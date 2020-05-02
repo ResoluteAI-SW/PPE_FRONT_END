@@ -1,12 +1,10 @@
-import React from "react";
-import Avatar from "@material-ui/core/Avatar";
+import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
@@ -52,7 +50,26 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignUpScreen() {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [organization, setOrganization] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+
   const classes = useStyles();
+
+  const signup = () => {
+    const details = {
+      email: email,
+      username: username,
+      password1: password,
+      password2: password2,
+      organization: organization,
+      ph_number: contactNumber,
+    };
+    console.log(JSON.stringify(details));
+  };
 
   return (
     <div
@@ -94,16 +111,23 @@ export default function SignUpScreen() {
                     id="username"
                     label="UserName"
                     autoFocus
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
                     required
                     fullWidth
+                    type="email"
                     id="email"
                     label="Email Address"
                     name="email"
                     autoComplete="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -115,6 +139,8 @@ export default function SignUpScreen() {
                     type="password"
                     id="password"
                     autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -126,6 +152,14 @@ export default function SignUpScreen() {
                     type="password"
                     id="password2"
                     autoComplete="confirm-password"
+                    value={password2}
+                    onChange={(e) => setPassword2(e.target.value)}
+                    error={password2 !== password && password2 !== ""}
+                    helperText={
+                      password2 !== password && password2 !== ""
+                        ? "Passwords do not match"
+                        : ""
+                    }
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -137,6 +171,8 @@ export default function SignUpScreen() {
                     id="organization"
                     label="Organization"
                     autoFocus
+                    value={organization}
+                    onChange={(e) => setOrganization(e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -147,17 +183,26 @@ export default function SignUpScreen() {
                     label="Contact"
                     name="contact"
                     autoComplete="contact number"
+                    value={contactNumber}
+                    onChange={(e) => setContactNumber(e.target.value)}
                   />
                 </Grid>
               </Grid>
               <div style={{ textAlign: "center", marginTop: 10 }}>
                 <Button
-                  type="submit"
                   fullWidth
                   variant="contained"
                   color="primary"
                   className={classes.submit}
                   style={{ width: "50%", borderRadius: 20 }}
+                  onClick={signup}
+                  disabled={
+                    (password !== password2 && password2 !== "") ||
+                    password.length === 0 ||
+                    password2.length === 0 ||
+                    username.length === 0 ||
+                    email.length === 0
+                  }
                 >
                   Sign Up
                 </Button>

@@ -8,7 +8,7 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-import PPEMaskImage from "../../Media/Images/CleanRoom.png";
+// import PPEMaskImage from "../../Media/Images/CleanRoom.png";
 import ResoluteAILogo from "../../Media/Images/resolute-AI-logo-rectangle.png";
 import labs_images from "../../Media/Images/labs_images.jpg";
 import "../Auth/DividerWithText.css";
