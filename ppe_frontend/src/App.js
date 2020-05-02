@@ -1,25 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import SignInScreen from "./Components/Auth/LoginScreen";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import "./App.css";
+
+const mainTheme = createMuiTheme({
+  palette: {
+    primary: {
+      light: "#9A4749",
+      main: "#9B282A",
+      dark: "#5A1111",
+    },
+  },
+  typography: {
+    htmlFontSize: 17,
+    fontFamily:
+      "-apple-system,system-ui,BlinkMacSystemFont," +
+      '"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif',
+    fontSize: 15,
+  },
+  shape: {
+    borderRadius: 10,
+  },
+});
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={mainTheme}>
+      <SignInScreen />
+    </ThemeProvider>
   );
 }
 
