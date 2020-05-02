@@ -1,7 +1,9 @@
 import React from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import SignInScreen from "./Components/Auth/LoginScreen";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import "./App.css";
+import SignUpScreen from "./Components/Auth/SignupScreen";
 
 const mainTheme = createMuiTheme({
   palette: {
@@ -26,7 +28,12 @@ const mainTheme = createMuiTheme({
 function App() {
   return (
     <ThemeProvider theme={mainTheme}>
-      <SignInScreen />
+      <Router>
+        <Switch>
+          <Route exact path="/" component={SignInScreen} />
+          <Route exact path="/signup" component={SignUpScreen} />
+        </Switch>
+      </Router>
     </ThemeProvider>
   );
 }

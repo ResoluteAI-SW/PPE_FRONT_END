@@ -11,12 +11,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import PPEMaskImage from "../../Media/Images/CleanRoom.png";
 import ResoluteAILogo from "../../Media/Images/resolute-AI-logo-rectangle.png";
 import labs_images from "../../Media/Images/labs_images.jpg";
+import "../Auth/DividerWithText.css";
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
+      <Link color="inherit" href="https://resoluteai.in/">
         ResoluteAI
       </Link>{" "}
       {new Date().getFullYear()}
@@ -85,9 +86,9 @@ export default function SignInScreen() {
           <img
             src={ResoluteAILogo}
             alt="loading"
-            style={{ width: "80%", height: "50%", marginBottom: 50 }}
+            style={{ width: "80%", height: "50%", marginBottom: 20 }}
           />
-          <h1>Welcome to PPE Client</h1>
+          <h1 style={{ color: "#505050" }}>Welcome to PPE Client</h1>
           <form className={classes.form} noValidate>
             <TextField
               margin="normal"
@@ -120,14 +121,15 @@ export default function SignInScreen() {
                 Sign In
               </Button>
             </div>
-            <Grid container>
+            <div class="separator">OR</div>
+            <Grid container style={{ marginTop: 30 }}>
               <Grid item xs>
                 <Link href="#" variant="body2">
                   Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/signup" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
