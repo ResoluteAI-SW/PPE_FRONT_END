@@ -65,7 +65,13 @@ export default function SignUpScreen() {
         alignItems: "center",
       }}
     >
-      <Paper style={{ width: "40%", marginTop: "5%", marginBottom: "4.9%" }}>
+      <Paper
+        style={{
+          width: "40%",
+          marginTop: "3%",
+          marginBottom: "2.68%",
+        }}
+      >
         <Container component="main" maxWidth="xs">
           <CssBaseline />
           <div className={classes.paper}>
@@ -79,25 +85,15 @@ export default function SignUpScreen() {
             </Typography>
             <form className={classes.form} noValidate>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12}>
                   <TextField
-                    autoComplete="fname"
-                    name="firstName"
+                    autoComplete="username"
+                    name="username"
                     required
                     fullWidth
-                    id="firstName"
-                    label="First Name"
+                    id="username"
+                    label="UserName"
                     autoFocus
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    id="lastName"
-                    label="Last Name"
-                    name="lastName"
-                    autoComplete="lname"
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -110,7 +106,7 @@ export default function SignUpScreen() {
                     autoComplete="email"
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     required
                     fullWidth
@@ -121,8 +117,40 @@ export default function SignUpScreen() {
                     autoComplete="current-password"
                   />
                 </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="password2"
+                    label="Confirm Password"
+                    type="password"
+                    id="password2"
+                    autoComplete="confirm-password"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    autoComplete="organization"
+                    name="organization"
+                    required
+                    fullWidth
+                    id="organization"
+                    label="Organization"
+                    autoFocus
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    required
+                    fullWidth
+                    id="contact"
+                    label="Contact"
+                    name="contact"
+                    autoComplete="contact number"
+                  />
+                </Grid>
               </Grid>
-              <div style={{ textAlign: "center" }}>
+              <div style={{ textAlign: "center", marginTop: 10 }}>
                 <Button
                   type="submit"
                   fullWidth
