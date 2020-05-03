@@ -121,7 +121,7 @@ export default function SignInScreen() {
                 Sign In
               </Button>
             </div>
-            <div class="separator">OR</div>
+            <div className="separator">OR</div>
             <Grid container style={{ marginTop: 30 }}>
               <Grid item xs>
                 <Link href="#" variant="body2">

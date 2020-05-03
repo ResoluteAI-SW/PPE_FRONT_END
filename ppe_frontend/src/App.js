@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import SignInScreen from "./Components/Auth/LoginScreen";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import "./App.css";
 import SignUpScreen from "./Components/Auth/SignupScreen";
+import AdminDashboard from "./Components/AdminDashboard";
+import firebase from "./FirebaseConfig";
 
 const mainTheme = createMuiTheme({
   palette: {
@@ -31,12 +33,23 @@ const mainTheme = createMuiTheme({
 });
 
 function App() {
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        console.log("user info: ", user.toJSON());
+      } else {
+        console.log("null user");
+      }
+    });
+  }, []);
+
   return (
     <ThemeProvider theme={mainTheme}>
       <Router>
         <Switch>
           <Route exact path="/" component={SignInScreen} />
           <Route exact path="/signup" component={SignUpScreen} />
+          <Route exact path="/dashboard" component={AdminDashboard} />
         </Switch>
       </Router>
     </ThemeProvider>

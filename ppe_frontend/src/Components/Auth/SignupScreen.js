@@ -13,6 +13,7 @@ import ResoluteAILogo from "../../Media/Images/resolute-AI-logo-rectangle.png";
 import MuiAlert from "@material-ui/lab/Alert";
 import firebase from "../../FirebaseConfig";
 import Snackbar from "@material-ui/core/Snackbar";
+import { Redirect } from "react-router-dom";
 
 function Copyright() {
   return (
@@ -68,6 +69,7 @@ export default function SignUpScreen() {
   const [contactNumber, setContactNumber] = useState("");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
 
   const classes = useStyles();
 
@@ -99,12 +101,9 @@ export default function SignUpScreen() {
           severity = "success";
           setOpen(true);
           setLoading(false);
-          setContactNumber("");
-          setEmail("");
-          setOrganization("");
-          setPassword("");
-          setPassword2("");
-          setUsername("");
+          setTimeout(() => {
+            setUser(user);
+          }, 2000);
         }
       })
       .catch((err) => {
@@ -115,6 +114,10 @@ export default function SignUpScreen() {
         setLoading(false);
       });
   };
+
+  if (user) {
+    return <Redirect to="/" />;
+  }
 
   return (
     <div
