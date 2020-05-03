@@ -10,6 +10,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import ResoluteAILogo from "../../Media/Images/resolute-AI-logo-rectangle.png";
+import MuiAlert from "@material-ui/lab/Alert";
+import firebase from "../../FirebaseConfig";
+import Snackbar from "@material-ui/core/Snackbar";
 
 function Copyright() {
   return (
@@ -27,6 +30,13 @@ function Copyright() {
       {"."}
     </Typography>
   );
+}
+
+var severity = "success";
+var message = "Account successfully created";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -56,8 +66,17 @@ export default function SignUpScreen() {
   const [password2, setPassword2] = useState("");
   const [organization, setOrganization] = useState("");
   const [contactNumber, setContactNumber] = useState("");
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const classes = useStyles();
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
 
   const signup = () => {
     const details = {
@@ -69,6 +88,32 @@ export default function SignUpScreen() {
       ph_number: contactNumber,
     };
     console.log(JSON.stringify(details));
+    setLoading(true);
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then((user) => {
+        if (user) {
+          console.log(JSON.stringify(user));
+          message = "Account successfully created";
+          severity = "success";
+          setOpen(true);
+          setLoading(false);
+          setContactNumber("");
+          setEmail("");
+          setOrganization("");
+          setPassword("");
+          setPassword2("");
+          setUsername("");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        message = err.message;
+        severity = "error";
+        setOpen(true);
+        setLoading(false);
+      });
   };
 
   return (
@@ -129,12 +174,12 @@ export default function SignUpScreen() {
                       setEmail(e.target.value);
                     }}
                     error={
-                      !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
+                      !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(
                         email
                       ) && email !== ""
                     }
                     helperText={
-                      !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
+                      !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(
                         email
                       ) && email !== ""
                         ? "Invalid email"
@@ -182,7 +227,6 @@ export default function SignUpScreen() {
                     fullWidth
                     id="organization"
                     label="Organization"
-                    autoFocus
                     value={organization}
                     onChange={(e) => setOrganization(e.target.value)}
                   />
@@ -203,6 +247,8 @@ export default function SignUpScreen() {
                     helperText={
                       !/^[0-9]+$/.test(contactNumber) && contactNumber !== ""
                         ? "Invalid contact number"
+                        : contactNumber.length !== 10 && contactNumber !== ""
+                        ? "Should consist of 10 digits"
                         : ""
                     }
                   />
@@ -221,10 +267,12 @@ export default function SignUpScreen() {
                     password.length === 0 ||
                     password2.length === 0 ||
                     username.length === 0 ||
-                    email.length === 0
+                    email.length === 0 ||
+                    (!/^[0-9]+$/.test(contactNumber) && contactNumber !== "") ||
+                    loading
                   }
                 >
-                  Sign Up
+                  {loading ? "Signing Up" : "Sign Up"}
                 </Button>
               </div>
               <Grid container justify="flex-end">
@@ -236,12 +284,16 @@ export default function SignUpScreen() {
               </Grid>
             </form>
           </div>
-
           <Box mt={5}>
             <Copyright />
           </Box>
         </Container>
       </Paper>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={severity}>
+          {message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

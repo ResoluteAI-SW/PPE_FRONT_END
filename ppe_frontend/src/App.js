@@ -12,6 +12,11 @@ const mainTheme = createMuiTheme({
       main: "#9B282A",
       dark: "#5A1111",
     },
+    secondary: {
+      light: "#FFFFFF",
+      main: "#FFFFFF",
+      dark: "#FFFFFF",
+    },
   },
   typography: {
     htmlFontSize: 17,
