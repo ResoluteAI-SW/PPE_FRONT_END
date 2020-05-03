@@ -128,6 +128,18 @@ export default function SignUpScreen() {
                     onChange={(e) => {
                       setEmail(e.target.value);
                     }}
+                    error={
+                      !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
+                        email
+                      ) && email !== ""
+                    }
+                    helperText={
+                      !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
+                        email
+                      ) && email !== ""
+                        ? "Invalid email"
+                        : ""
+                    }
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -166,7 +178,7 @@ export default function SignUpScreen() {
                   <TextField
                     autoComplete="organization"
                     name="organization"
-                    required
+                    // required
                     fullWidth
                     id="organization"
                     label="Organization"
@@ -177,7 +189,7 @@ export default function SignUpScreen() {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    required
+                    // required
                     fullWidth
                     id="contact"
                     label="Contact"
@@ -185,6 +197,14 @@ export default function SignUpScreen() {
                     autoComplete="contact number"
                     value={contactNumber}
                     onChange={(e) => setContactNumber(e.target.value)}
+                    error={
+                      !/^[0-9]+$/.test(contactNumber) && contactNumber !== ""
+                    }
+                    helperText={
+                      !/^[0-9]+$/.test(contactNumber) && contactNumber !== ""
+                        ? "Invalid contact number"
+                        : ""
+                    }
                   />
                 </Grid>
               </Grid>
