@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
@@ -12,6 +12,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import ResoluteAILogo from "../../Media/Images/resolute-AI-logo-rectangle.png";
 import labs_images from "../../Media/Images/labs_images.jpg";
 import "../Auth/DividerWithText.css";
+import firebase from "../../FirebaseConfig";
+import AdminDashboard from "../AdminDashboard";
 
 function Copyright() {
   return (
@@ -58,7 +60,31 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignInScreen() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [user, setUser] = useState(null);
+
+  const login = () => {
+    setEmail("");
+    setPassword("");
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then((user) => console.log("signed in user: ", user.user.toJSON()))
+      .catch((err) => console.log(err));
+  };
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user) => {
+      setUser(user);
+    });
+  }, []);
+
   const classes = useStyles();
+
+  if (user) {
+    return <AdminDashboard />;
+  }
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -89,7 +115,7 @@ export default function SignInScreen() {
             style={{ width: "80%", height: "50%", marginBottom: 20 }}
           />
           <h1 style={{ color: "#505050" }}>Welcome to PPE Client</h1>
-          <form className={classes.form} noValidate>
+          <form className={classes.form}>
             <TextField
               margin="normal"
               required
@@ -99,6 +125,9 @@ export default function SignInScreen() {
               name="email"
               autoComplete="email"
               autoFocus
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              type="email"
             />
             <TextField
               margin="normal"
@@ -109,14 +138,16 @@ export default function SignInScreen() {
               type="password"
               id="password"
               autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <div style={{ margin: 10, textAlign: "center" }}>
               <Button
-                type="submit"
                 variant="contained"
                 color="primary"
                 className={classes.submit}
                 style={{ width: "50%", borderRadius: 20 }}
+                onClick={login}
               >
                 Sign In
               </Button>

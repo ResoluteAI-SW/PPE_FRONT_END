@@ -41,6 +41,7 @@ function App() {
         console.log("null user");
       }
     });
+    console.log("current user: ", firebase.auth().currentUser);
   }, []);
 
   return (
