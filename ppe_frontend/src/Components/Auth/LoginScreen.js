@@ -83,7 +83,7 @@ export default function SignInScreen() {
   const classes = useStyles();
 
   if (user) {
-    return <AdminDashboard />;
+    return <AdminDashboard user={user} />;
   }
 
   return (

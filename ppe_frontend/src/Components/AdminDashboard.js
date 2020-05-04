@@ -1,7 +1,8 @@
 import React from "react";
 import firebase from "../FirebaseConfig";
 
-export default function AdminDashboard() {
+export default function AdminDashboard(props) {
+  const user = props.user;
   const logout = () => {
     console.log("clicked");
     firebase
@@ -13,7 +14,7 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      Hii there
+      Hii there {user.email}
       <button onClick={logout}>Logout</button>
     </div>
   );
