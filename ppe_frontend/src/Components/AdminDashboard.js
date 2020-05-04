@@ -7,6 +7,7 @@ import {
   withStyles,
 } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
+import Button from "@material-ui/core/Button";
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -29,6 +30,7 @@ import ErrorIcon from "@material-ui/icons/Error";
 import Tooltip from "@material-ui/core/Tooltip";
 import Logo from "../Media/Images/ResoluteAI-In-black-bg-social-media.png";
 import IPCameraRegistration from "../Components/Items/IPCameraRegistration";
+import firebase from "../FirebaseConfig";
 
 const drawerWidth = 240;
 
@@ -258,6 +260,14 @@ export default function AdminDashboard() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+  const logout = () => {
+    console.log("clicked");
+    firebase
+      .auth()
+      .signOut()
+      .then((user) => console.log(user))
+      .catch((err) => console.log(err));
+  };
 
   return (
     <div>
@@ -294,6 +304,9 @@ export default function AdminDashboard() {
             >
               <b>{title}</b>
             </Typography>
+            <Button onClick={logout} style={{ color: "white" }}>
+              Sign Out
+            </Button>
           </Toolbar>
         </AppBar>
         <ThemeProvider theme={theme}>
