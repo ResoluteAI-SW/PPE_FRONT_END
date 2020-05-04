@@ -14,6 +14,8 @@ import labs_images from "../../Media/Images/labs_images.jpg";
 import "../Auth/DividerWithText.css";
 import firebase from "../../FirebaseConfig";
 import AdminDashboard from "../AdminDashboard";
+import MuiAlert from "@material-ui/lab/Alert";
+import Snackbar from "@material-ui/core/Snackbar";
 
 function Copyright() {
   return (
@@ -27,6 +29,12 @@ function Copyright() {
     </Typography>
   );
 }
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
+var message = "";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,6 +71,14 @@ export default function SignInScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
 
   const login = () => {
     setEmail("");
@@ -71,7 +87,11 @@ export default function SignInScreen() {
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then((user) => console.log("signed in user: ", user.user.toJSON()))
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        message = err.message;
+        setOpen(true);
+      });
   };
 
   useEffect(() => {
@@ -171,6 +191,11 @@ export default function SignInScreen() {
           </form>
         </div>
       </Grid>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          {message}
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 }
