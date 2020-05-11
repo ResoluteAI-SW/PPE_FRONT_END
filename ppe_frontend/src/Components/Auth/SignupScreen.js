@@ -102,15 +102,17 @@ export default function SignUpScreen() {
           severity = "success";
           db.collection("users")
             .add(details)
-            .then((doc) => console.log(doc.id))
+            .then((doc) => {
+              console.log(doc.id);
+              setOpen(true);
+              setLoading(false);
+              setTimeout(() => {
+                setUser(user);
+              }, 2000);
+            })
             .catch((err) =>
               console.log("error adding user to firebase: ", err)
             );
-          setOpen(true);
-          setLoading(false);
-          setTimeout(() => {
-            setUser(user);
-          }, 2000);
         }
       })
       .catch((err) => {
