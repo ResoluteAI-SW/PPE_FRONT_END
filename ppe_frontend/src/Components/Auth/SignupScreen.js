@@ -12,6 +12,7 @@ import Paper from "@material-ui/core/Paper";
 import ResoluteAILogo from "../../Media/Images/resolute-AI-logo-rectangle.png";
 import MuiAlert from "@material-ui/lab/Alert";
 import firebase from "../../FirebaseConfig";
+import { db } from "../../FirebaseConfig";
 import Snackbar from "@material-ui/core/Snackbar";
 import { db } from "../../FirebaseConfig";
 import { Redirect } from "react-router-dom";

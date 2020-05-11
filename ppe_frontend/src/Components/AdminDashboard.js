@@ -302,7 +302,7 @@ export default function AdminDashboard() {
               noWrap
               className={classes.title}
             >
-              <b>{title}</b>
+              <b>{"Welcome to Facegenie PPE Client"}</b>
             </Typography>
             <Button onClick={logout} style={{ color: "white" }}>
               Sign Out
