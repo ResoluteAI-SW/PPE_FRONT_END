@@ -133,8 +133,9 @@ export default function SignInScreen() {
             src={ResoluteAILogo}
             alt="loading"
             style={{ width: "80%", height: "50%", marginBottom: 20 }}
+            className="w3-animate-zoom"
           />
-          <h1 style={{ color: "#505050" }}>Welcome to PPE Client</h1>
+          <h2 style={{ color: "#505050" }}>Welcome to PPE Client</h2>
           <form className={classes.form}>
             <TextField
               margin="normal"

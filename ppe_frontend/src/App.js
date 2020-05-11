@@ -22,9 +22,7 @@ const mainTheme = createMuiTheme({
   },
   typography: {
     htmlFontSize: 17,
-    fontFamily:
-      "-apple-system,system-ui,BlinkMacSystemFont," +
-      '"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif',
+    fontFamily: "Montserrat",
     fontSize: 15,
   },
   shape: {

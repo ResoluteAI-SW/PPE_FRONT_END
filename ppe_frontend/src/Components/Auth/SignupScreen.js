@@ -13,6 +13,7 @@ import ResoluteAILogo from "../../Media/Images/resolute-AI-logo-rectangle.png";
 import MuiAlert from "@material-ui/lab/Alert";
 import firebase from "../../FirebaseConfig";
 import Snackbar from "@material-ui/core/Snackbar";
+import { db } from "../../FirebaseConfig";
 import { Redirect } from "react-router-dom";
 
 function Copyright() {
@@ -99,11 +100,19 @@ export default function SignUpScreen() {
           console.log(JSON.stringify(user));
           message = "Account successfully created";
           severity = "success";
-          setOpen(true);
-          setLoading(false);
-          setTimeout(() => {
-            setUser(user);
-          }, 2000);
+          db.collection("users")
+            .add(details)
+            .then((doc) => {
+              console.log(doc.id);
+              setOpen(true);
+              setLoading(false);
+              setTimeout(() => {
+                setUser(user);
+              }, 2000);
+            })
+            .catch((err) =>
+              console.log("error adding user to firebase: ", err)
+            );
         }
       })
       .catch((err) => {
