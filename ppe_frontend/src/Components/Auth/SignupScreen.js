@@ -14,7 +14,6 @@ import MuiAlert from "@material-ui/lab/Alert";
 import firebase from "../../FirebaseConfig";
 import { db } from "../../FirebaseConfig";
 import Snackbar from "@material-ui/core/Snackbar";
-import { db } from "../../FirebaseConfig";
 import { Redirect } from "react-router-dom";
 
 function Copyright() {
