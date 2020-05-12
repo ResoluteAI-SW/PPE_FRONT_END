@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import AddProfile from "./AddProfile";
-import ViewProfile from "./ViewProfile";
+import ViewProfiles from "./ViewProfiles";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
 export default function NavigationTabs() {
   const classes = useStyles();
   const [title, setTitle] = React.useState("Add Profile");
-  const mainListItems = ["Add Profile", "View Profile"];
+  const mainListItems = ["Add Profile", "View Profiles"];
 
   return (
     <div>
@@ -121,7 +121,7 @@ export default function NavigationTabs() {
 function RenderComponent(props) {
   const componentMap = {
     "Add Profile": <AddProfile />,
-    "View Profile": <ViewProfile />,
+    "View Profiles": <ViewProfiles />,
   };
   return <div>{componentMap[props.component]}</div>;
 }

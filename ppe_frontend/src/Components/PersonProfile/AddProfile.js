@@ -9,6 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Chip from "@material-ui/core/Chip";
+import Webcam from "react-webcam";
 
 const useStyles = makeStyles((theme) => ({
   image: {
@@ -42,12 +43,58 @@ const useStyles = makeStyles((theme) => ({
 
 const colorHashtags = ["lab assistant", "management", "employee"];
 
+const videoConstraints = {
+  width: 500,
+  height: 440,
+  facingMode: "user",
+};
+
 export default function AddProfile() {
   const [name, setName] = useState("");
   const [department, setDepartment] = useState("");
   const [blocked, setBlocked] = useState(false);
   const [hashtag, setHashtag] = useState("");
   const classes = useStyles();
+
+  const WebcamCapture = () => {
+    const webcamRef = React.useRef(null);
+
+    const capture = React.useCallback(() => {
+      const imageSrc = webcamRef.current.getScreenshot();
+      console.log(imageSrc);
+    }, [webcamRef]);
+
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+          width: "95%",
+          padding: 10,
+        }}
+        class="w3-card"
+      >
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          videoConstraints={videoConstraints}
+          height={440}
+          width={500}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.submit}
+          onClick={capture}
+        >
+          Click Photo
+        </Button>
+      </div>
+    );
+  };
 
   const submitProfileInfo = (e) => {
     e.preventDefault();
@@ -73,9 +120,11 @@ export default function AddProfile() {
   };
 
   return (
-    <Grid container component="main" className={classes.root}>
+    <Grid container component="main">
       <CssBaseline />
-      <Grid item xs={false} sm={4} md={7} className={classes.image} />
+      <Grid item xs={false} sm={4} md={7}>
+        <WebcamCapture />
+      </Grid>
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
         <div className={classes.paper}>
           <Typography component="h1" variant="h5">
