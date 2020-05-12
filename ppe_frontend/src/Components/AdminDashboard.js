@@ -29,8 +29,9 @@ import FaceIcon from "@material-ui/icons/Face";
 import ErrorIcon from "@material-ui/icons/Error";
 import Tooltip from "@material-ui/core/Tooltip";
 import Logo from "../Media/Images/ResoluteAI-In-black-bg-social-media.png";
-import IPCameraRegistration from "../Components/Items/IPCameraRegistration";
+import Settings from "./Settings/Settings";
 import firebase from "../FirebaseConfig";
+import Alerts from "./Items/Alerts";
 
 const drawerWidth = 240;
 
@@ -162,7 +163,7 @@ const theme = createMuiTheme({
 export default function AdminDashboard() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
-  const [title, setTitle] = React.useState("No Teacher Alert");
+  const [title, setTitle] = React.useState("Settings");
   const mainListItems = (
     <ThemeProvider theme={theme}>
       <div>
@@ -302,7 +303,9 @@ export default function AdminDashboard() {
               noWrap
               className={classes.title}
             >
-              <b>{"Welcome to Facegenie PPE Client"}</b>
+              <b className="w3-animate-left">
+                {"Welcome to Facegenie PPE Client"}
+              </b>
             </Typography>
             <Button onClick={logout} style={{ color: "white" }}>
               Sign Out
@@ -343,12 +346,12 @@ export default function AdminDashboard() {
 
 function RenderComponent(props) {
   const componentMap = {
-    "Attendance Mark": <IPCameraRegistration />,
-    "Add Student": <IPCameraRegistration />,
-    Settings: <IPCameraRegistration />,
-    "Attendance Track": <IPCameraRegistration />,
-    "No Teacher Alert": <IPCameraRegistration />,
-    "Stayback Alert": <IPCameraRegistration />,
+    "Attendance Mark": <Alerts />,
+    "Add Student": <Alerts />,
+    Settings: <Settings />,
+    "Attendance Track": <Alerts />,
+    "No Teacher Alert": <Alerts />,
+    "Stayback Alert": <Alerts />,
   };
   return <div>{componentMap[props.component]}</div>;
 }
