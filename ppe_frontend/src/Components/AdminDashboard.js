@@ -33,6 +33,7 @@ import Settings from "./Settings/Settings";
 import firebase from "../FirebaseConfig";
 import { db } from "../FirebaseConfig";
 import Alerts from "./Items/Alerts";
+import NavigationTabs from "./PersonProfile/NavigationTabs";
 import LoadingScreen from "./LoadingScreen";
 
 const drawerWidth = 240;
@@ -203,16 +204,16 @@ export default function AdminDashboard(props) {
         <StyledListItem
           button
           onClick={() => {
-            setTitle("Add Student");
+            setTitle("Person Profiles");
           }}
-          selected={title === "Add Student"}
+          selected={title === "Person Profiles"}
         >
-          <Tooltip title="Add Students" placement="right-start" arrow>
+          <Tooltip title="Person Profiles" placement="right-start" arrow>
             <ListItemIcon>
               <PersonAddTwoToneIcon color="primary" />
             </ListItemIcon>
           </Tooltip>
-          <ListItemText primary="Add Students" />
+          <ListItemText primary="Person Profiles" />
         </StyledListItem>
         <StyledListItem
           button
@@ -369,7 +370,7 @@ export default function AdminDashboard(props) {
 function RenderComponent(props) {
   const componentMap = {
     "Attendance Mark": <Alerts />,
-    "Add Student": <Alerts />,
+    "Person Profiles": <NavigationTabs />,
     Settings: <Settings />,
     "Attendance Track": <Alerts />,
     "No Teacher Alert": <Alerts />,
