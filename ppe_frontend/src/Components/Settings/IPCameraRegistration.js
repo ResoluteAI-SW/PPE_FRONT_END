@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
@@ -9,6 +9,7 @@ import Grid from "@material-ui/core/Grid";
 import Chip from "@material-ui/core/Chip";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+import { UserContext } from "../AdminDashboard";
 
 const colorHashtags = ["entry", "exit", "lab", "lobby"];
 
@@ -36,30 +37,48 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+var severity = "success";
+var message = "IP Camera successfully registered";
+
 export default function IPCameraRegistration() {
   const classes = useStyles();
   const [ipAddress, setIPAddress] = useState("");
   const [placeInstalled, setPlaceInstalled] = useState("");
   const [hashtag, setHashtag] = useState("");
   const [open, setOpen] = React.useState(false);
-  const [severity, setSeverity] = React.useState("success");
-  const [content, setContent] = React.useState(
-    "IP Camera successfully registered"
-  );
+  const user = useContext(UserContext);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
     if (ipAddress === "" || hashtag === "" || placeInstalled === "") {
-      setSeverity("error");
-      setContent("Please fill all the details!");
+      severity = "warning";
+      message = "Please fill all the details";
       setOpen(true);
     } else {
       let ipCameraInfo = {
         IPAddress: ipAddress,
-        PlaceInstalled: placeInstalled,
+        Place: placeInstalled,
         Hashtag: hashtag,
       };
-      console.log(ipCameraInfo);
+      user.ref
+        .collection("ipCameras")
+        .add(ipCameraInfo)
+        .then((doc) => {
+          if (doc.id) {
+            severity = "success";
+            message = "IP Camera details successfully submitted";
+            setOpen(true);
+            setHashtag("");
+            setIPAddress("");
+            setPlaceInstalled("");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          severity = "error";
+          message = err.message;
+          setOpen(true);
+        });
     }
   };
 
@@ -157,7 +176,7 @@ export default function IPCameraRegistration() {
         </form>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
           <Alert onClose={handleClose} severity={severity}>
-            {content}
+            {message}
           </Alert>
         </Snackbar>
       </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, createContext } from "react";
 import clsx from "clsx";
 import {
   makeStyles,
@@ -31,7 +31,9 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Logo from "../Media/Images/ResoluteAI-In-black-bg-social-media.png";
 import Settings from "./Settings/Settings";
 import firebase from "../FirebaseConfig";
+import { db } from "../FirebaseConfig";
 import Alerts from "./Items/Alerts";
+import LoadingScreen from "./LoadingScreen";
 
 const drawerWidth = 240;
 
@@ -160,8 +162,11 @@ const theme = createMuiTheme({
   },
 });
 
-export default function AdminDashboard() {
+export const UserContext = createContext();
+
+export default function AdminDashboard(props) {
   const classes = useStyles();
+  const [userDoc, setUserDoc] = useState(null);
   const [open, setOpen] = React.useState(true);
   const [title, setTitle] = React.useState("Settings");
   const mainListItems = (
@@ -255,6 +260,17 @@ export default function AdminDashboard() {
     </ThemeProvider>
   );
 
+  useEffect(() => {
+    db.collection("users")
+      .where("email", "==", props.user.email)
+      .get()
+      .then((querySnapshot) => {
+        const doc = querySnapshot.docs[0];
+        setUserDoc(doc);
+      })
+      .catch((err) => console.log(err));
+  }, [props.user.email]);
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -269,6 +285,10 @@ export default function AdminDashboard() {
       .then((user) => console.log(user))
       .catch((err) => console.log(err));
   };
+
+  if (userDoc === null) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div>
@@ -308,7 +328,7 @@ export default function AdminDashboard() {
               </b>
             </Typography>
             <Button onClick={logout} style={{ color: "white" }}>
-              Sign Out
+              Sign Out ({`${userDoc.data().username}`})
             </Button>
           </Toolbar>
         </AppBar>
@@ -336,7 +356,9 @@ export default function AdminDashboard() {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
-            <RenderComponent component={title} />
+            <UserContext.Provider value={userDoc}>
+              <RenderComponent component={title} />
+            </UserContext.Provider>
           </Container>
         </main>
       </div>
