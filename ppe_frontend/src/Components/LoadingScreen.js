@@ -9,11 +9,13 @@ export default class LoadingScreen extends React.Component {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          width: "100%",
+          height: "100vh",
+          backgroundColor: "black",
         }}
       >
-        <div>
-          <HashLoader size={50} color={"#123abc"} loading={true} />
-        </div>
+        <HashLoader size={50} color={"#FFFFFF"} loading={true} />
+        <h3 style={{ color: "white", marginLeft: "2%" }}>Loading</h3>
       </div>
     );
   }
