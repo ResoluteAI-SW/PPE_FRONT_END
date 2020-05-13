@@ -287,7 +287,7 @@ export default function AdminDashboard(props) {
       .catch((err) => console.log(err));
   };
 
-  if (userDoc === null) {
+  if (userDoc === null || userDoc === undefined) {
     return <LoadingScreen />;
   }
 
