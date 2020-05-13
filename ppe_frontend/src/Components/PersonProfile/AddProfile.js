@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
@@ -71,6 +71,7 @@ export default function AddProfile() {
   const [blocked, setBlocked] = useState(false);
   const [hashtag, setHashtag] = useState("");
   const [open, setOpen] = React.useState(false);
+  const [retrainedPersons, setRetrainedPersons] = useState(0);
   const classes = useStyles();
 
   const WebcamCapture = () => {
@@ -132,8 +133,10 @@ export default function AddProfile() {
   const submitProfileInfo = (e) => {
     e.preventDefault();
     const uuid = parseInt(adminDoc.data().persons_registered) + 1;
+    console.log(uuid);
     const persons_not_retrained =
       parseInt(adminDoc.data().persons_not_retrained) + 1;
+    console.log(persons_not_retrained);
     const profileInfo = {
       uuid: uuid,
       name: name,
@@ -213,7 +216,13 @@ export default function AddProfile() {
     console.log("pressed reset");
   };
 
-  if (adminDoc.data().persons_not_retrained > 3) {
+  useEffect(() => {
+    adminDoc.ref.onSnapshot((doc) => {
+      setRetrainedPersons(doc.data().persons_not_retrained);
+    });
+  });
+
+  if (retrainedPersons > 4) {
     return <RetrainUsers />;
   }
 
