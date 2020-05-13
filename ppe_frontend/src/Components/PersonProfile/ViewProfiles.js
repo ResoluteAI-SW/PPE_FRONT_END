@@ -48,7 +48,7 @@ export default function ViewProfiles() {
           setPersons((persons) => persons.concat(doc.data()));
         })
       );
-  }, []);
+  }, [userDoc]);
 
   return (
     <TableContainer component={Paper}>

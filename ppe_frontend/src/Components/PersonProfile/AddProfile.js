@@ -15,6 +15,7 @@ import MuiAlert from "@material-ui/lab/Alert";
 import Webcam from "react-webcam";
 import { UserContext } from "../AdminDashboard";
 import { db } from "../../FirebaseConfig";
+import RetrainUsers from "./RetrainUsers";
 
 const useStyles = makeStyles((theme) => ({
   image: {
@@ -211,6 +212,10 @@ export default function AddProfile() {
     console.log("pressed reset");
   };
 
+  if (adminDoc.data().persons_not_retrained > 3) {
+    return <RetrainUsers />;
+  }
+
   return (
     <Grid container component="main">
       <CssBaseline />
@@ -244,7 +249,7 @@ export default function AddProfile() {
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
           <div className={classes.paper}>
             <Typography component="h1" variant="h5">
-              Add Profile
+              Add Profile Details
             </Typography>
             <form
               className={classes.form}
