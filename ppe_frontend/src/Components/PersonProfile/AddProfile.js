@@ -48,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const colorHashtags = ["lab assistant", "management", "employee"];
+const angles = ["Front", "Top", "Bottom", "Right", "Left"];
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -353,7 +354,22 @@ export default function AddProfile() {
             </form>
           </div>
         </Grid>
-      ) : null}
+      ) : (
+        <Grid item xs={12} sm={8} md={5} square>
+          <div
+            style={{
+              height: "100vh",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <h3>
+              Click the photo with {angles[images.length]} angle of the face
+            </h3>
+          </div>
+        </Grid>
+      )}
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={severity}>
           {message}
