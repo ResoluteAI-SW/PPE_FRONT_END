@@ -129,7 +129,11 @@ export default function AddProfile() {
 
   const submitProfileInfo = (e) => {
     e.preventDefault();
+    const uuid = parseInt(adminDoc.data().persons_registered) + 1;
+    const persons_not_retrained =
+      parseInt(adminDoc.data().persons_not_retrained) + 1;
     const profileInfo = {
+      uuid: uuid,
       name: name,
       department: department,
       blocked: blocked,
@@ -141,9 +145,6 @@ export default function AddProfile() {
     const config = {
       headers: { "content-type": "multipart/form-data" },
     };
-    const uuid = parseInt(adminDoc.data().persons_registered) + 1;
-    const persons_not_retrained =
-      parseInt(adminDoc.data().persons_not_retrained) + 1;
     form.append("identification", uuid);
     form.append("Front_Face", images[0]);
     form.append("Bottom_Face", images[1]);
