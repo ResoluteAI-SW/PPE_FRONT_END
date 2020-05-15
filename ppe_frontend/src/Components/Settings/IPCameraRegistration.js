@@ -72,7 +72,6 @@ var severity = "success";
 var message = "IP Camera successfully registered";
 
 var ipCameraEdit = null;
-var ipCamerasTemp = [];
 
 export default function IPCameraRegistration() {
   const classes = useStyles();
@@ -107,45 +106,47 @@ export default function IPCameraRegistration() {
       setOpen(true);
     } else {
       console.log(ipCameraEdit);
-      for (var i = 0; i < ipCameras.length; i++) {
-        if (ipCameras[i].IPAddress === ipCameraEdit.IPAddress) {
-          setIPCameras([]);
-          user.ref
-            .collection("ipCameras")
-            .where("IPAddress", "==", ipCameraEdit.IPAddress)
-            .get()
-            .then((querySnapshot) => {
-              const IPCameraDoc = querySnapshot.docs[0];
-              IPCameraDoc.ref
-                .set(
-                  {
-                    IPAddress: ipAddress,
-                    Place: placeInstalled,
-                    Hashtag: hashtag,
-                    Username: username,
-                    Password: password,
-                  },
-                  { merge: true }
-                )
-                .then(() => {
-                  message = "Edit Successful";
-                  severity = "success";
-                  setUsername("");
-                  setPassword("");
-                  setHashtag("");
-                  setIPAddress("");
-                  setPlaceInstalled("");
-                  setOpen(true);
-                })
-                .catch((err) => {
-                  message = err.message;
-                  severity = "error";
-                  setOpen(true);
-                });
-            });
-          return 0;
+      setIPCameras([]);
+      if (ipCameraEdit) {
+        for (var i = 0; i < ipCameras.length; i++) {
+          if (ipCameras[i].IPAddress === ipCameraEdit.IPAddress) {
+            user.ref
+              .collection("ipCameras")
+              .where("IPAddress", "==", ipCameraEdit.IPAddress)
+              .get()
+              .then((querySnapshot) => {
+                const IPCameraDoc = querySnapshot.docs[0];
+                IPCameraDoc.ref
+                  .set(
+                    {
+                      IPAddress: ipAddress,
+                      Place: placeInstalled,
+                      Hashtag: hashtag,
+                      Username: username,
+                      Password: password,
+                    },
+                    { merge: true }
+                  )
+                  .then(() => {
+                    message = "Edit Successful";
+                    severity = "success";
+                    setUsername("");
+                    setPassword("");
+                    setHashtag("");
+                    setIPAddress("");
+                    setPlaceInstalled("");
+                    setOpen(true);
+                  })
+                  .catch((err) => {
+                    message = err.message;
+                    severity = "error";
+                    setOpen(true);
+                  });
+              });
+            return 0;
+          }
+          console.log("heyy");
         }
-        console.log("heyy");
       }
       let ipCameraInfo = {
         IPAddress: ipAddress,
@@ -199,6 +200,27 @@ export default function IPCameraRegistration() {
 
   const handleDelete = (ipAddress) => {
     console.log(ipAddress);
+    setIPCameras([]);
+    user.ref
+      .collection("ipCameras")
+      .where("IPAddress", "==", ipAddress)
+      .get()
+      .then((querySnapshot) => {
+        const IPCameraDoc = querySnapshot.docs[0];
+        IPCameraDoc.ref
+          .delete()
+          .then(() => {
+            severity = "success";
+            message = "IP Camera successfully deleted";
+            setOpen(true);
+          })
+          .catch((err) => {
+            console.log(err);
+            severity = "error";
+            message = err.message;
+            setOpen(true);
+          });
+      });
   };
 
   return (
