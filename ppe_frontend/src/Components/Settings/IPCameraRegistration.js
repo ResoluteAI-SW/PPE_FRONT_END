@@ -109,23 +109,39 @@ export default function IPCameraRegistration() {
       console.log(ipCameraEdit);
       for (var i = 0; i < ipCameras.length; i++) {
         if (ipCameras[i].IPAddress === ipCameraEdit.IPAddress) {
-          setIPCameras([])
+          setIPCameras([]);
           user.ref
             .collection("ipCameras")
             .where("IPAddress", "==", ipCameraEdit.IPAddress)
             .get()
             .then((querySnapshot) => {
               const IPCameraDoc = querySnapshot.docs[0];
-              IPCameraDoc.ref.set(
-                {
-                  IPAddress: ipAddress,
-                  Place: placeInstalled,
-                  Hashtag: hashtag,
-                  Username: username,
-                  Password: password,
-                },
-                { merge: true }
-              );
+              IPCameraDoc.ref
+                .set(
+                  {
+                    IPAddress: ipAddress,
+                    Place: placeInstalled,
+                    Hashtag: hashtag,
+                    Username: username,
+                    Password: password,
+                  },
+                  { merge: true }
+                )
+                .then(() => {
+                  message = "Edit Successful";
+                  severity = "success";
+                  setUsername("");
+                  setPassword("");
+                  setHashtag("");
+                  setIPAddress("");
+                  setPlaceInstalled("");
+                  setOpen(true);
+                })
+                .catch((err) => {
+                  message = err.message;
+                  severity = "error";
+                  setOpen(true);
+                });
             });
           return 0;
         }
