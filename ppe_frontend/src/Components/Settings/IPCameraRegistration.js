@@ -72,6 +72,7 @@ var severity = "success";
 var message = "IP Camera successfully registered";
 
 var ipCameraEdit = null;
+var ipCamerasTemp = [];
 
 export default function IPCameraRegistration() {
   const classes = useStyles();
@@ -87,8 +88,11 @@ export default function IPCameraRegistration() {
   useEffect(() => {
     user.ref.collection("ipCameras").onSnapshot((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        setIPCameras((ipCameras) => ipCameras.concat(doc.data()));
+        ipCamerasTemp.push(doc.data());
+        console.log(ipCamerasTemp);
       });
+      setIPCameras(ipCamerasTemp);
+      ipCamerasTemp = []
     });
   }, []);
 
@@ -200,7 +204,7 @@ export default function IPCameraRegistration() {
 
   const handleDelete = (ipAddress) => {
     console.log(ipAddress);
-    setIPCameras([]);
+    // setIPCameras([]);
     user.ref
       .collection("ipCameras")
       .where("IPAddress", "==", ipAddress)
