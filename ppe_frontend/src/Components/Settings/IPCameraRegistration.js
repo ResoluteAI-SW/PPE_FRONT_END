@@ -45,12 +45,20 @@ export default function IPCameraRegistration() {
   const [ipAddress, setIPAddress] = useState("");
   const [placeInstalled, setPlaceInstalled] = useState("");
   const [hashtag, setHashtag] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [open, setOpen] = React.useState(false);
   const user = useContext(UserContext);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    if (ipAddress === "" || hashtag === "" || placeInstalled === "") {
+    if (
+      ipAddress === "" ||
+      hashtag === "" ||
+      placeInstalled === "" ||
+      username === "" ||
+      password === ""
+    ) {
       severity = "warning";
       message = "Please fill all the details";
       setOpen(true);
@@ -59,6 +67,8 @@ export default function IPCameraRegistration() {
         IPAddress: ipAddress,
         Place: placeInstalled,
         Hashtag: hashtag,
+        Username: username,
+        Password: password,
       };
       user.ref
         .collection("ipCameras")
@@ -67,10 +77,12 @@ export default function IPCameraRegistration() {
           if (doc.id) {
             severity = "success";
             message = "IP Camera details successfully submitted";
-            setOpen(true);
+            setUsername("");
+            setPassword("");
             setHashtag("");
             setIPAddress("");
             setPlaceInstalled("");
+            setOpen(true);
           }
         })
         .catch((err) => {
@@ -111,14 +123,52 @@ export default function IPCameraRegistration() {
             autoFocus
             onChange={(e) => setIPAddress(e.target.value)}
           />
-          <Grid container spacing={5}>
+          <Grid
+            item
+            xs={12}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              id="placeInstalled"
+              label="Place Installed"
+              name="placeInstalled"
+              autoComplete="placeInstalled"
+              fullWidth
+              onChange={(e) => setPlaceInstalled(e.target.value)}
+            />
+          </Grid>
+          <Grid container spacing={3}>
             <Grid
               item
-              xs={12}
+              xs={6}
               style={{
                 display: "flex",
                 justifyContent: "space-between",
-                marginTop: 20,
+              }}
+            >
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                id="username"
+                label="Username"
+                name="username"
+                autoComplete="username"
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={6}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
               }}
             >
               <TextField
@@ -126,43 +176,43 @@ export default function IPCameraRegistration() {
                 margin="normal"
                 required
                 fullWidth
-                id="placeInstalled"
-                label="Place Installed"
-                name="placeInstalled"
-                autoComplete="placeInstalled"
-                onChange={(e) => setPlaceInstalled(e.target.value)}
+                id="password"
+                label="Password"
+                name="password"
+                type="password"
+                onChange={(e) => setPassword(e.target.value)}
               />
             </Grid>
-            <Grid item xs={12}>
-              <div>
-                Suggested Hashtags:
-                {colorHashtags.map((hashtag) => (
-                  <Chip
-                    label={`#${hashtag}`}
-                    style={{
-                      margin: "3px",
-                    }}
-                    variant="outlined"
-                    onClick={() => {
-                      setHashtag(`#${hashtag}`);
-                    }}
-                  />
-                ))}
-              </div>
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                id="Hashtag"
-                label="Insert # Hashtag"
-                fullWidth
-                name="Hashtag"
-                autoComplete="Hashtag"
-                onChange={(e) => setHashtag(e.target.value)}
-                value={hashtag}
-              />
-            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <div>
+              Suggested Hashtags:
+              {colorHashtags.map((hashtag) => (
+                <Chip
+                  label={`#${hashtag}`}
+                  style={{
+                    margin: "3px",
+                  }}
+                  variant="outlined"
+                  onClick={() => {
+                    setHashtag(`#${hashtag}`);
+                  }}
+                />
+              ))}
+            </div>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              variant="outlined"
+              required
+              id="Hashtag"
+              label="Insert # Hashtag"
+              fullWidth
+              name="Hashtag"
+              autoComplete="Hashtag"
+              onChange={(e) => setHashtag(e.target.value)}
+              value={hashtag}
+            />
           </Grid>
           <Button
             type="submit"
