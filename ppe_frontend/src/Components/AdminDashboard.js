@@ -24,9 +24,7 @@ import PersonAddTwoToneIcon from "@material-ui/icons/PersonAddTwoTone";
 import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import EmojiPeopleTwoToneIcon from "@material-ui/icons/EmojiPeopleTwoTone";
-import FaceIcon from "@material-ui/icons/Face";
-import ErrorIcon from "@material-ui/icons/Error";
+import AssessmentIcon from "@material-ui/icons/Assessment";
 import Tooltip from "@material-ui/core/Tooltip";
 import Logo from "../Media/Images/ResoluteAI-In-black-bg-social-media.png";
 import Settings from "./Settings/Settings";
@@ -169,93 +167,65 @@ export default function AdminDashboard(props) {
   const classes = useStyles();
   const [userDoc, setUserDoc] = useState(null);
   const [open, setOpen] = React.useState(true);
-  const [title, setTitle] = React.useState("Settings");
+  const [title, setTitle] = React.useState("Configurations");
   const mainListItems = (
     <ThemeProvider theme={theme}>
       <div>
         <StyledListItem
           button
           onClick={() => {
-            setTitle("Attendance Mark");
+            setTitle("Register Employees");
           }}
-          selected={title === "Attendance Mark"}
+          selected={title === "Register Employees"}
         >
-          <Tooltip title="Mark Attendance" placement="right-start" arrow>
-            <ListItemIcon>
-              <EmojiPeopleTwoToneIcon color="primary" />
-            </ListItemIcon>
-          </Tooltip>
-          <ListItemText primary="Attendance Mark" />
-        </StyledListItem>
-        <StyledListItem
-          button
-          onClick={() => {
-            setTitle("Attendance Track");
-          }}
-          selected={title === "Attendance Track"}
-        >
-          <Tooltip title="Track Attendance" placement="right-start" arrow>
-            <ListItemIcon>
-              <TrackChangesTwoToneIcon color="primary" />
-            </ListItemIcon>
-          </Tooltip>
-          <ListItemText primary="Attendance Track" />
-        </StyledListItem>
-        <StyledListItem
-          button
-          onClick={() => {
-            setTitle("Person Profiles");
-          }}
-          selected={title === "Person Profiles"}
-        >
-          <Tooltip title="Person Profiles" placement="right-start" arrow>
+          <Tooltip title="Register Employees" placement="right-start" arrow>
             <ListItemIcon>
               <PersonAddTwoToneIcon color="primary" />
             </ListItemIcon>
           </Tooltip>
-          <ListItemText primary="Person Profiles" />
+          <ListItemText primary="Register Employees" />
         </StyledListItem>
         <StyledListItem
           button
           onClick={() => {
-            setTitle("Settings");
+            setTitle("PPE Tracking");
           }}
-          selected={title === "Settings"}
+          selected={title === "PPE Tracking"}
         >
-          <Tooltip title="Settings" placement="right-start" arrow>
+          <Tooltip title="PPE Tracking" placement="right-start" arrow>
+            <ListItemIcon>
+              <TrackChangesTwoToneIcon color="primary" />
+            </ListItemIcon>
+          </Tooltip>
+          <ListItemText primary="PPE Tracking" />
+        </StyledListItem>
+        <StyledListItem
+          button
+          onClick={() => {
+            setTitle("Reports");
+          }}
+          selected={title === "Reports"}
+        >
+          <Tooltip title="Reports" placement="right-start" arrow>
+            <ListItemIcon>
+              <AssessmentIcon color="primary" />
+            </ListItemIcon>
+          </Tooltip>
+          <ListItemText primary="Reports" />
+        </StyledListItem>
+        <StyledListItem
+          button
+          onClick={() => {
+            setTitle("Configurations");
+          }}
+          selected={title === "Configurations"}
+        >
+          <Tooltip title="Configurations" placement="right-start" arrow>
             <ListItemIcon>
               <SettingsTwoToneIcon color="primary" />
             </ListItemIcon>
           </Tooltip>
-          <ListItemText primary="Settings" />
-        </StyledListItem>
-        <StyledListItem
-          button
-          onClick={() => {
-            setTitle("No Teacher Alert");
-          }}
-          selected={title === "No Teacher Alert"}
-        >
-          <Tooltip title="No Teacher Alert" placement="right-start" arrow>
-            <ListItemIcon>
-              <FaceIcon color="primary" />
-            </ListItemIcon>
-          </Tooltip>
-          <ListItemText primary="No Teacher Alert" />
-        </StyledListItem>
-        <StyledListItem
-          button
-          onClick={() => {
-            setTitle("Stayback Alert");
-          }}
-          selected={title === "Stayback Alert"}
-        >
-          <Tooltip title="Stayback Alert" placement="right-start" arrow>
-            <ListItemIcon>
-              <ErrorIcon color="primary" />
-            </ListItemIcon>
-          </Tooltip>
-          <ListItemText primary="Stayback Alert" />
+          <ListItemText primary="Configurations" />
         </StyledListItem>
       </div>
     </ThemeProvider>
@@ -369,12 +339,10 @@ export default function AdminDashboard(props) {
 
 function RenderComponent(props) {
   const componentMap = {
-    "Attendance Mark": <Alerts />,
-    "Person Profiles": <NavigationTabs />,
-    Settings: <Settings />,
-    "Attendance Track": <Alerts />,
-    "No Teacher Alert": <Alerts />,
-    "Stayback Alert": <Alerts />,
+    Reports: <Alerts />,
+    "Register Employees": <NavigationTabs />,
+    Configurations: <Settings />,
+    "PPE Tracking": <Alerts />,
   };
   return <div>{componentMap[props.component]}</div>;
 }

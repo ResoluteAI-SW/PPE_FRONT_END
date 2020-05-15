@@ -2,7 +2,9 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import IPCameraRegistration from "./IPCameraRegistration";
-import AccountSettings from "./AccountSettings";
+import AttendanceSettings from "./AttendanceSettings";
+import PPESettings from "./PPESettings";
+import DetectionSettings from "./DetectionSettings";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -90,7 +92,12 @@ const useStyles = makeStyles((theme) => ({
 export default function Settings() {
   const classes = useStyles();
   const [title, setTitle] = React.useState("IP Camera Registration");
-  const mainListItems = ["IP Camera Registration", "Account Settings"];
+  const mainListItems = [
+    "IP Camera Registration",
+    "Attendance Framerate and Senstivity",
+    "PPE Settings",
+    "Detection Threshold",
+  ];
 
   return (
     <div>
@@ -121,7 +128,9 @@ export default function Settings() {
 function RenderComponent(props) {
   const componentMap = {
     "IP Camera Registration": <IPCameraRegistration />,
-    "Account Settings": <AccountSettings />,
+    "Attendance Framerate and Senstivity": <AttendanceSettings />,
+    "PPE Settings": <PPESettings />,
+    "Detection Threshold": <DetectionSettings />,
   };
   return <div>{componentMap[props.component]}</div>;
 }
