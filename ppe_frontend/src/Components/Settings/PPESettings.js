@@ -8,11 +8,16 @@ import Boots from "../../Media/Images/boots.png";
 import Respirator from "../../Media/Images/respirator.png";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
 
 const useStyles = makeStyles({
   root: {
     display: "flex",
-    // height: "70vh",
     alignItems: "center",
     width: "100%",
   },
@@ -20,8 +25,6 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    // backgroundColor: "pink",
-    // height: "70vh",
     width: "50%",
     margin: "1%",
     padding: "2%",
@@ -32,8 +35,8 @@ const useStyles = makeStyles({
     alignItems: "center",
   },
   image: {
-    width: "9%",
-    height: "9%",
+    width: "70%",
+    height: "50%",
   },
 });
 
@@ -44,96 +47,162 @@ export default function PPESettings() {
       <div className={classes.selectPPE}>
         <h2>Select PPE for Detection</h2>
         <div style={{ marginTop: 10 }}>
-          <div className={classes.content}>
-            <img
-              src={HazmatSuit}
-              className={classes.image}
-              alt="Hazmat Suit Icon"
-            />
-            <input class="w3-check" type="checkbox" checked={true} />
-            <h5>Hazmat Suit</h5>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value="Red"
-            >
-              <MenuItem value="Red">Red</MenuItem>
-              <MenuItem value="Yellow">Yellow</MenuItem>
-            </Select>
-          </div>
-          <div className={classes.content}>
-            <img src={Gloves} className={classes.image} alt="Gloves Icon" />
-            <input class="w3-check" type="checkbox" checked={true} />
-            <h5>Gloves</h5>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value="Red"
-            >
-              <MenuItem value="Red">Red</MenuItem>
-              <MenuItem value="Yellow">Yellow</MenuItem>
-            </Select>
-          </div>
-          <div className={classes.content}>
-            <img src={HardCap} className={classes.image} alt="Hard Cap Icon" />
-            <input class="w3-check" type="checkbox" checked={true} />
-            <h5>Hard Cap</h5>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value="Red"
-            >
-              <MenuItem value="Red">Red</MenuItem>
-              <MenuItem value="Yellow">Yellow</MenuItem>
-            </Select>
-          </div>
-          <div className={classes.content}>
-            <img
-              src={Faceshield}
-              className={classes.image}
-              alt="Face Shield Icon"
-            />
-            <input class="w3-check" type="checkbox" checked={true} />
-            <h5>Face Shield</h5>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value="Red"
-            >
-              <MenuItem value="Red">Red</MenuItem>
-              <MenuItem value="Yellow">Yellow</MenuItem>
-            </Select>
-          </div>
-          <div className={classes.content}>
-            <img src={Boots} className={classes.image} alt="Boots Icon" />
-            <input class="w3-check" type="checkbox" checked={true} />
-            <h5>Boots</h5>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value="Red"
-            >
-              <MenuItem value="Red">Red</MenuItem>
-              <MenuItem value="Yellow">Yellow</MenuItem>
-            </Select>
-          </div>
-          <div className={classes.content}>
-            <img
-              src={Respirator}
-              className={classes.image}
-              alt="Respirators Icon"
-            />
-            <input class="w3-check" type="checkbox" checked={true} />
-            <h5>Respirators</h5>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value="Red"
-            >
-              <MenuItem value="Red">Red</MenuItem>
-              <MenuItem value="Yellow">Yellow</MenuItem>
-            </Select>
-          </div>
+          <TableContainer component={Paper}>
+            <Table className={classes.table} aria-label="simple table">
+              <TableBody>
+                <TableRow>
+                  <TableCell style={{ width: "20%" }}>
+                    <img
+                      src={HazmatSuit}
+                      alt="Hazmat suit icon"
+                      className={classes.image}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <h5>Hazmat Suit</h5>
+                  </TableCell>
+                  <TableCell>
+                    <input class="w3-check" type="checkbox" checked="checked" />
+                  </TableCell>
+                  <TableCell>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value="Red"
+                    >
+                      <MenuItem value="Red">Red</MenuItem>
+                      <MenuItem value="Yellow">Yellow</MenuItem>
+                    </Select>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell style={{ width: "30%" }}>
+                    <img
+                      src={Gloves}
+                      alt="Gloves icon"
+                      className={classes.image}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <h5>Gloves</h5>
+                  </TableCell>
+                  <TableCell>
+                    <input class="w3-check" type="checkbox" checked="checked" />
+                  </TableCell>
+                  <TableCell>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value="Red"
+                    >
+                      <MenuItem value="Red">Red</MenuItem>
+                      <MenuItem value="Yellow">Yellow</MenuItem>
+                    </Select>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell style={{ width: "30%" }}>
+                    <img
+                      src={HardCap}
+                      alt="Hard cap icon"
+                      className={classes.image}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <h5>Hard Cap</h5>
+                  </TableCell>
+                  <TableCell>
+                    <input class="w3-check" type="checkbox" checked="checked" />
+                  </TableCell>
+                  <TableCell>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value="Red"
+                    >
+                      <MenuItem value="Red">Red</MenuItem>
+                      <MenuItem value="Yellow">Yellow</MenuItem>
+                    </Select>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell style={{ width: "30%" }}>
+                    <img
+                      src={Faceshield}
+                      alt="Faceshield icon"
+                      className={classes.image}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <h5>Face Shield</h5>
+                  </TableCell>
+                  <TableCell>
+                    <input class="w3-check" type="checkbox" checked="checked" />
+                  </TableCell>
+                  <TableCell>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value="Red"
+                    >
+                      <MenuItem value="Red">Red</MenuItem>
+                      <MenuItem value="Yellow">Yellow</MenuItem>
+                    </Select>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell style={{ width: "30%" }}>
+                    <img
+                      src={Boots}
+                      alt="Boots icon"
+                      className={classes.image}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <h5>Boots</h5>
+                  </TableCell>
+                  <TableCell>
+                    <input class="w3-check" type="checkbox" checked="checked" />
+                  </TableCell>
+                  <TableCell>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value="Red"
+                    >
+                      <MenuItem value="Red">Red</MenuItem>
+                      <MenuItem value="Yellow">Yellow</MenuItem>
+                    </Select>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell style={{ width: "30%" }}>
+                    <img
+                      src={Respirator}
+                      alt="Respirator icon"
+                      className={classes.image}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <h5>Respirators</h5>
+                  </TableCell>
+                  <TableCell>
+                    <input class="w3-check" type="checkbox" checked="checked" />
+                  </TableCell>
+                  <TableCell>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value="Red"
+                    >
+                      <MenuItem value="Red">Red</MenuItem>
+                      <MenuItem value="Yellow">Yellow</MenuItem>
+                    </Select>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
       </div>
       <div className={classes.selectPPE}>Hello</div>
