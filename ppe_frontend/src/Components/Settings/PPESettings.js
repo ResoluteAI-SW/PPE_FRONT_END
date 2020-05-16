@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import HazmatSuit from "../../Media/Images/hazmat.png";
 import Gloves from "../../Media/Images/gloves.png";
@@ -15,6 +15,10 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
+import Button from "@material-ui/core/Button";
+import { UserContext } from "../AdminDashboard";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles({
   root: {
@@ -49,7 +53,23 @@ const useStyles = makeStyles({
   },
 });
 
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
+var severity = "success";
+var message = "IP Camera successfully registered";
+
 export default function PPESettings() {
+  const displayImageMap = {
+    "Hazmat Suit": HazmatSuit,
+    Gloves: Gloves,
+    "Hard Cap": HardCap,
+    "Face Shield": Faceshield,
+    Boots: Boots,
+    Respirators: Respirator,
+  };
+  const userDoc = useContext(UserContext);
   const [tools, setTools] = useState([
     { display: "Hazmat Suit", image: HazmatSuit, alertType: "Red" },
     { display: "Gloves", image: Gloves, alertType: "Red" },
@@ -62,6 +82,103 @@ export default function PPESettings() {
     { color: "Red", minutes: 1, seconds: 50 },
     { color: "Yellow", minutes: 2, seconds: 25 },
   ]);
+  const [open, setOpen] = React.useState(false);
+
+  useEffect(() => {
+    if (
+      userDoc.data().settings.RedAlert &&
+      userDoc.data().settings.YellowAlert
+    ) {
+      const RedAlert = userDoc.data().settings.RedAlert;
+      const YellowAlert = userDoc.data().settings.YellowAlert;
+      var timeArr = [];
+      var timeObj = {};
+      timeObj.color = "Red";
+      timeObj.minutes = RedAlert.time.minutes;
+      timeObj.seconds = RedAlert.time.seconds;
+      timeArr.push(timeObj);
+      timeObj = {};
+      timeObj.color = "Yellow";
+      timeObj.minutes = YellowAlert.time.minutes;
+      timeObj.seconds = YellowAlert.time.seconds;
+      timeArr.push(timeObj);
+      var toolsArr = [];
+      var toolsObj = {};
+      for (var i = 0; i < RedAlert.tools.length; i++) {
+        toolsObj.display = RedAlert.tools[i];
+        toolsObj.image = displayImageMap[RedAlert.tools[i]];
+        toolsObj.alertType = "Red";
+        toolsArr.push(toolsObj);
+        toolsObj = {};
+      }
+      for (var i = 0; i < YellowAlert.tools.length; i++) {
+        toolsObj.display = YellowAlert.tools[i];
+        toolsObj.image = displayImageMap[YellowAlert.tools[i]];
+        toolsObj.alertType = "Yellow";
+        toolsArr.push(toolsObj);
+        toolsObj = {};
+      }
+      for (var i = 0; i < toolsArr.length; i++) {
+        console.log(toolsArr[i]);
+      }
+      for (var i = 0; i < timeArr.length; i++) {
+        console.log(timeArr[i]);
+      }
+      setTime(timeArr);
+      setTools(toolsArr);
+    }
+  }, []);
+
+  const savePPESettings = () => {
+    var RedAlert = {};
+    RedAlert.tools = [];
+    var YellowAlert = {};
+    YellowAlert.tools = [];
+    for (var i = 0; i < tools.length; i++) {
+      if (tools[i].alertType === "Red") {
+        RedAlert.tools.push(tools[i].display);
+      } else {
+        YellowAlert.tools.push(tools[i].display);
+      }
+    }
+    RedAlert.time = {};
+    YellowAlert.time = {};
+    RedAlert.time.minutes = time[0].minutes;
+    RedAlert.time.seconds = time[0].seconds;
+    YellowAlert.time.minutes = time[1].minutes;
+    YellowAlert.time.seconds = time[1].seconds;
+    userDoc.ref
+      .set(
+        {
+          settings: {
+            RedAlert: RedAlert,
+            YellowAlert: YellowAlert,
+          },
+        },
+        { merge: true }
+      )
+      .then(() => {
+        console.log("Write successfull");
+        message = "PPE Settings updated successfully";
+        severity = "success";
+        setOpen(true);
+      })
+      .catch((err) => {
+        console.log(err.message);
+        message = err.message;
+        severity = "error";
+        setOpen(true);
+        console.log(err);
+      });
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
+
   const classes = useStyles();
   return (
     <div className={classes.root}>
@@ -177,7 +294,13 @@ export default function PPESettings() {
             </TableBody>
           </Table>
         </TableContainer>
+        <Button onClick={savePPESettings}>Save</Button>
       </div>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={severity}>
+          {message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
