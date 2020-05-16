@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import HazmatSuit from "../../Media/Images/hazmat.png";
 import Gloves from "../../Media/Images/gloves.png";
@@ -10,6 +10,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
+import TableHead from "@material-ui/core/TableHead";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
@@ -38,9 +39,29 @@ const useStyles = makeStyles({
     width: "70%",
     height: "50%",
   },
+  redAlert: {
+    backgroundColor: "#ff4747",
+    color: "#ffffff",
+  },
+  yellowAlert: {
+    backgroundColor: "#f4ff2b",
+    color: "#000000",
+  },
 });
 
 export default function PPESettings() {
+  const [tools, setTools] = useState([
+    { display: "Hazmat Suit", image: HazmatSuit, alertType: "Red" },
+    { display: "Gloves", image: Gloves, alertType: "Red" },
+    { display: "Hard Cap", image: HardCap, alertType: "Yellow" },
+    { display: "Face Shield", image: Faceshield, alertType: "Red" },
+    { display: "Boots", image: Boots, alertType: "Yellow" },
+    { display: "Respirators", image: Respirator, alertType: "Red" },
+  ]);
+  const [time, setTime] = useState([
+    { color: "Red", minutes: 1, seconds: 50 },
+    { color: "Yellow", minutes: 2, seconds: 25 },
+  ]);
   const classes = useStyles();
   return (
     <div className={classes.root}>
@@ -50,162 +71,113 @@ export default function PPESettings() {
           <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="simple table">
               <TableBody>
-                <TableRow>
-                  <TableCell style={{ width: "20%" }}>
-                    <img
-                      src={HazmatSuit}
-                      alt="Hazmat suit icon"
-                      className={classes.image}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <h5>Hazmat Suit</h5>
-                  </TableCell>
-                  <TableCell>
-                    <input class="w3-check" type="checkbox" checked="checked" />
-                  </TableCell>
-                  <TableCell>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value="Red"
-                    >
-                      <MenuItem value="Red">Red</MenuItem>
-                      <MenuItem value="Yellow">Yellow</MenuItem>
-                    </Select>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{ width: "30%" }}>
-                    <img
-                      src={Gloves}
-                      alt="Gloves icon"
-                      className={classes.image}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <h5>Gloves</h5>
-                  </TableCell>
-                  <TableCell>
-                    <input class="w3-check" type="checkbox" checked="checked" />
-                  </TableCell>
-                  <TableCell>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value="Red"
-                    >
-                      <MenuItem value="Red">Red</MenuItem>
-                      <MenuItem value="Yellow">Yellow</MenuItem>
-                    </Select>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{ width: "30%" }}>
-                    <img
-                      src={HardCap}
-                      alt="Hard cap icon"
-                      className={classes.image}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <h5>Hard Cap</h5>
-                  </TableCell>
-                  <TableCell>
-                    <input class="w3-check" type="checkbox" checked="checked" />
-                  </TableCell>
-                  <TableCell>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value="Red"
-                    >
-                      <MenuItem value="Red">Red</MenuItem>
-                      <MenuItem value="Yellow">Yellow</MenuItem>
-                    </Select>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{ width: "30%" }}>
-                    <img
-                      src={Faceshield}
-                      alt="Faceshield icon"
-                      className={classes.image}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <h5>Face Shield</h5>
-                  </TableCell>
-                  <TableCell>
-                    <input class="w3-check" type="checkbox" checked="checked" />
-                  </TableCell>
-                  <TableCell>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value="Red"
-                    >
-                      <MenuItem value="Red">Red</MenuItem>
-                      <MenuItem value="Yellow">Yellow</MenuItem>
-                    </Select>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{ width: "30%" }}>
-                    <img
-                      src={Boots}
-                      alt="Boots icon"
-                      className={classes.image}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <h5>Boots</h5>
-                  </TableCell>
-                  <TableCell>
-                    <input class="w3-check" type="checkbox" checked="checked" />
-                  </TableCell>
-                  <TableCell>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value="Red"
-                    >
-                      <MenuItem value="Red">Red</MenuItem>
-                      <MenuItem value="Yellow">Yellow</MenuItem>
-                    </Select>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{ width: "30%" }}>
-                    <img
-                      src={Respirator}
-                      alt="Respirator icon"
-                      className={classes.image}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <h5>Respirators</h5>
-                  </TableCell>
-                  <TableCell>
-                    <input class="w3-check" type="checkbox" checked="checked" />
-                  </TableCell>
-                  <TableCell>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value="Red"
-                    >
-                      <MenuItem value="Red">Red</MenuItem>
-                      <MenuItem value="Yellow">Yellow</MenuItem>
-                    </Select>
-                  </TableCell>
-                </TableRow>
+                {tools.map((row, index) => (
+                  <TableRow
+                    className={
+                      row.alertType === "Red"
+                        ? classes.redAlert
+                        : classes.yellowAlert
+                    }
+                  >
+                    <TableCell style={{ width: "20%" }}>
+                      <img
+                        src={row.image}
+                        alt={row.display}
+                        className={classes.image}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <h5>{row.display}</h5>
+                    </TableCell>
+                    <TableCell>
+                      <h5>
+                        <Select
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          value={tools[index].alertType}
+                          onChange={(e) => {
+                            var obj = tools[index];
+                            obj.alertType = e.target.value.toString();
+                            const toolsBefore = tools.slice(0, index);
+                            const toolsAfter = tools.slice(
+                              index + 1,
+                              tools.length
+                            );
+                            setTools([...toolsBefore, obj, ...toolsAfter]);
+                          }}
+                        >
+                          <MenuItem value={"Red"}>Red</MenuItem>
+                          <MenuItem value={"Yellow"}>Yellow</MenuItem>
+                        </Select>
+                      </h5>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </TableContainer>
         </div>
       </div>
-      <div className={classes.selectPPE}>Hello</div>
+      <div className={classes.selectPPE}>
+        <TableContainer component={Paper}>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell align="left">Type</TableCell>
+                <TableCell align="right">Minutes</TableCell>
+                <TableCell align="right">Seconds</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {time.map((row, index) => (
+                <TableRow>
+                  <TableCell align="left">{row.color}</TableCell>
+                  <TableCell align="right">
+                    <input
+                      type="number"
+                      id="minutes"
+                      name="minutes"
+                      min="0"
+                      max="59"
+                      style={{
+                        width: "40%",
+                      }}
+                      value={row.minutes}
+                      onChange={(e) => {
+                        var obj = time[index];
+                        obj.minutes = e.target.value.toString();
+                        const timeBefore = time.slice(0, index);
+                        const timeAfter = time.slice(index + 1, time.length);
+                        setTime([...timeBefore, obj, ...timeAfter]);
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <input
+                      type="number"
+                      id="seconds"
+                      name="seconds"
+                      min="0"
+                      max="59"
+                      style={{
+                        width: "40%",
+                      }}
+                      value={row.seconds}
+                      onChange={(e) => {
+                        var obj = time[index];
+                        obj.seconds = e.target.value.toString();
+                        const timeBefore = time.slice(0, index);
+                        const timeAfter = time.slice(index + 1, time.length);
+                        setTime([...timeBefore, obj, ...timeAfter]);
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
     </div>
   );
 }
