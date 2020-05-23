@@ -232,6 +232,24 @@ export default function AdminDashboard(props) {
   );
 
   useEffect(() => {
+    let socket = new WebSocket(
+      "ws://ec2-13-235-128-141.ap-south-1.compute.amazonaws.com/ws/responser/192.168.29.126/"
+    );
+    socket.onopen = () => {
+      console.log("Connection Established");
+    };
+    socket.onmessage = function (data) {
+      console.log("on message", data);
+    };
+    socket.onclose = function (data) {
+      console.log("onclose");
+      console.log(data);
+
+      socket.onerror = function (data) {
+        console.log("error");
+        console.log(data);
+      };
+    };
     db.collection("users")
       .where("email", "==", props.user.email)
       .get()
@@ -240,6 +258,17 @@ export default function AdminDashboard(props) {
         setUserDoc(doc);
       })
       .catch((err) => console.log(err));
+    return () => {
+      socket.onclose = function (data) {
+        console.log("onclose");
+        console.log(data);
+
+        socket.onerror = function (data) {
+          console.log("error");
+          console.log(data);
+        };
+      };
+    };
   }, [props.user.email]);
 
   const handleDrawerOpen = () => {
