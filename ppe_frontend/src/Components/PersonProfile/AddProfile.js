@@ -147,9 +147,9 @@ export default function AddProfile() {
       adminOrganization: adminDoc.data().organization,
     };
     var form = new FormData();
-    const config = {
-      headers: { "content-type": "multipart/form-data" },
-    };
+    // const config = {
+    //   headers: { "content-type": "multipart/form-data" },
+    // };
     form.append("identification", uuid);
     form.append("Front_Face", images[0]);
     form.append("Bottom_Face", images[1]);

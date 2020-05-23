@@ -41,7 +41,7 @@ const useStyles = makeStyles({
   },
   image: {
     width: "70%",
-    height: "50%",
+    height: "3%",
   },
   redAlert: {
     backgroundColor: "#ff4747",
@@ -104,24 +104,24 @@ export default function PPESettings() {
       timeArr.push(timeObj);
       var toolsArr = [];
       var toolsObj = {};
-      for (var i = 0; i < RedAlert.tools.length; i++) {
+      for (let i = 0; i < RedAlert.tools.length; i++) {
         toolsObj.display = RedAlert.tools[i];
         toolsObj.image = displayImageMap[RedAlert.tools[i]];
         toolsObj.alertType = "Red";
         toolsArr.push(toolsObj);
         toolsObj = {};
       }
-      for (var i = 0; i < YellowAlert.tools.length; i++) {
+      for (let i = 0; i < YellowAlert.tools.length; i++) {
         toolsObj.display = YellowAlert.tools[i];
         toolsObj.image = displayImageMap[YellowAlert.tools[i]];
         toolsObj.alertType = "Yellow";
         toolsArr.push(toolsObj);
         toolsObj = {};
       }
-      for (var i = 0; i < toolsArr.length; i++) {
+      for (let i = 0; i < toolsArr.length; i++) {
         console.log(toolsArr[i]);
       }
-      for (var i = 0; i < timeArr.length; i++) {
+      for (let i = 0; i < timeArr.length; i++) {
         console.log(timeArr[i]);
       }
       setTime(timeArr);
