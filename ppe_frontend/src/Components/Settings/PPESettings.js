@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { withStyles, makeStyles } from "@material-ui/core/styles";
 import HazmatSuit from "../../Media/Images/hazmat.png";
 import Gloves from "../../Media/Images/gloves.png";
 import HardCap from "../../Media/Images/hardCap.png";
@@ -56,6 +56,16 @@ const useStyles = makeStyles({
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
+
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  body: {
+    fontSize: 14,
+  },
+}))(TableCell);
 
 var severity = "success";
 var message = "IP Camera successfully registered";
@@ -189,13 +199,7 @@ export default function PPESettings() {
             <Table className={classes.table} aria-label="simple table">
               <TableBody>
                 {tools.map((row, index) => (
-                  <TableRow
-                    className={
-                      row.alertType === "Red"
-                        ? classes.redAlert
-                        : classes.yellowAlert
-                    }
-                  >
+                  <TableRow>
                     <TableCell style={{ width: "20%" }}>
                       <img
                         src={row.image}
@@ -240,9 +244,9 @@ export default function PPESettings() {
           <Table className={classes.table} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell align="left">Type</TableCell>
-                <TableCell align="right">Minutes</TableCell>
-                <TableCell align="right">Seconds</TableCell>
+                <StyledTableCell align="left">Type</StyledTableCell>
+                <StyledTableCell align="right">Minutes</StyledTableCell>
+                <StyledTableCell align="right">Seconds</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -294,7 +298,14 @@ export default function PPESettings() {
             </TableBody>
           </Table>
         </TableContainer>
-        <Button onClick={savePPESettings}>Save</Button>
+        <Button
+          onClick={savePPESettings}
+          variant="contained"
+          color="primary"
+          style={{ marginTop: 5 }}
+        >
+          Save
+        </Button>
       </div>
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={severity}>
