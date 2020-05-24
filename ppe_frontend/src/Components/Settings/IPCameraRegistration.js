@@ -92,7 +92,7 @@ export default function IPCameraRegistration() {
         console.log(ipCamerasTemp);
       });
       setIPCameras(ipCamerasTemp);
-      ipCamerasTemp = []
+      ipCamerasTemp = [];
     });
   }, []);
 
@@ -158,6 +158,8 @@ export default function IPCameraRegistration() {
         Hashtag: hashtag,
         Username: username,
         Password: password,
+        OnDuty: 0,
+        Status: "Green",
       };
       user.ref
         .collection("ipCameras")

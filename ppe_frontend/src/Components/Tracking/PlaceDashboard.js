@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useEffect, useContext, useState } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -12,6 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import TrackChangesTwoToneIcon from "@material-ui/icons/TrackChangesTwoTone";
+import { UserContext } from "../AdminDashboard";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -43,18 +43,46 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(6),
   },
-  dot: {
+  redDot: {
     height: 20,
     width: 20,
     backgroundColor: "red",
     borderRadius: "50%",
     display: "inline-block",
   },
+  yellowDot: {
+    height: 20,
+    width: 20,
+    backgroundColor: "yellow",
+    borderRadius: "50%",
+    display: "inline-block",
+  },
+  greenDot: {
+    height: 20,
+    width: 20,
+    backgroundColor: "green",
+    borderRadius: "50%",
+    display: "inline-block",
+  },
 }));
 
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+var ipCamerasTemp = [];
 
-export default function Album() {
+export default function PlaceDashboard() {
+  const userDoc = useContext(UserContext);
+  const [ipCameras, setIPCameras] = useState([]);
+
+  useEffect(() => {
+    userDoc.ref.collection("ipCameras").onSnapshot((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        ipCamerasTemp.push(doc.data());
+        console.log(ipCamerasTemp);
+      });
+      setIPCameras(ipCamerasTemp);
+      ipCamerasTemp = [];
+    });
+  }, []);
+
   const classes = useStyles();
 
   return (
@@ -71,24 +99,29 @@ export default function Album() {
       <main>
         <Container className={classes.cardGrid} maxWidth="md">
           <Grid container spacing={4}>
-            {cards.map((card) => (
+            {ipCameras.map((card) => (
               <Grid item key={card} xs={12} sm={6} md={4}>
                 <Card className={classes.card}>
                   <CardContent className={classes.cardContent}>
                     <Typography gutterBottom variant="h5" component="h2">
-                      Heading
+                      {card.Place}
                     </Typography>
-                    <Typography>
-                      This is a media card. You can use this section to describe
-                      the content.
-                    </Typography>
+                    <Typography>On Duty: {card.OnDuty}</Typography>
                   </CardContent>
                   <CardActions>
                     <Button size="small" color="primary">
                       View
                     </Button>
                     <Typography>Status:</Typography>
-                    <span className={classes.dot}></span>
+                    <span
+                      className={
+                        card.Status === "Green"
+                          ? classes.greenDot
+                          : card.Status === "Red"
+                          ? classes.redDot
+                          : classes.yellowDot
+                      }
+                    ></span>
                   </CardActions>
                 </Card>
               </Grid>
