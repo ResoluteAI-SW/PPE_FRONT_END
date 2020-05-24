@@ -30,7 +30,8 @@ import Logo from "../Media/Images/ResoluteAI-In-black-bg-social-media.png";
 import Settings from "./Settings/Settings";
 import firebase from "../FirebaseConfig";
 import { db } from "../FirebaseConfig";
-import Alerts from "./Items/Alerts";
+import PlaceDashboard from "./Tracking/PlaceDashboard";
+import NavigationReports from "./Reports/NavigationReports";
 import NavigationTabs from "./PersonProfile/NavigationTabs";
 import LoadingScreen from "./LoadingScreen";
 
@@ -368,10 +369,10 @@ export default function AdminDashboard(props) {
 
 function RenderComponent(props) {
   const componentMap = {
-    Reports: <Alerts />,
+    Reports: <NavigationReports />,
     "Register Employees": <NavigationTabs />,
     Configurations: <Settings />,
-    "PPE Tracking": <Alerts />,
+    "PPE Tracking": <PlaceDashboard />,
   };
   return <div>{componentMap[props.component]}</div>;
 }
