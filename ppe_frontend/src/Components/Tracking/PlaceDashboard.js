@@ -97,7 +97,7 @@ export default function PlaceDashboard() {
         </Toolbar>
       </AppBar>
       <main>
-        <Container className={classes.cardGrid} maxWidth="md">
+        <Container className={classes.cardGrid} maxwidth="md">
           <Grid container spacing={4}>
             {ipCameras.map((card) => (
               <Grid item key={card} xs={12} sm={6} md={4}>

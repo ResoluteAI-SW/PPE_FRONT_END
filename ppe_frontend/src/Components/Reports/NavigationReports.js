@@ -109,7 +109,7 @@ export default function Settings() {
               </button>
             ))}
           </div>
-          <Container maxWidth="lg" className={classes.container}>
+          <Container maxwidth="lg" className={classes.container}>
             <RenderComponent component={title} />
           </Container>
         </main>

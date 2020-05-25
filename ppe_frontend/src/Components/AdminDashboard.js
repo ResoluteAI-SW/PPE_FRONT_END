@@ -29,7 +29,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Logo from "../Media/Images/ResoluteAI-In-black-bg-social-media.png";
 import Settings from "./Settings/Settings";
 import firebase from "../FirebaseConfig";
-import { db } from "../FirebaseConfig";
+import { db, rdb } from "../FirebaseConfig";
 import PlaceDashboard from "./Tracking/PlaceDashboard";
 import NavigationReports from "./Reports/NavigationReports";
 import NavigationTabs from "./PersonProfile/NavigationTabs";
@@ -260,15 +260,7 @@ export default function AdminDashboard(props) {
       })
       .catch((err) => console.log(err));
     return () => {
-      socket.onclose = function (data) {
-        console.log("onclose");
-        console.log(data);
-
-        socket.onerror = function (data) {
-          console.log("error");
-          console.log(data);
-        };
-      };
+      socket.close();
     };
   }, [props.user.email]);
 
@@ -356,7 +348,7 @@ export default function AdminDashboard(props) {
         </ThemeProvider>
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
-          <Container maxWidth="lg" className={classes.container}>
+          <Container maxwidth="lg" className={classes.container}>
             <UserContext.Provider value={userDoc}>
               <RenderComponent component={title} />
             </UserContext.Provider>

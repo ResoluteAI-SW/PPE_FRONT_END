@@ -232,7 +232,7 @@ export default function IPCameraRegistration() {
   return (
     <Container component="main" style={{ width: "100%" }}>
       <CssBaseline />
-      <Grid container spacing={3} maxWidth="xs">
+      <Grid container spacing={3} maxwidth="xs">
         <Grid item xs={6}>
           <div className={classes.paper} class="w3-animate-bottom">
             <div style={{ textAlign: "center" }}>
