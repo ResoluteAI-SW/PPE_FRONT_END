@@ -34,8 +34,10 @@ import PlaceDashboard from "./Tracking/PlaceDashboard";
 import NavigationReports from "./Reports/NavigationReports";
 import NavigationTabs from "./PersonProfile/NavigationTabs";
 import LoadingScreen from "./LoadingScreen";
+import moment from "moment";
 
 const drawerWidth = 240;
+var doc = null;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -233,35 +235,88 @@ export default function AdminDashboard(props) {
   );
 
   useEffect(() => {
-    let socket = new WebSocket(
-      "ws://ec2-13-235-128-141.ap-south-1.compute.amazonaws.com/ws/responser/192.168.29.126/"
-    );
-    socket.onopen = () => {
-      console.log("Connection Established");
-    };
-    socket.onmessage = function (data) {
-      console.log("on message", data);
-    };
-    socket.onclose = function (data) {
-      console.log("onclose");
-      console.log(data);
-
-      socket.onerror = function (data) {
-        console.log("error");
-        console.log(data);
-      };
-    };
     db.collection("users")
       .where("email", "==", props.user.email)
       .get()
       .then((querySnapshot) => {
-        const doc = querySnapshot.docs[0];
+        doc = querySnapshot.docs[0];
         setUserDoc(doc);
+        var persons = [];
+        db.collection("people")
+          .where("adminEmail", "==", doc.data().email)
+          .get()
+          .then((querySnapshot) =>
+            querySnapshot.forEach((doc) => {
+              let obj = {};
+              obj.id = doc.id;
+              obj.data = doc.data();
+              persons = persons.concat(obj);
+            })
+          )
+          .then(() => {
+            for (let i = 0; i < persons.length; i++) {
+              console.log(persons[i]);
+              console.log(persons[i].id);
+            }
+            let socket = new WebSocket(
+              "ws://ec2-13-127-195-181.ap-south-1.compute.amazonaws.com/ws/responser/192.168.29.126/"
+            );
+            socket.onopen = () => {
+              console.log("Connection Established");
+            };
+            const todayDate = moment().format("DD MMM YYYY");
+            socket.onmessage = function (data) {
+              console.log("on message", data);
+              const obj = JSON.parse(data.data);
+              console.log(obj.message.users);
+              const usersDetected = obj.message.users;
+              for (let i = 0; i < usersDetected.length; i++) {
+                console.log("looping inside usersDetected");
+                for (let j = 0; j < persons.length; j++) {
+                  console.log("looping inside persons detected");
+                  console.log("person id: ", persons[j].id);
+                  console.log("user:", usersDetected[i]);
+                  console.log(
+                    "check bool: ",
+                    usersDetected[i] === persons[j].id
+                  );
+                  if (persons[j].id === usersDetected[i]) {
+                    console.log("reached at person id===user id");
+                    rdb
+                      .ref(
+                        `/Attendance/${doc.id}/${todayDate}/${persons[j].id}`
+                      )
+                      .set({
+                        Name: persons[j].data.name,
+                        Department: persons[j].data.department,
+                        Login: moment().format("HH:mm:ss"),
+                        Logout: moment().format("HH:mm:ss"),
+                        Designation: "Researcher",
+                      })
+                      .then((res) =>
+                        console.log(
+                          "response after writing socket message: ",
+                          res
+                        )
+                      )
+                      .catch((err) => console.log(err));
+                  }
+                }
+              }
+            };
+            socket.onclose = function (data) {
+              console.log("onclose");
+              console.log(data);
+
+              socket.onerror = function (data) {
+                console.log("error");
+                console.log(data);
+              };
+            };
+          })
+          .catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
-    return () => {
-      socket.close();
-    };
   }, [props.user.email]);
 
   const handleDrawerOpen = () => {
