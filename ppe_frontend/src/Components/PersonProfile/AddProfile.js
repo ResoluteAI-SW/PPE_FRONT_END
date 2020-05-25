@@ -16,6 +16,7 @@ import Webcam from "react-webcam";
 import { UserContext } from "../AdminDashboard";
 import { db } from "../../FirebaseConfig";
 import RetrainUsers from "./RetrainUsers";
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   image: {
@@ -132,13 +133,11 @@ export default function AddProfile() {
 
   const submitProfileInfo = (e) => {
     e.preventDefault();
-    const uuid = parseInt(adminDoc.data().persons_registered) + 1;
-    console.log(uuid);
+    const persons_registered = parseInt(adminDoc.data().persons_registered) + 1;
     const persons_not_retrained =
       parseInt(adminDoc.data().persons_not_retrained) + 1;
     console.log(persons_not_retrained);
     const profileInfo = {
-      uuid: uuid,
       name: name,
       department: department,
       blocked: blocked,
@@ -147,10 +146,9 @@ export default function AddProfile() {
       adminOrganization: adminDoc.data().organization,
     };
     var form = new FormData();
-    // const config = {
-    //   headers: { "content-type": "multipart/form-data" },
-    // };
-    form.append("identification", uuid);
+    const config = {
+      headers: { "content-type": "multipart/form-data" },
+    };
     form.append("Front_Face", images[0]);
     form.append("Bottom_Face", images[1]);
     form.append("Top_Face", images[2]);
@@ -160,27 +158,41 @@ export default function AddProfile() {
       .add(profileInfo)
       .then((doc) => {
         console.log(doc.id);
+        form.append("identification", doc.id);
         adminDoc.ref
           .set(
             {
-              persons_registered: uuid,
+              persons_registered: persons_registered,
               persons_not_retrained: persons_not_retrained,
             },
             { merge: true }
           )
           .then(() => {
-            // add the backend integration here using form and config
-            //----------------------------------------
-            //add these lines in .then() of backend response
-            console.log("successfully updated");
-            severity = "success";
-            message = `Details successfully registered.`;
-            setOpen(true);
-            setName("");
-            setDepartment("");
-            setBlocked(false);
-            setHashtag("");
-            setImages([]);
+            axios
+              .post(
+                "http://ec2-13-127-195-181.ap-south-1.compute.amazonaws.com/recog/reg/",
+                form,
+                config
+              )
+              .then((res) => {
+                if (res.status === 200) {
+                  console.log("successfully updated");
+                  severity = "success";
+                  message = `Details successfully registered.`;
+                  setOpen(true);
+                  setName("");
+                  setDepartment("");
+                  setBlocked(false);
+                  setHashtag("");
+                  setImages([]);
+                }
+              })
+              .catch((err) => {
+                console.log(err);
+                severity = "error";
+                message = `Error while uploading images: ${err}`;
+                setOpen(true);
+              });
           })
           .catch((err) => {
             console.log(err);
@@ -222,7 +234,7 @@ export default function AddProfile() {
     });
   });
 
-  if (retrainedPersons > 4) {
+  if (retrainedPersons > 1) {
     return <RetrainUsers />;
   }
 
