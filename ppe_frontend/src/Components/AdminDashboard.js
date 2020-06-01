@@ -37,6 +37,9 @@ import NavigationTabs from "./PersonProfile/NavigationTabs";
 import SocialDistancingDashboard from "./SocialDistance/PlaceDashboard";
 import LoadingScreen from "./LoadingScreen";
 import moment from "moment";
+import GetAppIcon from "@material-ui/icons/GetApp";
+import Downloads from "./Downloads/Downloads";
+import Firebase from "firebase";
 
 const drawerWidth = 240;
 var doc = null;
@@ -239,12 +242,26 @@ export default function AdminDashboard(props) {
           }}
           selected={title === "Social Distancing"}
         >
-          <Tooltip title="Configurations" placement="right-start" arrow>
+          <Tooltip title="Social Distancing" placement="right-start" arrow>
             <ListItemIcon>
               <DoneOutlineTwoToneIcon color="primary" />
             </ListItemIcon>
           </Tooltip>
           <ListItemText primary="Social Distancing" />
+        </StyledListItem>
+        <StyledListItem
+          button
+          onClick={() => {
+            setTitle("Downloads");
+          }}
+          selected={title === "Downloads"}
+        >
+          <Tooltip title="Downloads" placement="right-start" arrow>
+            <ListItemIcon>
+              <GetAppIcon color="primary" />
+            </ListItemIcon>
+          </Tooltip>
+          <ListItemText primary="Downloads" />
         </StyledListItem>
       </div>
     </ThemeProvider>
@@ -282,7 +299,7 @@ export default function AdminDashboard(props) {
             };
             const todayDate = moment().format("DD MMM YYYY");
             socket.onmessage = function (data) {
-              attendanceTracking(data, persons, todayDate);
+              attendanceTracking(data, persons, todayDate, doc);
             };
             socket.onclose = function (data) {
               console.log("onclose");
@@ -394,37 +411,53 @@ export default function AdminDashboard(props) {
   );
 }
 
-function attendanceTracking(data, persons, todayDate) {
+function attendanceTracking(data, persons, todayDate, userDoc) {
   console.log("on message", data);
   const obj = JSON.parse(data.data);
-  console.log(obj.message.users);
-  const usersDetected = obj.message.users;
-  console.log("mask detected response: ", obj.message.mask_detected);
-  const maskField = obj.message.mask_detected === "True" ? "Mask" : "No Mask";
-  for (let i = 0; i < usersDetected.length; i++) {
-    console.log("looping inside usersDetected");
-    for (let j = 0; j < persons.length; j++) {
-      console.log("looping inside persons detected");
-      console.log("person id: ", persons[j].id);
-      console.log("user:", usersDetected[i]);
-      console.log("check bool: ", usersDetected[i] === persons[j].id);
-      if (persons[j].id === usersDetected[i]) {
-        console.log("reached at person id===user id");
-        rdb
-          .ref(`/Attendance/${doc.id}/${todayDate}/${persons[j].id}`)
-          .set({
-            Name: persons[j].data.name,
-            Department: persons[j].data.department,
-            Login: moment().format("HH:mm:ss"),
-            Logout: moment().format("HH:mm:ss"),
-            Designation: "Researcher",
-            Mask: maskField,
-          })
-          .then((res) =>
-            console.log("response after writing socket message: ", res)
-          )
-          .catch((err) => console.log(err));
+  if ("users" in obj.message) {
+    console.log(obj.message.users);
+    const usersDetected = obj.message.users;
+    console.log("mask detected response: ", obj.message.mask_detected);
+    const maskField = obj.message.mask_detected === "True" ? "Mask" : "No Mask";
+    for (let i = 0; i < usersDetected.length; i++) {
+      console.log("looping inside usersDetected");
+      for (let j = 0; j < persons.length; j++) {
+        console.log("looping inside persons detected");
+        console.log("person id: ", persons[j].id);
+        console.log("user:", usersDetected[i]);
+        console.log("check bool: ", usersDetected[i] === persons[j].id);
+        if (persons[j].id === usersDetected[i]) {
+          console.log("reached at person id===user id");
+          rdb
+            .ref(`/Attendance/${doc.id}/${todayDate}/${persons[j].id}`)
+            .set({
+              Name: persons[j].data.name,
+              Department: persons[j].data.department,
+              Login: moment().format("HH:mm:ss"),
+              Logout: moment().format("HH:mm:ss"),
+              Designation: "Researcher",
+              Mask: maskField,
+            })
+            .then((res) =>
+              console.log("response after writing socket message: ", res)
+            )
+            .catch((err) => console.log(err));
+        }
       }
+    }
+  } else {
+    console.log("Social distancing response: ");
+    console.log(obj.message);
+    const pushRef = rdb
+      .ref(`/SocialDistancing/${userDoc.id}/192_168_29_127/Logs`)
+      .push();
+    for (let i = 0; i < obj.message.grid.length; i++) {
+      pushRef.set({
+        Grid: obj.message.grid[i],
+        ip: "192.168.29.127",
+        Hashtag: "#Lab",
+        timestamp: Firebase.database.ServerValue.TIMESTAMP,
+      });
     }
   }
 }
@@ -436,6 +469,7 @@ function RenderComponent(props) {
     Configurations: <Settings />,
     "PPE Tracking": <PlaceDashboard />,
     "Social Distancing": <SocialDistancingDashboard />,
+    Downloads: <Downloads />,
   };
   return <div>{componentMap[props.component]}</div>;
 }
