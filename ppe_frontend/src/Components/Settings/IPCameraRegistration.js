@@ -20,7 +20,7 @@ import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import { UserContext } from "../AdminDashboard";
-import Firebase, { rdb } from "../../FirebaseConfig";
+import { rdb } from "../../FirebaseConfig";
 
 const colorHashtags = ["entry", "exit", "lab", "lobby"];
 
