@@ -11,6 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import DoneOutlineTwoToneIcon from "@material-ui/icons/DoneOutlineTwoTone";
+import Logs from "./Logs";
 import { rdb } from "../../FirebaseConfig";
 import { UserContext } from "../AdminDashboard";
 import { Divider } from "@material-ui/core";
@@ -68,94 +69,122 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-var ipCamerasTemp = [];
+var placesTemp = [];
 
 export default function SocialDistancingDashboard() {
   const userDoc = useContext(UserContext);
   const [places, setPlaces] = useState([]);
+  const [placeLogs, setPlaceLogs] = useState(null);
 
   useEffect(() => {
     var ipCameras = [];
-    userDoc.ref.collection("ipCameras").onSnapshot((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        ipCameras.push(doc.data());
-      });
-    });
-    rdb.ref(`SocialDistancing/${userDoc.id}`).on("value", (snapshot) => {
-      const collection = snapshot.val();
-      for (const ipCamera in collection) {
-        for (let i = 0; i < ipCameras.length; i++) {
-          const original_IPCameraAddress = ipCameras[i].IPAddress;
-          const new_IPCameraAddress = original_IPCameraAddress
-            .toString()
-            .replace(/\./g, "_");
-          if (new_IPCameraAddress === ipCamera) {
-            const obj = {};
-            obj.IPAddress = original_IPCameraAddress;
-            obj.Status = collection[ipCamera].status;
-            obj.Hashtag = ipCameras[i].Hashtag;
-            obj.Place = ipCameras[i].Place;
-            setPlaces([]);
-            setPlaces((places) => places.concat(obj));
+    userDoc.ref
+      .collection("ipCameras")
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          ipCameras.push(doc.data());
+        });
+      })
+      .then(() => {
+        console.log("IP Camera: ", ipCameras[0]);
+        rdb.ref(`SocialDistancing/${userDoc.id}`).on("value", (snapshot) => {
+          placesTemp = [];
+          const collection = snapshot.val();
+          for (const ipCamera in collection) {
+            for (let i = 0; i < ipCameras.length; i++) {
+              console.log("for loop for matching IP Addresses starts:");
+              const original_IPCameraAddress = ipCameras[i].IPAddress;
+              const new_IPCameraAddress = original_IPCameraAddress
+                .toString()
+                .replace(/\./g, "_");
+              if (new_IPCameraAddress === ipCamera) {
+                console.log("Approached to the camera matching point");
+                const obj = {};
+                obj.IPAddress = original_IPCameraAddress;
+                obj.Status = collection[ipCamera].status;
+                obj.Hashtag = ipCameras[i].Hashtag;
+                obj.Place = ipCameras[i].Place;
+                placesTemp.push(obj);
+                setPlaces(placesTemp);
+              }
+            }
           }
-        }
-      }
-    });
+        });
+      });
   }, []);
+
+  const setPlaceLogsToNull = () => {
+    setPlaceLogs(null);
+  };
 
   const classes = useStyles();
 
-  return (
-    <React.Fragment>
-      <CssBaseline />
-      <AppBar position="relative">
-        <Toolbar>
-          <DoneOutlineTwoToneIcon className={classes.icon} />
-          <Typography variant="h6" color="inherit" noWrap>
-            Social Distancing
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <main>
-        <Container className={classes.cardGrid} maxwidth="md">
-          <Grid container spacing={4}>
-            {places.map((card) => (
-              <Grid item key={card} xs={12} sm={6} md={4}>
-                <Card className={classes.card}>
-                  <CardContent className={classes.cardContent}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {card.Place}
-                    </Typography>
-                    <Divider />
-                    <Typography variant="overline" style={{ color: "grey" }}>
-                      {card.Hashtag}
-                    </Typography>
-                    <br />
-                    <Typography variant="overline" style={{ color: "grey" }}>
-                      {card.IPAddress}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small" color="primary">
-                      View
-                    </Button>
-                    <Typography>Status:</Typography>
-                    <span
-                      className={
-                        card.Status === "Green"
-                          ? classes.greenDot
-                          : card.Status === "Red"
-                          ? classes.redDot
-                          : classes.yellowDot
-                      }
-                    ></span>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </main>
-    </React.Fragment>
-  );
+  if (placeLogs) {
+    return <Logs IPAddress={placeLogs} handleBack={setPlaceLogsToNull} />;
+  }
+
+  return <PlaceDashboard />;
+
+  function PlaceDashboard() {
+    return (
+      <React.Fragment>
+        <CssBaseline />
+        <AppBar position="relative">
+          <Toolbar>
+            <DoneOutlineTwoToneIcon className={classes.icon} />
+            <Typography variant="h6" color="inherit" noWrap>
+              Social Distancing
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <main>
+          <Container className={classes.cardGrid} maxwidth="md">
+            <Grid container spacing={4}>
+              {places.map((card) => (
+                <Grid item key={card} xs={12} sm={6} md={4}>
+                  <Card className={classes.card}>
+                    <CardContent className={classes.cardContent}>
+                      <Typography gutterBottom variant="h5" component="h2">
+                        {card.Place}
+                      </Typography>
+                      <Divider />
+                      <Typography variant="overline" style={{ color: "grey" }}>
+                        {card.Hashtag}
+                      </Typography>
+                      <br />
+                      <Typography variant="overline" style={{ color: "grey" }}>
+                        {card.IPAddress}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => {
+                          setPlaceLogs(card.IPAddress);
+                        }}
+                      >
+                        View
+                      </Button>
+                      <Typography>Status:</Typography>
+                      <span
+                        className={
+                          card.Status === "Green"
+                            ? classes.greenDot
+                            : card.Status === "Red"
+                            ? classes.redDot
+                            : classes.yellowDot
+                        }
+                      ></span>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Container>
+        </main>
+      </React.Fragment>
+    );
+  }
 }
