@@ -399,7 +399,8 @@ function attendanceTracking(data, persons, todayDate) {
   const obj = JSON.parse(data.data);
   console.log(obj.message.users);
   const usersDetected = obj.message.users;
-  const maskField = obj.message.alert ? "No mask" : "Mask";
+  console.log("mask detected response: ", obj.message.mask_detected);
+  const maskField = obj.message.mask_detected === "True" ? "Mask" : "No Mask";
   for (let i = 0; i < usersDetected.length; i++) {
     console.log("looping inside usersDetected");
     for (let j = 0; j < persons.length; j++) {
