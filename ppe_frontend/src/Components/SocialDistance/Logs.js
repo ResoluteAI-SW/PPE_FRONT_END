@@ -75,6 +75,21 @@ export default function AttendanceReports(props) {
 
   return (
     <div className={classes.paper} class="w3-animate-bottom">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-start",
+          marginBottom: 10,
+        }}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => props.handleBack()}
+        >
+          Back to Live Stream
+        </Button>
+      </div>
       <TableContainer>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
@@ -100,21 +115,6 @@ export default function AttendanceReports(props) {
             ))}
           </TableBody>
         </Table>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            marginTop: 10,
-          }}
-        >
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => props.handleBack()}
-          >
-            Back to Live Stream
-          </Button>
-        </div>
       </TableContainer>
     </div>
   );

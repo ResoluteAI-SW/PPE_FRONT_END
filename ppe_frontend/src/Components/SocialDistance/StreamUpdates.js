@@ -107,7 +107,7 @@ export default function StreamUpdates(props) {
         }}
       >
         <div>
-          <img src="https://picsum.photos/500" alt="Stream not available" />
+          <img src="https://picsum.photos/480/360" alt="Stream not available" />
         </div>
         <div
           style={{
