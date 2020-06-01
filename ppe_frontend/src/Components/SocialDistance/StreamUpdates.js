@@ -1,11 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
+import Logs from "./Logs";
 import Button from "@material-ui/core/Button";
 import { UserContext } from "../AdminDashboard";
 import { rdb } from "../../FirebaseConfig";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-import Paper from "@material-ui/core/Paper";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
@@ -43,6 +43,7 @@ export default function StreamUpdates(props) {
   const classes = useStyles();
   const user = useContext(UserContext);
   const [logs, setLogs] = useState([]);
+  const [showCompleteLogs, setShowCompleteLogs] = useState(false);
 
   useEffect(() => {
     const IPAddress = props.IPAddress.toString().replace(/\./g, "_");
@@ -75,6 +76,15 @@ export default function StreamUpdates(props) {
       timestamp: Firebase.database.ServerValue.TIMESTAMP,
     });
   };
+
+  if (showCompleteLogs) {
+    return (
+      <Logs
+        IPAddress={props.IPAddress}
+        handleBack={() => setShowCompleteLogs(false)}
+      />
+    );
+  }
 
   return (
     <div>
@@ -147,7 +157,7 @@ export default function StreamUpdates(props) {
               <Button
                 variant="contained"
                 color="primary"
-                // onClick={() => props.handleBack()}
+                onClick={() => setShowCompleteLogs(true)}
               >
                 Show complete Logs
               </Button>
