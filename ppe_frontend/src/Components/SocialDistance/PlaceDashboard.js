@@ -11,10 +11,10 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import DoneOutlineTwoToneIcon from "@material-ui/icons/DoneOutlineTwoTone";
-import Logs from "./Logs";
 import { rdb } from "../../FirebaseConfig";
 import { UserContext } from "../AdminDashboard";
 import { Divider } from "@material-ui/core";
+import StreamUpdates from "./StreamUpdates";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -121,7 +121,9 @@ export default function SocialDistancingDashboard() {
   const classes = useStyles();
 
   if (placeLogs) {
-    return <Logs IPAddress={placeLogs} handleBack={setPlaceLogsToNull} />;
+    return (
+      <StreamUpdates IPAddress={placeLogs} handleBack={setPlaceLogsToNull} />
+    );
   }
 
   return <PlaceDashboard />;
