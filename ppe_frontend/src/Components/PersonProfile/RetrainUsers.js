@@ -8,20 +8,16 @@ export default function RetrainUsers() {
   const userDoc = useContext(UserContext);
 
   const handleRetrain = () => {
-    axios
-      .get(
-        "http://ec2-13-127-195-181.ap-south-1.compute.amazonaws.com/recog/retrain"
-      )
-      .then((res) => {
-        if (res.status === 200) {
-          userDoc.ref.set(
-            {
-              persons_not_retrained: 0,
-            },
-            { merge: true }
-          );
-        }
-      });
+    axios.get("https://facegenie.co/recog/retrain").then((res) => {
+      if (res.status === 200) {
+        userDoc.ref.set(
+          {
+            persons_not_retrained: 0,
+          },
+          { merge: true }
+        );
+      }
+    });
   };
 
   return (

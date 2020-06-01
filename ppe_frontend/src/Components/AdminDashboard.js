@@ -259,50 +259,14 @@ export default function AdminDashboard(props) {
               console.log(persons[i].id);
             }
             let socket = new WebSocket(
-              "ws://ec2-13-127-195-181.ap-south-1.compute.amazonaws.com/ws/responser/192.168.29.126/"
+              "wss://facegenie.co/ws/responser/192.168.29.126/"
             );
             socket.onopen = () => {
               console.log("Connection Established");
             };
             const todayDate = moment().format("DD MMM YYYY");
             socket.onmessage = function (data) {
-              console.log("on message", data);
-              const obj = JSON.parse(data.data);
-              console.log(obj.message.users);
-              const usersDetected = obj.message.users;
-              for (let i = 0; i < usersDetected.length; i++) {
-                console.log("looping inside usersDetected");
-                for (let j = 0; j < persons.length; j++) {
-                  console.log("looping inside persons detected");
-                  console.log("person id: ", persons[j].id);
-                  console.log("user:", usersDetected[i]);
-                  console.log(
-                    "check bool: ",
-                    usersDetected[i] === persons[j].id
-                  );
-                  if (persons[j].id === usersDetected[i]) {
-                    console.log("reached at person id===user id");
-                    rdb
-                      .ref(
-                        `/Attendance/${doc.id}/${todayDate}/${persons[j].id}`
-                      )
-                      .set({
-                        Name: persons[j].data.name,
-                        Department: persons[j].data.department,
-                        Login: moment().format("HH:mm:ss"),
-                        Logout: moment().format("HH:mm:ss"),
-                        Designation: "Researcher",
-                      })
-                      .then((res) =>
-                        console.log(
-                          "response after writing socket message: ",
-                          res
-                        )
-                      )
-                      .catch((err) => console.log(err));
-                  }
-                }
-              }
+              attendanceTracking(data, persons, todayDate);
             };
             socket.onclose = function (data) {
               console.log("onclose");
@@ -412,6 +376,38 @@ export default function AdminDashboard(props) {
       </div>
     </div>
   );
+}
+
+function attendanceTracking(data, persons, todayDate) {
+  console.log("on message", data);
+  const obj = JSON.parse(data.data);
+  console.log(obj.message.users);
+  const usersDetected = obj.message.users;
+  for (let i = 0; i < usersDetected.length; i++) {
+    console.log("looping inside usersDetected");
+    for (let j = 0; j < persons.length; j++) {
+      console.log("looping inside persons detected");
+      console.log("person id: ", persons[j].id);
+      console.log("user:", usersDetected[i]);
+      console.log("check bool: ", usersDetected[i] === persons[j].id);
+      if (persons[j].id === usersDetected[i]) {
+        console.log("reached at person id===user id");
+        rdb
+          .ref(`/Attendance/${doc.id}/${todayDate}/${persons[j].id}`)
+          .set({
+            Name: persons[j].data.name,
+            Department: persons[j].data.department,
+            Login: moment().format("HH:mm:ss"),
+            Logout: moment().format("HH:mm:ss"),
+            Designation: "Researcher",
+          })
+          .then((res) =>
+            console.log("response after writing socket message: ", res)
+          )
+          .catch((err) => console.log(err));
+      }
+    }
+  }
 }
 
 function RenderComponent(props) {

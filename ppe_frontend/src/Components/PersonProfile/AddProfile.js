@@ -169,11 +169,7 @@ export default function AddProfile() {
           )
           .then(() => {
             axios
-              .post(
-                "http://ec2-13-127-195-181.ap-south-1.compute.amazonaws.com/recog/reg/",
-                form,
-                config
-              )
+              .post("https://facegenie.co/recog/reg/", form, config)
               .then((res) => {
                 if (res.status === 200) {
                   console.log("successfully updated");
