@@ -25,6 +25,7 @@ import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import AssessmentIcon from "@material-ui/icons/Assessment";
+import DoneOutlineTwoToneIcon from "@material-ui/icons/DoneOutlineTwoTone";
 import Tooltip from "@material-ui/core/Tooltip";
 import Logo from "../Media/Images/ResoluteAI-In-black-bg-social-media.png";
 import Settings from "./Settings/Settings";
@@ -33,6 +34,7 @@ import { db, rdb } from "../FirebaseConfig";
 import PlaceDashboard from "./Tracking/PlaceDashboard";
 import NavigationReports from "./Reports/NavigationReports";
 import NavigationTabs from "./PersonProfile/NavigationTabs";
+import SocialDistancingDashboard from "./SocialDistance/PlaceDashboard";
 import LoadingScreen from "./LoadingScreen";
 import moment from "moment";
 
@@ -230,6 +232,20 @@ export default function AdminDashboard(props) {
           </Tooltip>
           <ListItemText primary="Configurations" />
         </StyledListItem>
+        <StyledListItem
+          button
+          onClick={() => {
+            setTitle("Social Distancing");
+          }}
+          selected={title === "Social Distancing"}
+        >
+          <Tooltip title="Configurations" placement="right-start" arrow>
+            <ListItemIcon>
+              <DoneOutlineTwoToneIcon color="primary" />
+            </ListItemIcon>
+          </Tooltip>
+          <ListItemText primary="Social Distancing" />
+        </StyledListItem>
       </div>
     </ThemeProvider>
   );
@@ -416,6 +432,7 @@ function RenderComponent(props) {
     "Register Employees": <NavigationTabs />,
     Configurations: <Settings />,
     "PPE Tracking": <PlaceDashboard />,
+    "Social Distancing": <SocialDistancingDashboard />,
   };
   return <div>{componentMap[props.component]}</div>;
 }
