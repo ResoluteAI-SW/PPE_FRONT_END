@@ -399,6 +399,7 @@ function attendanceTracking(data, persons, todayDate) {
   const obj = JSON.parse(data.data);
   console.log(obj.message.users);
   const usersDetected = obj.message.users;
+  const maskField = obj.message.alert ? "No mask" : "Mask";
   for (let i = 0; i < usersDetected.length; i++) {
     console.log("looping inside usersDetected");
     for (let j = 0; j < persons.length; j++) {
@@ -416,6 +417,7 @@ function attendanceTracking(data, persons, todayDate) {
             Login: moment().format("HH:mm:ss"),
             Logout: moment().format("HH:mm:ss"),
             Designation: "Researcher",
+            Mask: maskField,
           })
           .then((res) =>
             console.log("response after writing socket message: ", res)

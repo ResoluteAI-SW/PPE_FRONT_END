@@ -87,6 +87,7 @@ export default function AttendanceReports() {
               <StyledTableCell align="right">Department</StyledTableCell>
               <StyledTableCell align="right">Login</StyledTableCell>
               <StyledTableCell align="right">Logout</StyledTableCell>
+              <StyledTableCell align="right">Mask</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -103,6 +104,7 @@ export default function AttendanceReports() {
                 </StyledTableCell>
                 <StyledTableCell align="right">{row.Login}</StyledTableCell>
                 <StyledTableCell align="right">{row.Logout}</StyledTableCell>
+                <StyledTableCell align="right">{row.Mask}</StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
