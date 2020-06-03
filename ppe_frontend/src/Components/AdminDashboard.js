@@ -415,19 +415,17 @@ function attendanceTracking(data, persons, todayDate, userDoc) {
   console.log("on message", data);
   const obj = JSON.parse(data.data);
   if ("users" in obj.message) {
-    console.log(obj.message.users);
     const usersDetected = obj.message.users;
-    console.log("mask detected response: ", obj.message.mask_detected);
-    const maskField = obj.message.mask_detected === "True" ? "Mask" : "No Mask";
     for (let i = 0; i < usersDetected.length; i++) {
-      console.log("looping inside usersDetected");
+      console.log("looping inside users");
+      const user = usersDetected[i];
+      console.log("person detected:", user[0]);
       for (let j = 0; j < persons.length; j++) {
-        console.log("looping inside persons detected");
-        console.log("person id: ", persons[j].id);
-        console.log("user:", usersDetected[i]);
-        console.log("check bool: ", usersDetected[i] === persons[j].id);
-        if (persons[j].id === usersDetected[i]) {
-          console.log("reached at person id===user id");
+        console.log("looping inside stored users.....");
+        console.log("stored user: ", persons[j].id);
+        console.log("matched?: - ", persons[j].id === user[0]);
+        if (persons[j].id === user[0]) {
+          console.log("person matched");
           rdb
             .ref(`/Attendance/${doc.id}/${todayDate}/${persons[j].id}`)
             .set({
@@ -436,7 +434,7 @@ function attendanceTracking(data, persons, todayDate, userDoc) {
               Login: moment().format("HH:mm:ss"),
               Logout: moment().format("HH:mm:ss"),
               Designation: "Researcher",
-              Mask: maskField,
+              Mask: user[1] === "Mask" ? "Mask" : "No mask",
             })
             .then((res) =>
               console.log("response after writing socket message: ", res)
@@ -448,10 +446,11 @@ function attendanceTracking(data, persons, todayDate, userDoc) {
   } else {
     console.log("Social distancing response: ");
     console.log(obj.message);
-    const pushRef = rdb
-      .ref(`/SocialDistancing/${userDoc.id}/192_168_29_127/Logs`)
-      .push();
     for (let i = 0; i < obj.message.grid.length; i++) {
+      const pushRef = rdb
+        .ref(`/SocialDistancing/${userDoc.id}/192_168_29_127/Logs`)
+        .push();
+      console.log(obj.message.grid[i]);
       pushRef.set({
         Grid: obj.message.grid[i],
         ip: "192.168.29.127",
