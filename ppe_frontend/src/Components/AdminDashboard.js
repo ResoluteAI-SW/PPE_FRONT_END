@@ -25,16 +25,24 @@ import SettingsTwoToneIcon from "@material-ui/icons/SettingsTwoTone";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import AssessmentIcon from "@material-ui/icons/Assessment";
+import DoneOutlineTwoToneIcon from "@material-ui/icons/DoneOutlineTwoTone";
 import Tooltip from "@material-ui/core/Tooltip";
 import Logo from "../Media/Images/ResoluteAI-In-black-bg-social-media.png";
 import Settings from "./Settings/Settings";
 import firebase from "../FirebaseConfig";
-import { db } from "../FirebaseConfig";
-import Alerts from "./Items/Alerts";
+import { db, rdb } from "../FirebaseConfig";
+import PlaceDashboard from "./Tracking/PlaceDashboard";
+import NavigationReports from "./Reports/NavigationReports";
 import NavigationTabs from "./PersonProfile/NavigationTabs";
+import SocialDistancingDashboard from "./SocialDistance/PlaceDashboard";
 import LoadingScreen from "./LoadingScreen";
+import moment from "moment";
+import GetAppIcon from "@material-ui/icons/GetApp";
+import Downloads from "./Downloads/Downloads";
+import Firebase from "firebase";
 
 const drawerWidth = 240;
+var doc = null;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -227,48 +235,85 @@ export default function AdminDashboard(props) {
           </Tooltip>
           <ListItemText primary="Configurations" />
         </StyledListItem>
+        <StyledListItem
+          button
+          onClick={() => {
+            setTitle("Social Distancing");
+          }}
+          selected={title === "Social Distancing"}
+        >
+          <Tooltip title="Social Distancing" placement="right-start" arrow>
+            <ListItemIcon>
+              <DoneOutlineTwoToneIcon color="primary" />
+            </ListItemIcon>
+          </Tooltip>
+          <ListItemText primary="Social Distancing" />
+        </StyledListItem>
+        <StyledListItem
+          button
+          onClick={() => {
+            setTitle("Downloads");
+          }}
+          selected={title === "Downloads"}
+        >
+          <Tooltip title="Downloads" placement="right-start" arrow>
+            <ListItemIcon>
+              <GetAppIcon color="primary" />
+            </ListItemIcon>
+          </Tooltip>
+          <ListItemText primary="Downloads" />
+        </StyledListItem>
       </div>
     </ThemeProvider>
   );
 
   useEffect(() => {
-    let socket = new WebSocket(
-      "ws://ec2-13-235-128-141.ap-south-1.compute.amazonaws.com/ws/responser/192.168.29.126/"
-    );
-    socket.onopen = () => {
-      console.log("Connection Established");
-    };
-    socket.onmessage = function (data) {
-      console.log("on message", data);
-    };
-    socket.onclose = function (data) {
-      console.log("onclose");
-      console.log(data);
-
-      socket.onerror = function (data) {
-        console.log("error");
-        console.log(data);
-      };
-    };
     db.collection("users")
       .where("email", "==", props.user.email)
       .get()
       .then((querySnapshot) => {
-        const doc = querySnapshot.docs[0];
+        doc = querySnapshot.docs[0];
         setUserDoc(doc);
+        var persons = [];
+        db.collection("people")
+          .where("adminEmail", "==", doc.data().email)
+          .get()
+          .then((querySnapshot) =>
+            querySnapshot.forEach((doc) => {
+              let obj = {};
+              obj.id = doc.id;
+              obj.data = doc.data();
+              persons = persons.concat(obj);
+            })
+          )
+          .then(() => {
+            for (let i = 0; i < persons.length; i++) {
+              console.log(persons[i]);
+              console.log(persons[i].id);
+            }
+            let socket = new WebSocket(
+              "wss://facegenie.co/ws/responser/192.168.29.126/"
+            );
+            socket.onopen = () => {
+              console.log("Connection Established");
+            };
+            const todayDate = moment().format("DD MMM YYYY");
+            socket.onmessage = function (data) {
+              attendanceTracking(data, persons, todayDate, doc);
+            };
+            socket.onclose = function (data) {
+              console.log("onclose");
+              console.log(data);
+
+              socket.onerror = function (data) {
+                console.log("error");
+                console.log(data);
+              };
+            };
+          })
+          .catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
-    return () => {
-      socket.onclose = function (data) {
-        console.log("onclose");
-        console.log(data);
-
-        socket.onerror = function (data) {
-          console.log("error");
-          console.log(data);
-        };
-      };
-    };
   }, [props.user.email]);
 
   const handleDrawerOpen = () => {
@@ -355,7 +400,7 @@ export default function AdminDashboard(props) {
         </ThemeProvider>
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
-          <Container maxWidth="lg" className={classes.container}>
+          <Container maxwidth="lg" className={classes.container}>
             <UserContext.Provider value={userDoc}>
               <RenderComponent component={title} />
             </UserContext.Provider>
@@ -366,12 +411,64 @@ export default function AdminDashboard(props) {
   );
 }
 
+function attendanceTracking(data, persons, todayDate, userDoc) {
+  console.log("on message", data);
+  const obj = JSON.parse(data.data);
+  if ("users" in obj.message) {
+    const usersDetected = obj.message.users;
+    for (let i = 0; i < usersDetected.length; i++) {
+      console.log("looping inside users");
+      const user = usersDetected[i];
+      console.log("person detected:", user[0]);
+      for (let j = 0; j < persons.length; j++) {
+        console.log("looping inside stored users.....");
+        console.log("stored user: ", persons[j].id);
+        console.log("matched?: - ", persons[j].id === user[0]);
+        if (persons[j].id === user[0]) {
+          console.log("person matched");
+          rdb
+            .ref(`/Attendance/${doc.id}/${todayDate}/${persons[j].id}`)
+            .set({
+              Name: persons[j].data.name,
+              Department: persons[j].data.department,
+              Login: moment().format("HH:mm:ss"),
+              Logout: moment().format("HH:mm:ss"),
+              Designation: "Researcher",
+              Mask: user[1] === "Mask" ? "Mask" : "No mask",
+            })
+            .then((res) =>
+              console.log("response after writing socket message: ", res)
+            )
+            .catch((err) => console.log(err));
+        }
+      }
+    }
+  } else {
+    console.log("Social distancing response: ");
+    console.log(obj.message);
+    for (let i = 0; i < obj.message.grid.length; i++) {
+      const pushRef = rdb
+        .ref(`/SocialDistancing/${userDoc.id}/192_168_29_127/Logs`)
+        .push();
+      console.log(obj.message.grid[i]);
+      pushRef.set({
+        Grid: obj.message.grid[i],
+        ip: "192.168.29.127",
+        Hashtag: "#Lab",
+        timestamp: Firebase.database.ServerValue.TIMESTAMP,
+      });
+    }
+  }
+}
+
 function RenderComponent(props) {
   const componentMap = {
-    Reports: <Alerts />,
+    Reports: <NavigationReports />,
     "Register Employees": <NavigationTabs />,
     Configurations: <Settings />,
-    "PPE Tracking": <Alerts />,
+    "PPE Tracking": <PlaceDashboard />,
+    "Social Distancing": <SocialDistancingDashboard />,
+    Downloads: <Downloads />,
   };
   return <div>{componentMap[props.component]}</div>;
 }

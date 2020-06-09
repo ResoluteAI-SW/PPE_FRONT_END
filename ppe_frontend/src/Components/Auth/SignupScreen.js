@@ -146,7 +146,7 @@ export default function SignUpScreen() {
           marginBottom: "2.68%",
         }}
       >
-        <Container component="main" maxWidth="xs">
+        <Container component="main" maxwidth="xs">
           <CssBaseline />
           <div className={classes.paper}>
             <img

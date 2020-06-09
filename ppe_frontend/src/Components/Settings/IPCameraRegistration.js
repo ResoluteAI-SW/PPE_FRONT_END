@@ -20,6 +20,7 @@ import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import { UserContext } from "../AdminDashboard";
+import { rdb } from "../../FirebaseConfig";
 
 const colorHashtags = ["entry", "exit", "lab", "lobby"];
 
@@ -92,7 +93,7 @@ export default function IPCameraRegistration() {
         console.log(ipCamerasTemp);
       });
       setIPCameras(ipCamerasTemp);
-      ipCamerasTemp = []
+      ipCamerasTemp = [];
     });
   }, []);
 
@@ -132,6 +133,28 @@ export default function IPCameraRegistration() {
                     { merge: true }
                   )
                   .then(() => {
+                    const IPAddress = ipCameraEdit.IPAddress.replace(
+                      /\./g,
+                      "_"
+                    );
+                    console.log(IPAddress);
+                    rdb
+                      .ref(`/SocialDistancing/${user.id}/${IPAddress}`)
+                      .once("value")
+                      .then((querySnapshot) => {
+                        const obj = querySnapshot.val();
+                        rdb
+                          .ref(`/SocialDistancing/${user.id}/${IPAddress}`)
+                          .remove()
+                          .then(() => {
+                            const newIPAddress = ipAddress.replace(/\./g, "_");
+                            rdb
+                              .ref(
+                                `/SocialDistancing/${user.id}/${newIPAddress}`
+                              )
+                              .set(obj);
+                          });
+                      });
                     message = "Edit Successful";
                     severity = "success";
                     setUsername("");
@@ -158,12 +181,15 @@ export default function IPCameraRegistration() {
         Hashtag: hashtag,
         Username: username,
         Password: password,
+        OnDuty: 0,
+        Status: "Green",
       };
       user.ref
         .collection("ipCameras")
         .add(ipCameraInfo)
         .then((doc) => {
           if (doc.id) {
+            writeToRDB(user, ipCameraInfo, setOpen);
             severity = "success";
             message = "IP Camera details successfully submitted";
             setUsername("");
@@ -204,7 +230,6 @@ export default function IPCameraRegistration() {
 
   const handleDelete = (ipAddress) => {
     console.log(ipAddress);
-    // setIPCameras([]);
     user.ref
       .collection("ipCameras")
       .where("IPAddress", "==", ipAddress)
@@ -214,9 +239,7 @@ export default function IPCameraRegistration() {
         IPCameraDoc.ref
           .delete()
           .then(() => {
-            severity = "success";
-            message = "IP Camera successfully deleted";
-            setOpen(true);
+            deleteFromRDB(ipAddress, user, setOpen);
           })
           .catch((err) => {
             console.log(err);
@@ -230,7 +253,7 @@ export default function IPCameraRegistration() {
   return (
     <Container component="main" style={{ width: "100%" }}>
       <CssBaseline />
-      <Grid container spacing={3} maxWidth="xs">
+      <Grid container spacing={3} maxwidth="xs">
         <Grid item xs={6}>
           <div className={classes.paper} class="w3-animate-bottom">
             <div style={{ textAlign: "center" }}>
@@ -425,4 +448,44 @@ export default function IPCameraRegistration() {
       </Grid>
     </Container>
   );
+}
+function deleteFromRDB(ipAddress, user, setOpen) {
+  const IPAddress = ipAddress.replace(/\./g, "_");
+  rdb
+    .ref(`/SocialDistancing/${user.id}/${IPAddress}`)
+    .remove()
+    .then(() => {
+      severity = "success";
+      message = "IP Camera successfully deleted";
+      setOpen(true);
+    })
+    .catch((err) => {
+      console.log(err);
+      severity = "error";
+      message = err.message;
+      setOpen(true);
+    });
+}
+
+function writeToRDB(user, ipCameraInfo, setOpen) {
+  const IPAddress = ipCameraInfo.IPAddress.replace(/\./g, "_");
+  rdb
+    .ref(`/SocialDistancing/${user.id}/${IPAddress}`)
+    .set({
+      status: "Green",
+      Logs: {},
+    })
+    .then((res) => {
+      console.log("response: ", res);
+    })
+    .catch((err) => {
+      console.log(
+        "Error while updating the Social distancing in Real time Database",
+        err
+      );
+      console.log(err);
+      severity = "error";
+      message = err.message;
+      setOpen(true);
+    });
 }

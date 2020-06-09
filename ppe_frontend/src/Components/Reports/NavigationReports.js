@@ -1,8 +1,8 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import AddProfile from "./AddProfile";
-import ViewProfiles from "./ViewProfiles";
+import PPEAlertReports from "./PPEAlertReports";
+import AttendanceReports from "./AttendanceReports";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -87,10 +87,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function NavigationTabs() {
+export default function Settings() {
   const classes = useStyles();
-  const [title, setTitle] = React.useState("Add Profile");
-  const mainListItems = ["Add Profile", "View Profiles"];
+  const [title, setTitle] = React.useState("PPE Alert Reports");
+  const mainListItems = ["PPE Alert Reports", "Attendance Reports"];
 
   return (
     <div>
@@ -120,8 +120,8 @@ export default function NavigationTabs() {
 
 function RenderComponent(props) {
   const componentMap = {
-    "Add Profile": <AddProfile />,
-    "View Profiles": <ViewProfiles />,
+    "PPE Alert Reports": <PPEAlertReports />,
+    "Attendance Reports": <AttendanceReports />,
   };
   return <div>{componentMap[props.component]}</div>;
 }
