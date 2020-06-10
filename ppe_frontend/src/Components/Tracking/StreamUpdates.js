@@ -208,6 +208,7 @@ export default function StreamUpdates(props) {
           </div>
         </div>
       </div>
+      <h1 style={{ margin: 10 }}>PPE Alerts Logs</h1>
       <TableContainer>
         <Table className={classes.logsTable} aria-label="customized table">
           <TableHead>
