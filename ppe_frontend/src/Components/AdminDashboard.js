@@ -299,7 +299,7 @@ export default function AdminDashboard(props) {
             };
             const todayDate = moment().format("DD MMM YYYY");
             socket.onmessage = function (data) {
-              attendanceTracking(data, persons, todayDate, doc);
+              processResponse(data, persons, todayDate, doc);
             };
             socket.onclose = function (data) {
               console.log("onclose");
@@ -411,7 +411,7 @@ export default function AdminDashboard(props) {
   );
 }
 
-function attendanceTracking(data, persons, todayDate, userDoc) {
+function processResponse(data, persons, todayDate, userDoc) {
   console.log("on message", data);
   const obj = JSON.parse(data.data);
   if (obj.message.type === "attendance_tracking") {
@@ -506,17 +506,18 @@ function attendanceTracking(data, persons, todayDate, userDoc) {
   } else if (obj.message.type === "social_distancing") {
     console.log("Social distancing response: ");
     console.log(obj.message);
-    for (let i = 0; i < obj.message.grid.length; i++) {
-      const pushRef = rdb
-        .ref(`/SocialDistancing/${userDoc.id}/192_168_29_127/Logs`)
-        .push();
-      console.log(obj.message.grid[i]);
-      pushRef.set({
-        Grid: obj.message.grid[i],
-        ip: "192.168.29.127",
-        Hashtag: "#Lab",
-        timestamp: Firebase.database.ServerValue.TIMESTAMP,
-      });
+    if (obj.message.grid.length > 0) {
+      for (let i = 0; i < obj.message.grid.length; i++) {
+        const pushRef = rdb
+          .ref(`/SocialDistancing/${userDoc.id}/192_168_29_126/Logs`)
+          .push();
+        pushRef.set({
+          Grid: obj.message.grid[i],
+          ip: "192.168.29.127",
+          Hashtag: "#Lab",
+          timestamp: Firebase.database.ServerValue.TIMESTAMP,
+        });
+      }
     }
   }
 }

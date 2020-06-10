@@ -4,12 +4,11 @@ import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import { UserContext } from "../AdminDashboard";
 import moment from "moment";
-import Paper from "@material-ui/core/Paper";
+import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -98,11 +97,27 @@ export default function AttendanceReports() {
           justifyContent: "space-evenly",
         }}
       >
-        <img
-          src={frame}
-          alt="stream not available"
-          style={{ width: 500, height: 500 }}
-        />
+        <div>
+          {frame === "" ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              <VideocamOffIcon style={{ width: 300, height: 300 }} />
+              <h4>Stream not available currently</h4>
+            </div>
+          ) : (
+            <img
+              src={frame}
+              alt="Stream not available"
+              style={{ width: 400, height: 500 }}
+            />
+          )}
+        </div>
         <div
           style={{
             display: "flex",

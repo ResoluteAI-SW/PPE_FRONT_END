@@ -10,6 +10,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
+import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 import moment from "moment";
 import Firebase from "firebase";
 
@@ -120,11 +121,25 @@ export default function StreamUpdates(props) {
         }}
       >
         <div>
-          <img
-            src={frame}
-            alt="Stream not available"
-            style={{ width: 500, height: 240 }}
-          />
+          {frame === "" ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              <VideocamOffIcon style={{ width: 300, height: 300 }} />
+              <h4>Stream not available currently</h4>
+            </div>
+          ) : (
+            <img
+              src={frame}
+              alt="Stream not available"
+              style={{ width: 400, height: 500 }}
+            />
+          )}
         </div>
         <div
           style={{
