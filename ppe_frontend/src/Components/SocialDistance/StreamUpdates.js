@@ -44,9 +44,22 @@ export default function StreamUpdates(props) {
   const user = useContext(UserContext);
   const [logs, setLogs] = useState([]);
   const [showCompleteLogs, setShowCompleteLogs] = useState(false);
+  const [frame, setFrame] = useState("");
 
   useEffect(() => {
     const IPAddress = props.IPAddress.toString().replace(/\./g, "_");
+    let socket = new WebSocket(
+      "wss://facegenie.co/ws/responser/192.168.29.126/"
+    );
+    socket.onopen = () => {
+      console.log("Connection Established");
+    };
+    socket.onmessage = (data) => {
+      const obj = JSON.parse(data.data);
+      if (obj.message.type === "social_distancing") {
+        setFrame(obj.message.frame);
+      }
+    };
     rdb
       .ref(`SocialDistancing/${user.id}/${IPAddress}/Logs`)
       .orderByChild("timestamp")
@@ -107,7 +120,11 @@ export default function StreamUpdates(props) {
         }}
       >
         <div>
-          <img src="https://picsum.photos/480/360" alt="Stream not available" />
+          <img
+            src={frame}
+            alt="Stream not available"
+            style={{ width: 500, height: 240 }}
+          />
         </div>
         <div
           style={{

@@ -414,37 +414,36 @@ export default function AdminDashboard(props) {
 function attendanceTracking(data, persons, todayDate, userDoc) {
   console.log("on message", data);
   const obj = JSON.parse(data.data);
-  // if ("users" in obj.message) {
-  //   const usersDetected = obj.message.users;
-  //   for (let i = 0; i < usersDetected.length; i++) {
-  //     console.log("looping inside users");
-  //     const user = usersDetected[i];
-  //     console.log("person detected:", user[0]);
-  //     for (let j = 0; j < persons.length; j++) {
-  //       console.log("looping inside stored users.....");
-  //       console.log("stored user: ", persons[j].id);
-  //       console.log("matched?: - ", persons[j].id === user[0]);
-  //       if (persons[j].id === user[0]) {
-  //         console.log("person matched");
-  //         rdb
-  //           .ref(`/Attendance/${doc.id}/${todayDate}/${persons[j].id}`)
-  //           .set({
-  //             Name: persons[j].data.name,
-  //             Department: persons[j].data.department,
-  //             Login: moment().format("HH:mm:ss"),
-  //             Logout: moment().format("HH:mm:ss"),
-  //             Designation: "Researcher",
-  //             Mask: user[1] === "Mask" ? "Mask" : "No mask",
-  //           })
-  //           .then((res) =>
-  //             console.log("response after writing socket message: ", res)
-  //           )
-  //           .catch((err) => console.log(err));
-  //       }
-  //     }
-  //   }
-  // } else if ("num_people" in obj.message) {
-  if ("num_people" in obj.message.users) {
+  if (obj.message.type === "attendance_tracking") {
+    const usersDetected = obj.message.users;
+    for (let i = 0; i < usersDetected.length; i++) {
+      console.log("looping inside users");
+      const user = usersDetected[i];
+      console.log("person detected:", user[0]);
+      for (let j = 0; j < persons.length; j++) {
+        console.log("looping inside stored users.....");
+        console.log("stored user: ", persons[j].id);
+        console.log("matched?: - ", persons[j].id === user[0]);
+        if (persons[j].id === user[0]) {
+          console.log("person matched");
+          rdb
+            .ref(`/Attendance/${doc.id}/${todayDate}/${persons[j].id}`)
+            .set({
+              Name: persons[j].data.name,
+              Department: persons[j].data.department,
+              Login: moment().format("HH:mm:ss"),
+              Logout: moment().format("HH:mm:ss"),
+              Designation: "Researcher",
+              Mask: user[1] === "Mask" ? "Mask" : "No mask",
+            })
+            .then((res) =>
+              console.log("response after writing socket message: ", res)
+            )
+            .catch((err) => console.log(err));
+        }
+      }
+    }
+  } else if (obj.message.type === "ppe_alerts") {
     const users = obj.message.users;
     const realtimePPEUpdate = {};
     realtimePPEUpdate.people = users.num_people;
@@ -504,7 +503,7 @@ function attendanceTracking(data, persons, todayDate, userDoc) {
         status: realtimePPEUpdate.status,
       })
       .catch((err) => console.log("error: ", err));
-  } else {
+  } else if (obj.message.type === "social_distancing") {
     console.log("Social distancing response: ");
     console.log(obj.message);
     for (let i = 0; i < obj.message.grid.length; i++) {

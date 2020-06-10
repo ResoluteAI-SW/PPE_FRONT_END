@@ -11,6 +11,11 @@ import TableRow from "@material-ui/core/TableRow";
 import moment from "moment";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Firebase from "firebase";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import AnimatedProgressProvider from "./AnimatedProgressProvider";
+import { easeQuadInOut } from "d3-ease";
+import "react-circular-progressbar/dist/styles.css";
+import CustomCircularProgressbar from "./CircularProgressBar";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -152,52 +157,56 @@ export default function StreamUpdates(props) {
             {totalPeople}
           </h1>
         </div>
-        <Table className={classes.table} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>Total number of people</StyledTableCell>
-              <StyledTableCell align="right">Count</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow key="body suit">
-              <StyledTableCell component="th" scope="row">
-                Not wearing body suit
-              </StyledTableCell>
-              <StyledTableCell align="right">{bodySuit}</StyledTableCell>
-            </TableRow>
-            <TableRow key="boots">
-              <StyledTableCell component="th" scope="row">
-                Not wearing boots
-              </StyledTableCell>
-              <StyledTableCell align="right">{boots}</StyledTableCell>
-            </TableRow>
-            <TableRow key="gloves">
-              <StyledTableCell component="th" scope="row">
-                Not wearing gloves
-              </StyledTableCell>
-              <StyledTableCell align="right">{gloves}</StyledTableCell>
-            </TableRow>
-            <TableRow key="headgear">
-              <StyledTableCell component="th" scope="row">
-                Not wearing headgear
-              </StyledTableCell>
-              <StyledTableCell align="right">{headgear}</StyledTableCell>
-            </TableRow>
-            <TableRow key="masks">
-              <StyledTableCell component="th" scope="row">
-                Not wearing masks
-              </StyledTableCell>
-              <StyledTableCell align="right">{masks}</StyledTableCell>
-            </TableRow>
-            <TableRow key="safety goggles">
-              <StyledTableCell component="th" scope="row">
-                Not wearing Safety Goggles
-              </StyledTableCell>
-              <StyledTableCell align="right">{safetyGoggles}</StyledTableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
+          <h1>PPE Alerts detected on persons</h1>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-around",
+              alignItems: "center",
+            }}
+          >
+            <CustomCircularProgressbar
+              percentage={(bodySuit / totalPeople) * 100}
+              title="No Body Suit"
+            />
+            <CustomCircularProgressbar
+              percentage={(boots / totalPeople) * 100}
+              title="No Boots"
+            />
+            <CustomCircularProgressbar
+              percentage={(gloves / totalPeople) * 100}
+              title="No Gloves"
+            />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-around",
+              alignItems: "center",
+              marginTop: 10,
+            }}
+          >
+            <CustomCircularProgressbar
+              percentage={(headgear / totalPeople) * 100}
+              title="No Headgear"
+            />
+            <CustomCircularProgressbar
+              percentage={(masks / totalPeople) * 100}
+              title="No Mask"
+            />
+            <CustomCircularProgressbar
+              percentage={(safetyGoggles / totalPeople) * 100}
+              title="No Safety Goggles"
+            />
+          </div>
+        </div>
       </div>
       <TableContainer>
         <Table className={classes.logsTable} aria-label="customized table">

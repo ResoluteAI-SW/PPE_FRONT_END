@@ -57,8 +57,22 @@ export default function AttendanceReports() {
 
   const userDoc = useContext(UserContext);
   const [attendanceReports, setAttendanceReports] = useState([]);
+  const [frame, setFrame] = useState("");
 
   useEffect(() => {
+    let socket = new WebSocket(
+      "wss://facegenie.co/ws/responser/192.168.29.126/"
+    );
+    socket.onopen = () => {
+      console.log("Connection Established");
+    };
+    socket.onmessage = (data) => {
+      const obj = JSON.parse(data.data);
+      console.log(obj.message.type);
+      if (obj.message.type === "attendance_tracking") {
+        setFrame(obj.message.frame);
+      }
+    };
     const todayDate = moment().format("DD MMM YYYY");
     console.log(todayDate);
     console.log(userDoc.id);
@@ -78,38 +92,56 @@ export default function AttendanceReports() {
 
   return (
     <div className={classes.paper} class="w3-animate-bottom">
-      <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>Name</StyledTableCell>
-              <StyledTableCell align="right">Designation</StyledTableCell>
-              <StyledTableCell align="right">Department</StyledTableCell>
-              <StyledTableCell align="right">Login</StyledTableCell>
-              <StyledTableCell align="right">Logout</StyledTableCell>
-              <StyledTableCell align="right">Mask</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {attendanceReports.map((row) => (
-              <StyledTableRow key={row.uuid}>
-                <StyledTableCell component="th" scope="row">
-                  {row.Name}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.Designation}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.Department}
-                </StyledTableCell>
-                <StyledTableCell align="right">{row.Login}</StyledTableCell>
-                <StyledTableCell align="right">{row.Logout}</StyledTableCell>
-                <StyledTableCell align="right">{row.Mask}</StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-evenly",
+        }}
+      >
+        <img
+          src={frame}
+          alt="stream not available"
+          style={{ width: 500, height: 500 }}
+        />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginLeft: 5,
+          }}
+        >
+          <Table className={classes.table} aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                <StyledTableCell>Name</StyledTableCell>
+                <StyledTableCell align="right">Designation</StyledTableCell>
+                <StyledTableCell align="right">Department</StyledTableCell>
+                <StyledTableCell align="right">Login</StyledTableCell>
+                <StyledTableCell align="right">Logout</StyledTableCell>
+                <StyledTableCell align="right">Mask</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {attendanceReports.map((row) => (
+                <StyledTableRow key={row.uuid}>
+                  <StyledTableCell component="th" scope="row">
+                    {row.Name}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.Designation}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.Department}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">{row.Login}</StyledTableCell>
+                  <StyledTableCell align="right">{row.Logout}</StyledTableCell>
+                  <StyledTableCell align="right">{row.Mask}</StyledTableCell>
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
     </div>
   );
 }
