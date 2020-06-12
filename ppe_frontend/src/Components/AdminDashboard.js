@@ -299,7 +299,7 @@ export default function AdminDashboard(props) {
             };
             const todayDate = moment().format("DD MMM YYYY");
             socket.onmessage = function (data) {
-              attendanceTracking(data, persons, todayDate, doc);
+              processResponse(data, persons, todayDate, doc);
             };
             socket.onclose = function (data) {
               console.log("onclose");
@@ -411,10 +411,10 @@ export default function AdminDashboard(props) {
   );
 }
 
-function attendanceTracking(data, persons, todayDate, userDoc) {
+function processResponse(data, persons, todayDate, userDoc) {
   console.log("on message", data);
   const obj = JSON.parse(data.data);
-  if ("users" in obj.message) {
+  if (obj.message.type === "attendance_tracking") {
     const usersDetected = obj.message.users;
     for (let i = 0; i < usersDetected.length; i++) {
       console.log("looping inside users");
@@ -443,20 +443,81 @@ function attendanceTracking(data, persons, todayDate, userDoc) {
         }
       }
     }
-  } else {
+  } else if (obj.message.type === "ppe_alerts") {
+    const users = obj.message.users;
+    const realtimePPEUpdate = {};
+    realtimePPEUpdate.people = users.num_people;
+    realtimePPEUpdate.mask = 0;
+    realtimePPEUpdate.body_Suit = 0;
+    realtimePPEUpdate.non_body_Suit = 0;
+    realtimePPEUpdate.boots = 0;
+    realtimePPEUpdate.gloves = 0;
+    realtimePPEUpdate.headgear = 0;
+    realtimePPEUpdate.safety_goggles = 0;
+    realtimePPEUpdate.status = "Green";
+    realtimePPEUpdate.timestamp = Firebase.database.ServerValue.TIMESTAMP;
+    const people = users.people;
+    for (let i = 0; i < people.length; i++) {
+      if (people[i].detected_ppe < 7) {
+        realtimePPEUpdate.status = "Red";
+      }
+      realtimePPEUpdate.mask += people[i].mask.num === 0 ? 1 : 0;
+      realtimePPEUpdate.body_Suit += people[i].body_suit.num === 0 ? 1 : 0;
+      realtimePPEUpdate.non_body_Suit +=
+        people[i].non_body_suit.num === 0 ? 1 : 0;
+      realtimePPEUpdate.boots += people[i].gloves.num === 0 ? 1 : 0;
+      realtimePPEUpdate.gloves += people[i].headgear.num === 0 ? 1 : 0;
+      realtimePPEUpdate.headgear += people[i].boots.num === 0 ? 1 : 0;
+      realtimePPEUpdate.safety_goggles +=
+        people[i].non_body_suit.num === 0 ? 1 : 0;
+    }
+
+    if (realtimePPEUpdate.status === "Red") {
+      const pushRef = rdb
+        .ref(`/PPE_Alerts/${userDoc.id}/192_168_29_126/Logs`)
+        .push();
+      pushRef.set({
+        body_Suit: realtimePPEUpdate.body_Suit,
+        boots: realtimePPEUpdate.boots,
+        gloves: realtimePPEUpdate.gloves,
+        headgear: realtimePPEUpdate.headgear,
+        mask: realtimePPEUpdate.mask,
+        non_body_suit: realtimePPEUpdate.non_body_Suit,
+        people: realtimePPEUpdate.people,
+        safety_goggles: realtimePPEUpdate.safety_goggles,
+        status: realtimePPEUpdate.status,
+      });
+    }
+
+    rdb
+      .ref(`/PPE_Alerts/${userDoc.id}/192_168_29_126/`)
+      .update({
+        body_Suit: realtimePPEUpdate.body_Suit,
+        boots: realtimePPEUpdate.boots,
+        gloves: realtimePPEUpdate.gloves,
+        headgear: realtimePPEUpdate.headgear,
+        mask: realtimePPEUpdate.mask,
+        non_body_suit: realtimePPEUpdate.non_body_Suit,
+        people: realtimePPEUpdate.people,
+        safety_goggles: realtimePPEUpdate.safety_goggles,
+        status: realtimePPEUpdate.status,
+      })
+      .catch((err) => console.log("error: ", err));
+  } else if (obj.message.type === "social_distancing") {
     console.log("Social distancing response: ");
     console.log(obj.message);
-    for (let i = 0; i < obj.message.grid.length; i++) {
-      const pushRef = rdb
-        .ref(`/SocialDistancing/${userDoc.id}/192_168_29_127/Logs`)
-        .push();
-      console.log(obj.message.grid[i]);
-      pushRef.set({
-        Grid: obj.message.grid[i],
-        ip: "192.168.29.127",
-        Hashtag: "#Lab",
-        timestamp: Firebase.database.ServerValue.TIMESTAMP,
-      });
+    if (obj.message.grid.length > 0) {
+      for (let i = 0; i < obj.message.grid.length; i++) {
+        const pushRef = rdb
+          .ref(`/SocialDistancing/${userDoc.id}/192_168_29_126/Logs`)
+          .push();
+        pushRef.set({
+          Grid: obj.message.grid[i],
+          ip: "192.168.29.127",
+          Hashtag: "#Lab",
+          timestamp: Firebase.database.ServerValue.TIMESTAMP,
+        });
+      }
     }
   }
 }

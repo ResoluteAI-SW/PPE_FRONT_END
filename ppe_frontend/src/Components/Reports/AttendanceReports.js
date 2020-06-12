@@ -4,12 +4,11 @@ import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import { UserContext } from "../AdminDashboard";
 import moment from "moment";
-import Paper from "@material-ui/core/Paper";
+import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -57,8 +56,22 @@ export default function AttendanceReports() {
 
   const userDoc = useContext(UserContext);
   const [attendanceReports, setAttendanceReports] = useState([]);
+  const [frame, setFrame] = useState("");
 
   useEffect(() => {
+    let socket = new WebSocket(
+      "wss://facegenie.co/ws/responser/192.168.29.126/"
+    );
+    socket.onopen = () => {
+      console.log("Connection Established");
+    };
+    socket.onmessage = (data) => {
+      const obj = JSON.parse(data.data);
+      console.log(obj.message.type);
+      if (obj.message.type === "attendance_tracking") {
+        setFrame(obj.message.frame);
+      }
+    };
     const todayDate = moment().format("DD MMM YYYY");
     console.log(todayDate);
     console.log(userDoc.id);
@@ -78,38 +91,72 @@ export default function AttendanceReports() {
 
   return (
     <div className={classes.paper} class="w3-animate-bottom">
-      <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>Name</StyledTableCell>
-              <StyledTableCell align="right">Designation</StyledTableCell>
-              <StyledTableCell align="right">Department</StyledTableCell>
-              <StyledTableCell align="right">Login</StyledTableCell>
-              <StyledTableCell align="right">Logout</StyledTableCell>
-              <StyledTableCell align="right">Mask</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {attendanceReports.map((row) => (
-              <StyledTableRow key={row.uuid}>
-                <StyledTableCell component="th" scope="row">
-                  {row.Name}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.Designation}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.Department}
-                </StyledTableCell>
-                <StyledTableCell align="right">{row.Login}</StyledTableCell>
-                <StyledTableCell align="right">{row.Logout}</StyledTableCell>
-                <StyledTableCell align="right">{row.Mask}</StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-evenly",
+        }}
+      >
+        <div>
+          {frame === "" ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              <VideocamOffIcon style={{ width: 300, height: 300 }} />
+              <h4>Stream not available currently</h4>
+            </div>
+          ) : (
+            <img
+              src={frame}
+              alt="Stream not available"
+              style={{ width: 400, height: 500 }}
+            />
+          )}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginLeft: 5,
+          }}
+        >
+          <Table className={classes.table} aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                <StyledTableCell>Name</StyledTableCell>
+                <StyledTableCell align="right">Designation</StyledTableCell>
+                <StyledTableCell align="right">Department</StyledTableCell>
+                <StyledTableCell align="right">Login</StyledTableCell>
+                <StyledTableCell align="right">Logout</StyledTableCell>
+                <StyledTableCell align="right">Mask</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {attendanceReports.map((row) => (
+                <StyledTableRow key={row.uuid}>
+                  <StyledTableCell component="th" scope="row">
+                    {row.Name}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.Designation}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {row.Department}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">{row.Login}</StyledTableCell>
+                  <StyledTableCell align="right">{row.Logout}</StyledTableCell>
+                  <StyledTableCell align="right">{row.Mask}</StyledTableCell>
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
     </div>
   );
 }
