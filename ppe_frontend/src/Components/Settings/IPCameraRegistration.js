@@ -19,6 +19,8 @@ import Paper from "@material-ui/core/Paper";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
 import { UserContext } from "../AdminDashboard";
 import { rdb } from "../../FirebaseConfig";
 
@@ -84,6 +86,12 @@ export default function IPCameraRegistration() {
   const [password, setPassword] = useState("");
   const [open, setOpen] = React.useState(false);
   const [ipCameras, setIPCameras] = useState([]);
+  const [body_suit, setBody_Suit] = useState(false);
+  const [boots, setBoots] = useState(false);
+  const [gloves, setGloves] = useState(false);
+  const [headgear, setHeadgear] = useState(false);
+  const [mask, setMask] = useState(false);
+  const [safety_goggles, setSafety_Goggles] = useState(false);
   const user = useContext(UserContext);
 
   useEffect(() => {
@@ -138,23 +146,7 @@ export default function IPCameraRegistration() {
                       "_"
                     );
                     console.log(IPAddress);
-                    rdb
-                      .ref(`/SocialDistancing/${user.id}/${IPAddress}`)
-                      .once("value")
-                      .then((querySnapshot) => {
-                        const obj = querySnapshot.val();
-                        rdb
-                          .ref(`/SocialDistancing/${user.id}/${IPAddress}`)
-                          .remove()
-                          .then(() => {
-                            const newIPAddress = ipAddress.replace(/\./g, "_");
-                            rdb
-                              .ref(
-                                `/SocialDistancing/${user.id}/${newIPAddress}`
-                              )
-                              .set(obj);
-                          });
-                      });
+                    updateToRDB(user, IPAddress, ipAddress);
                     message = "Edit Successful";
                     severity = "success";
                     setUsername("");
@@ -181,8 +173,12 @@ export default function IPCameraRegistration() {
         Hashtag: hashtag,
         Username: username,
         Password: password,
-        OnDuty: 0,
-        Status: "Green",
+        BodySuit: body_suit,
+        Boots: boots,
+        Gloves: gloves,
+        Headgear: headgear,
+        Mask: mask,
+        Safety_Goggles: safety_goggles,
       };
       user.ref
         .collection("ipCameras")
@@ -373,6 +369,93 @@ export default function IPCameraRegistration() {
                   value={hashtag}
                 />
               </Grid>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                }}
+              >
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      value="remember"
+                      color="primary"
+                      onChange={(e) => setBody_Suit(e.target.checked)}
+                      checked={body_suit}
+                    />
+                  }
+                  label="Body Suit"
+                  value={body_suit}
+                  color="black"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      value="remember"
+                      color="primary"
+                      onChange={(e) => setBoots(e.target.checked)}
+                      checked={boots}
+                    />
+                  }
+                  label="Boots"
+                  value={boots}
+                  color="black"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      value="remember"
+                      color="primary"
+                      onChange={(e) => setGloves(e.target.checked)}
+                      checked={gloves}
+                    />
+                  }
+                  label="Gloves"
+                  value={gloves}
+                  color="black"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      value="remember"
+                      color="primary"
+                      onChange={(e) => setHeadgear(e.target.checked)}
+                      checked={headgear}
+                    />
+                  }
+                  label="Headgear"
+                  value={headgear}
+                  color="black"
+                />
+              </div>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      value="remember"
+                      color="primary"
+                      onChange={(e) => setMask(e.target.checked)}
+                      checked={mask}
+                    />
+                  }
+                  label="Mask"
+                  value={mask}
+                  color="black"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      value="remember"
+                      color="primary"
+                      onChange={(e) => setSafety_Goggles(e.target.checked)}
+                      checked={safety_goggles}
+                    />
+                  }
+                  label="Safety Goggles"
+                  value={safety_goggles}
+                  color="black"
+                />
+              </div>
               <Button
                 type="submit"
                 fullWidth
@@ -449,10 +532,54 @@ export default function IPCameraRegistration() {
     </Container>
   );
 }
+
+function updateToRDB(user, IPAddress, ipAddress) {
+  rdb
+    .ref(`/SocialDistancing/${user.id}/${IPAddress}`)
+    .once("value")
+    .then((querySnapshot) => {
+      const obj = querySnapshot.val();
+      rdb
+        .ref(`/SocialDistancing/${user.id}/${IPAddress}`)
+        .remove()
+        .then(() => {
+          const newIPAddress = ipAddress.replace(/\./g, "_");
+          rdb.ref(`/SocialDistancing/${user.id}/${newIPAddress}`).set(obj);
+        });
+    });
+  rdb
+    .ref(`/PPE_Alerts/${user.id}/${IPAddress}`)
+    .once("value")
+    .then((querySnapshot) => {
+      const obj = querySnapshot.val();
+      rdb
+        .ref(`/PPE_Alerts/${user.id}/${IPAddress}`)
+        .remove()
+        .then(() => {
+          const newIPAddress = ipAddress.replace(/\./g, "_");
+          rdb.ref(`/PPE_Alerts/${user.id}/${newIPAddress}`).set(obj);
+        });
+    });
+}
+
 function deleteFromRDB(ipAddress, user, setOpen) {
   const IPAddress = ipAddress.replace(/\./g, "_");
   rdb
     .ref(`/SocialDistancing/${user.id}/${IPAddress}`)
+    .remove()
+    .then(() => {
+      severity = "success";
+      message = "IP Camera successfully deleted";
+      setOpen(true);
+    })
+    .catch((err) => {
+      console.log(err);
+      severity = "error";
+      message = err.message;
+      setOpen(true);
+    });
+  rdb
+    .ref(`/PPE_Alerts/${user.id}/${IPAddress}`)
     .remove()
     .then(() => {
       severity = "success";
@@ -481,6 +608,33 @@ function writeToRDB(user, ipCameraInfo, setOpen) {
     .catch((err) => {
       console.log(
         "Error while updating the Social distancing in Real time Database",
+        err
+      );
+      console.log(err);
+      severity = "error";
+      message = err.message;
+      setOpen(true);
+    });
+  rdb
+    .ref(`/PPE_Alerts/${user.id}/${IPAddress}`)
+    .set({
+      status: "Green",
+      people: 0,
+      mask: 0,
+      body_Suit: 0,
+      boots: 0,
+      gloves: 0,
+      headgear: 0,
+      non_body_suit: 0,
+      safety_goggles: 0,
+      Logs: {},
+    })
+    .then((res) => {
+      console.log("response: ", res);
+    })
+    .catch((err) => {
+      console.log(
+        "Error while updating the PPE Alerts in Real time Database",
         err
       );
       console.log(err);
