@@ -30,7 +30,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Logo from "../Media/Images/ResoluteAI-In-black-bg-social-media.png";
 import Settings from "./Settings/Settings";
 import firebase from "../FirebaseConfig";
-import { db, rdb } from "../FirebaseConfig";
+import { db, rdb, storageRef } from "../FirebaseConfig";
 import PlaceDashboard from "./Tracking/PlaceDashboard";
 import NavigationReports from "./Reports/NavigationReports";
 import NavigationTabs from "./PersonProfile/NavigationTabs";
@@ -476,17 +476,19 @@ function processResponse(data, persons, todayDate, userDoc) {
       const pushRef = rdb
         .ref(`/PPE_Alerts/${userDoc.id}/192_168_29_126/Logs`)
         .push();
-      pushRef.set({
-        body_Suit: realtimePPEUpdate.body_Suit,
-        boots: realtimePPEUpdate.boots,
-        gloves: realtimePPEUpdate.gloves,
-        headgear: realtimePPEUpdate.headgear,
-        mask: realtimePPEUpdate.mask,
-        non_body_suit: realtimePPEUpdate.non_body_Suit,
-        people: realtimePPEUpdate.people,
-        safety_goggles: realtimePPEUpdate.safety_goggles,
-        status: realtimePPEUpdate.status,
-      });
+      pushRef
+        .set({
+          body_Suit: realtimePPEUpdate.body_Suit,
+          boots: realtimePPEUpdate.boots,
+          gloves: realtimePPEUpdate.gloves,
+          headgear: realtimePPEUpdate.headgear,
+          mask: realtimePPEUpdate.mask,
+          non_body_suit: realtimePPEUpdate.non_body_Suit,
+          people: realtimePPEUpdate.people,
+          safety_goggles: realtimePPEUpdate.safety_goggles,
+          status: realtimePPEUpdate.status,
+        })
+        .catch((err) => console.log("PPE Alert error"));
     }
 
     rdb
@@ -502,7 +504,7 @@ function processResponse(data, persons, todayDate, userDoc) {
         safety_goggles: realtimePPEUpdate.safety_goggles,
         status: realtimePPEUpdate.status,
       })
-      .catch((err) => console.log("error: ", err));
+      .catch((err) => console.log("error in PPE Alerts :: ", err));
   } else if (obj.message.type === "social_distancing") {
     console.log("Social distancing response: ");
     console.log(obj.message);
@@ -511,12 +513,32 @@ function processResponse(data, persons, todayDate, userDoc) {
         const pushRef = rdb
           .ref(`/SocialDistancing/${userDoc.id}/192_168_29_126/Logs`)
           .push();
-        pushRef.set({
-          Grid: obj.message.grid[i],
-          ip: "192.168.29.127",
-          Hashtag: "#Lab",
-          timestamp: Firebase.database.ServerValue.TIMESTAMP,
-        });
+        const imgKey = pushRef.key;
+        pushRef
+          .set({
+            Grid: obj.message.grid[i],
+            ip: "192.168.29.127",
+            Hashtag: "#Lab",
+            timestamp: Firebase.database.ServerValue.TIMESTAMP,
+          })
+          .then(() => {
+            // console.log(obj.message.frame.toString());
+            let frame_trim = obj.message.frame
+              .toString()
+              .replace("data:image/jpeg;base64,", "");
+            storageRef
+              .child(`Snapshots/SocialDistance/${imgKey}`)
+              .putString(frame_trim, "base64")
+              .then((snapshot) =>
+                console.log("uploaded successfully", snapshot.state)
+              )
+              .catch((err) =>
+                console.error("error while uploading base 64: ", err)
+              );
+          })
+          .catch((err) =>
+            console.log("error while Social distancing updates: ", err)
+          );
       }
     }
   }
