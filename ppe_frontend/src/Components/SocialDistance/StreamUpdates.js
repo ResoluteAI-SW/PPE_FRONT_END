@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import Logs from "./Logs";
 import Button from "@material-ui/core/Button";
 import { UserContext } from "../AdminDashboard";
-import { rdb } from "../../FirebaseConfig";
+import { rdb, storageRef } from "../../FirebaseConfig";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -70,11 +70,25 @@ export default function StreamUpdates(props) {
         const collection = snapshot.val();
         for (const docID in collection) {
           const obj = collection[docID];
-          obj.id = docID;
-          reverseTempList.push(obj);
+          const downloadRef = storageRef.child(
+            `Snapshots/SocialDistance/${docID}`
+          );
+          downloadRef
+            .getDownloadURL()
+            .then((url) => {
+              obj.imgURL = url;
+              console.log("object image url: ", obj.imgURL);
+            })
+            .then(() => {
+              obj.id = docID;
+              reverseTempList = reverseTempList.concat(obj);
+            })
+            .then(() => {
+              setLogs(reverseTempList.reverse());
+              reverseTempList = [];
+            })
+            .catch((err) => console.log(err.code));
         }
-        setLogs(reverseTempList.reverse());
-        reverseTempList = [];
       });
   }, []);
 
@@ -163,7 +177,7 @@ export default function StreamUpdates(props) {
                 {logs.map((row) => (
                   <StyledTableRow key={logs.id}>
                     <StyledTableCell component="th" scope="row">
-                      <img src="https://picsum.photos/50" alt="No thumbnail" />
+                      <img src={row.imgURL} alt="No thumbnail" />
                     </StyledTableCell>
                     <StyledTableCell component="th" scope="row">
                       {row.Grid}

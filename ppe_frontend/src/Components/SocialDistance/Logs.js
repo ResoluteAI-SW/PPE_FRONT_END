@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { rdb } from "../../FirebaseConfig";
+import { rdb, storageRef } from "../../FirebaseConfig";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -67,8 +67,20 @@ export default function AttendanceReports(props) {
         const collection = snapshot.val();
         for (const docID in collection) {
           const obj = collection[docID];
-          obj.id = docID;
-          setLogs((logs) => logs.concat(obj));
+          const downloadRef = storageRef.child(
+            `Snapshots/SocialDistance/${docID}`
+          );
+          downloadRef
+            .getDownloadURL()
+            .then((url) => {
+              obj.imgURL = url;
+              console.log("object image url: ", obj.imgURL);
+            })
+            .then((obj.id = docID))
+            .then(() => {
+              setLogs((logs) => logs.concat(obj));
+            })
+            .catch((err) => console.log(err.code));
         }
       });
   }, []);
@@ -94,7 +106,8 @@ export default function AttendanceReports(props) {
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>Grid</StyledTableCell>
+              <StyledTableCell>Thumbnail</StyledTableCell>
+              <StyledTableCell align="right">Grid</StyledTableCell>
               <StyledTableCell align="right">IP Address</StyledTableCell>
               <StyledTableCell align="right">Hashtag</StyledTableCell>
               <StyledTableCell align="right">Timestamp</StyledTableCell>
@@ -103,6 +116,14 @@ export default function AttendanceReports(props) {
           <TableBody>
             {logs.map((row) => (
               <StyledTableRow key={logs.id}>
+                <StyledTableCell component="th" scope="row">
+                  <img
+                    src={row.imgURL}
+                    alt="No thumbnail"
+                    width={150}
+                    height={150}
+                  />
+                </StyledTableCell>
                 <StyledTableCell component="th" scope="row">
                   {row.Grid}
                 </StyledTableCell>

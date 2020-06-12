@@ -528,7 +528,7 @@ function processResponse(data, persons, todayDate, userDoc) {
               .replace("data:image/jpeg;base64,", "");
             storageRef
               .child(`Snapshots/SocialDistance/${imgKey}`)
-              .putString(frame_trim, "base64")
+              .putString(frame_trim, "base64", { contentType: "image/jpeg" })
               .then((snapshot) =>
                 console.log("uploaded successfully", snapshot.state)
               )
