@@ -465,6 +465,25 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
       }
     }
   } else if (obj.message.type === "ppe_alerts") {
+    var PPETotalCount = 0;
+    if (IPCamera.Body_Suit) {
+      PPETotalCount += 1;
+    }
+    if (IPCamera.Boots) {
+      PPETotalCount += 1;
+    }
+    if (IPCamera.Gloves) {
+      PPETotalCount += 1;
+    }
+    if (IPCamera.Headgear) {
+      PPETotalCount += 1;
+    }
+    if (IPCamera.Mask) {
+      PPETotalCount += 1;
+    }
+    if (IPCamera.Safety_Goggles) {
+      PPETotalCount += 1;
+    }
     const users = obj.message.users;
     const realtimePPEUpdate = {};
     realtimePPEUpdate.people = users.num_people;
@@ -479,18 +498,30 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
     realtimePPEUpdate.timestamp = Firebase.database.ServerValue.TIMESTAMP;
     const people = users.people;
     for (let i = 0; i < people.length; i++) {
-      if (people[i].detected_ppe < 7) {
+      if (people[i].detected_ppe < PPETotalCount) {
         realtimePPEUpdate.status = "Red";
       }
-      realtimePPEUpdate.mask += people[i].mask.num === 0 ? 1 : 0;
-      realtimePPEUpdate.body_Suit += people[i].body_suit.num === 0 ? 1 : 0;
-      realtimePPEUpdate.non_body_Suit +=
-        people[i].non_body_suit.num === 0 ? 1 : 0;
-      realtimePPEUpdate.boots += people[i].gloves.num === 0 ? 1 : 0;
-      realtimePPEUpdate.gloves += people[i].headgear.num === 0 ? 1 : 0;
-      realtimePPEUpdate.headgear += people[i].boots.num === 0 ? 1 : 0;
-      realtimePPEUpdate.safety_goggles +=
-        people[i].non_body_suit.num === 0 ? 1 : 0;
+      if (IPCamera.Body_Suit) {
+        realtimePPEUpdate.body_Suit += people[i].body_suit.num === 0 ? 1 : 0;
+        realtimePPEUpdate.non_body_Suit +=
+          people[i].non_body_suit.num === 0 ? 1 : 0;
+      }
+      if (IPCamera.Boots) {
+        realtimePPEUpdate.headgear += people[i].boots.num === 0 ? 1 : 0;
+      }
+      if (IPCamera.Gloves) {
+        realtimePPEUpdate.gloves += people[i].headgear.num === 0 ? 1 : 0;
+      }
+      if (IPCamera.Headgear) {
+        PPETotalCount += 1;
+      }
+      if (IPCamera.Mask) {
+        realtimePPEUpdate.mask += people[i].mask.num === 0 ? 1 : 0;
+      }
+      if (IPCamera.Safety_Goggles) {
+        realtimePPEUpdate.safety_goggles +=
+          people[i].non_body_suit.num === 0 ? 1 : 0;
+      }
     }
 
     if (realtimePPEUpdate.status === "Red") {
@@ -525,8 +556,9 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
         people: realtimePPEUpdate.people,
         safety_goggles: realtimePPEUpdate.safety_goggles,
         status: realtimePPEUpdate.status,
+        timestamp: realtimePPEUpdate.timestamp,
       })
-      .catch((err) => console.log("error in Social Distancing :: ", err));
+      .catch((err) => console.log("error in PPE Alerts :: ", err));
   } else if (obj.message.type === "social_distancing") {
     console.log("Social distancing response: ");
     console.log(obj.message);
