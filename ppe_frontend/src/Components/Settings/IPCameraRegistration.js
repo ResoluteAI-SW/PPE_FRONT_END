@@ -137,6 +137,12 @@ export default function IPCameraRegistration() {
                       Hashtag: hashtag,
                       Username: username,
                       Password: password,
+                      BodySuit: body_suit,
+                      Boots: boots,
+                      Gloves: gloves,
+                      Headgear: headgear,
+                      Mask: mask,
+                      Safety_Goggles: safety_goggles,
                     },
                     { merge: true }
                   )
@@ -154,6 +160,12 @@ export default function IPCameraRegistration() {
                     setHashtag("");
                     setIPAddress("");
                     setPlaceInstalled("");
+                    setBody_Suit(false);
+                    setBoots(false);
+                    setGloves(false);
+                    setHeadgear(false);
+                    setMask(false);
+                    setSafety_Goggles(false);
                     setOpen(true);
                   })
                   .catch((err) => {
@@ -164,7 +176,6 @@ export default function IPCameraRegistration() {
               });
             return 0;
           }
-          console.log("heyy");
         }
       }
       let ipCameraInfo = {
@@ -193,6 +204,12 @@ export default function IPCameraRegistration() {
             setHashtag("");
             setIPAddress("");
             setPlaceInstalled("");
+            setBody_Suit(false);
+            setBoots(false);
+            setGloves(false);
+            setHeadgear(false);
+            setMask(false);
+            setSafety_Goggles(false);
             setOpen(true);
           }
         })
@@ -222,6 +239,12 @@ export default function IPCameraRegistration() {
     setUsername(ipCameraEdit.Username);
     setPassword(ipCameraEdit.Password);
     setHashtag(ipCameraEdit.Hashtag);
+    setBody_Suit(ipCameraEdit.BodySuit);
+    setBoots(ipCameraEdit.Boots);
+    setGloves(ipCameraEdit.Gloves);
+    setHeadgear(ipCameraEdit.Headgear);
+    setMask(ipCameraEdit.Mask);
+    setSafety_Goggles(ipCameraEdit.Safety_Goggles);
   };
 
   const handleDelete = (ipAddress) => {
