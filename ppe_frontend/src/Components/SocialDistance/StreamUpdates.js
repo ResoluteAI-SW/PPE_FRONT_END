@@ -12,7 +12,6 @@ import TableRow from "@material-ui/core/TableRow";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 import moment from "moment";
-import Firebase from "firebase";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -92,19 +91,6 @@ export default function StreamUpdates(props) {
       });
   }, []);
 
-  const generateLogs = () => {
-    const IPAddress = props.IPAddress.toString().replace(/\./g, "_");
-    const pushingRef = rdb
-      .ref(`SocialDistancing/${user.id}/${IPAddress}/Logs`)
-      .push();
-    pushingRef.set({
-      Grid: "01",
-      ip: "192.168.29.127",
-      Hashtag: "#Lab",
-      timestamp: Firebase.database.ServerValue.TIMESTAMP,
-    });
-  };
-
   if (showCompleteLogs) {
     return (
       <Logs
@@ -122,9 +108,6 @@ export default function StreamUpdates(props) {
         onClick={() => props.handleBack()}
       >
         Back to Dashboard
-      </Button>
-      <Button color="primary" onClick={generateLogs}>
-        Generate Logs
       </Button>
       <div
         style={{

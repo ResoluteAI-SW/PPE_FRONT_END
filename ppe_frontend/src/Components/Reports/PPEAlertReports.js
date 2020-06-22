@@ -7,7 +7,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import moment from "moment";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
-import { rdb } from "../../FirebaseConfig";
+import { db, rdb } from "../../FirebaseConfig";
 import { UserContext } from "../AdminDashboard";
 
 const StyledTableCell = withStyles((theme) => ({
@@ -40,17 +40,22 @@ export default function PPEAlertReports() {
   const [logs, setLogs] = useState([]);
 
   useEffect(() => {
-    const IPAddress = "192_168_29_126";
-    rdb
-      .ref(`PPE_Alerts/${user.id}/${IPAddress}/Logs`)
-      .on("value", (snapshot) => {
-        setLogs([]);
-        const collection = snapshot.val();
-        for (const docID in collection) {
-          let obj = collection[docID];
-          setLogs((logs) => logs.concat(obj));
-        }
+    user.ref.collection("ipCameras").onSnapshot((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const IPAddressRDB = doc.data().IPAddress.replace(/\./g, "_");
+        console.log(IPAddressRDB);
+        rdb
+          .ref(`PPE_Alerts/${user.id}/${IPAddressRDB}/Logs`)
+          .once("value")
+          .then((snapshot) => {
+            const collection = snapshot.val();
+            for (const docID in collection) {
+              let obj = collection[docID];
+              setLogs((logs) => logs.concat(obj));
+            }
+          });
       });
+    });
   }, []);
 
   return (

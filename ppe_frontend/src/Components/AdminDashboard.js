@@ -508,6 +508,7 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
           people: realtimePPEUpdate.people,
           safety_goggles: realtimePPEUpdate.safety_goggles,
           status: realtimePPEUpdate.status,
+          timestamp: realtimePPEUpdate.timestamp,
         })
         .catch((err) => console.log("PPE Alert error", err));
     }
@@ -544,12 +545,11 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
         pushRef
           .set({
             Grid: obj.message.grid[i],
-            ip: "192.168.29.127",
+            ip: IPCamera.IPAddress,
             Hashtag: "#Lab",
             timestamp: Firebase.database.ServerValue.TIMESTAMP,
           })
           .then(() => {
-            // console.log(obj.message.frame.toString());
             snapToBucket(obj, imgKey);
           })
           .catch((err) =>
