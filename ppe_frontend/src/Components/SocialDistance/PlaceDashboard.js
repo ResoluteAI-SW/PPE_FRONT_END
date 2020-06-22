@@ -69,8 +69,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-var placesTemp = [];
-
 export default function SocialDistancingDashboard() {
   const userDoc = useContext(UserContext);
   const [places, setPlaces] = useState([]);
@@ -89,7 +87,7 @@ export default function SocialDistancingDashboard() {
       .then(() => {
         console.log("IP Camera: ", ipCameras[0]);
         rdb.ref(`SocialDistancing/${userDoc.id}`).on("value", (snapshot) => {
-          placesTemp = [];
+          setPlaces([]);
           const collection = snapshot.val();
           for (const ipCamera in collection) {
             for (let i = 0; i < ipCameras.length; i++) {
@@ -105,8 +103,7 @@ export default function SocialDistancingDashboard() {
                 obj.Status = collection[ipCamera].status;
                 obj.Hashtag = ipCameras[i].Hashtag;
                 obj.Place = ipCameras[i].Place;
-                placesTemp.push(obj);
-                setPlaces(placesTemp);
+                setPlaces((places) => places.concat(obj));
               }
             }
           }

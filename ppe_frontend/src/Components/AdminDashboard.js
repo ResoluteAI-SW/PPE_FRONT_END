@@ -287,29 +287,47 @@ export default function AdminDashboard(props) {
             })
           )
           .then(() => {
-            for (let i = 0; i < persons.length; i++) {
-              console.log(persons[i]);
-              console.log(persons[i].id);
-            }
-            let socket = new WebSocket(
-              "wss://facegenie.co/ws/responser/192.168.29.126/"
-            );
-            socket.onopen = () => {
-              console.log("Connection Established");
-            };
+            let ipCamerasSockets = []; // ip cameras sockets
             const todayDate = moment().format("DD MMM YYYY");
-            socket.onmessage = function (data) {
-              processResponse(data, persons, todayDate, doc);
-            };
-            socket.onclose = function (data) {
-              console.log("onclose");
-              console.log(data);
-
-              socket.onerror = function (data) {
-                console.log("error");
-                console.log(data);
-              };
-            };
+            doc.ref.collection("ipCameras").onSnapshot((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                //here doc contains all the ip camera details such as IP Address and the configurations
+                console.log(
+                  `wss://facegenie.co/ws/responser/${doc.data().IPAddress}/`
+                );
+                let socket = new WebSocket(
+                  `wss://facegenie.co/ws/responser/${doc.data().IPAddress}/`
+                );
+                let obj = {
+                  socket: socket,
+                  IPCamera: doc.data(),
+                };
+                ipCamerasSockets = ipCamerasSockets.concat(obj);
+                // ip camera sockets will be pushed to the list.
+              });
+              ipCamerasSockets.forEach((obj, index) => {
+                obj.socket.onopen = () => {
+                  console.log(
+                    "Connection Established on socket: ",
+                    obj.IPCamera.IPAddress
+                  );
+                };
+                // establishing connection for each socket.
+                obj.socket.onmessage = function (data) {
+                  processResponse(data, persons, todayDate, doc, obj.IPCamera);
+                };
+                // process the data incoming on that channel
+                obj.socket.onclose = function (data) {
+                  console.log("onclose");
+                  console.log(data);
+                  obj.socket.onerror = function (data) {
+                    console.log("error");
+                    console.log(data);
+                  };
+                };
+                // closing and error while connecting of the sockets handled
+              });
+            });
           })
           .catch((err) => console.log(err));
       })
@@ -411,9 +429,12 @@ export default function AdminDashboard(props) {
   );
 }
 
-function processResponse(data, persons, todayDate, userDoc) {
-  console.log("on message", data);
+function processResponse(data, persons, todayDate, userDoc, IPCamera) {
+  console.log("message received on IP Address: ", IPCamera.IPAddress);
+  const IPAddressRDB = IPCamera.IPAddress.replace(/\./g, "_");
+
   const obj = JSON.parse(data.data);
+  console.log("JSON parsed data: ", obj);
   if (obj.message.type === "attendance_tracking") {
     const usersDetected = obj.message.users;
     for (let i = 0; i < usersDetected.length; i++) {
@@ -474,7 +495,7 @@ function processResponse(data, persons, todayDate, userDoc) {
 
     if (realtimePPEUpdate.status === "Red") {
       const pushRef = rdb
-        .ref(`/PPE_Alerts/${userDoc.id}/192_168_29_126/Logs`)
+        .ref(`/PPE_Alerts/${userDoc.id}/${IPAddressRDB}/Logs`)
         .push();
       pushRef
         .set({
@@ -488,11 +509,11 @@ function processResponse(data, persons, todayDate, userDoc) {
           safety_goggles: realtimePPEUpdate.safety_goggles,
           status: realtimePPEUpdate.status,
         })
-        .catch((err) => console.log("PPE Alert error"));
+        .catch((err) => console.log("PPE Alert error", err));
     }
 
     rdb
-      .ref(`/PPE_Alerts/${userDoc.id}/192_168_29_126/`)
+      .ref(`/PPE_Alerts/${userDoc.id}/${IPAddressRDB}/`)
       .update({
         body_Suit: realtimePPEUpdate.body_Suit,
         boots: realtimePPEUpdate.boots,
@@ -504,14 +525,20 @@ function processResponse(data, persons, todayDate, userDoc) {
         safety_goggles: realtimePPEUpdate.safety_goggles,
         status: realtimePPEUpdate.status,
       })
-      .catch((err) => console.log("error in PPE Alerts :: ", err));
+      .catch((err) => console.log("error in Social Distancing :: ", err));
   } else if (obj.message.type === "social_distancing") {
     console.log("Social distancing response: ");
     console.log(obj.message);
     if (obj.message.grid.length > 0) {
+      rdb
+        .ref(`/SocialDistancing/${userDoc.id}/${IPAddressRDB}/`)
+        .update({
+          status: "Red",
+        })
+        .catch((err) => console.log("error in PPE Alerts :: ", err));
       for (let i = 0; i < obj.message.grid.length; i++) {
         const pushRef = rdb
-          .ref(`/SocialDistancing/${userDoc.id}/192_168_29_126/Logs`)
+          .ref(`/SocialDistancing/${userDoc.id}/${IPAddressRDB}/Logs`)
           .push();
         const imgKey = pushRef.key;
         pushRef
@@ -523,25 +550,32 @@ function processResponse(data, persons, todayDate, userDoc) {
           })
           .then(() => {
             // console.log(obj.message.frame.toString());
-            let frame_trim = obj.message.frame
-              .toString()
-              .replace("data:image/jpeg;base64,", "");
-            storageRef
-              .child(`Snapshots/SocialDistance/${imgKey}`)
-              .putString(frame_trim, "base64", { contentType: "image/jpeg" })
-              .then((snapshot) =>
-                console.log("uploaded successfully", snapshot.state)
-              )
-              .catch((err) =>
-                console.error("error while uploading base 64: ", err)
-              );
+            snapToBucket(obj, imgKey);
           })
           .catch((err) =>
             console.log("error while Social distancing updates: ", err)
           );
       }
+    } else {
+      rdb
+        .ref(`/SocialDistancing/${userDoc.id}/${IPAddressRDB}/`)
+        .update({
+          status: "Green",
+        })
+        .catch((err) => console.log("error in Social Distancing :: ", err));
     }
   }
+}
+
+function snapToBucket(obj, imgKey) {
+  let frame_trim = obj.message.frame
+    .toString()
+    .replace("data:image/jpeg;base64,", "");
+  storageRef
+    .child(`Snapshots/SocialDistance/${imgKey}`)
+    .putString(frame_trim, "base64", { contentType: "image/jpeg" })
+    .then((snapshot) => console.log("uploaded successfully", snapshot.state))
+    .catch((err) => console.error("error while uploading base 64: ", err));
 }
 
 function RenderComponent(props) {
