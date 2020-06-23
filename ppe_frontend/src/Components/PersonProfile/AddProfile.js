@@ -69,6 +69,7 @@ export default function AddProfile() {
   const [name, setName] = useState("");
   const [images, setImages] = useState([]);
   const [department, setDepartment] = useState("");
+  const [designation, setDesignation] = useState("");
   const [blocked, setBlocked] = useState(false);
   const [hashtag, setHashtag] = useState("");
   const [open, setOpen] = React.useState(false);
@@ -140,6 +141,7 @@ export default function AddProfile() {
     const profileInfo = {
       name: name,
       department: department,
+      designation: designation,
       blocked: blocked,
       hashtag: hashtag,
       adminEmail: adminDoc.data().email,
@@ -178,6 +180,7 @@ export default function AddProfile() {
                   setOpen(true);
                   setName("");
                   setDepartment("");
+                  setDesignation("");
                   setBlocked(false);
                   setHashtag("");
                   setImages([]);
@@ -218,6 +221,7 @@ export default function AddProfile() {
     if (confirmAns) {
       setName("");
       setDepartment("");
+      setDesignation("");
       setBlocked(false);
       setHashtag("");
     }
@@ -298,6 +302,18 @@ export default function AddProfile() {
                 onChange={(e) => setDepartment(e.target.value)}
                 autoComplete="department"
                 value={department}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                name="designation"
+                label="Designation"
+                id="department"
+                onChange={(e) => setDesignation(e.target.value)}
+                autoComplete="designation"
+                value={designation}
               />
               <FormControlLabel
                 control={
