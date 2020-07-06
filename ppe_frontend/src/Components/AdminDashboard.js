@@ -176,6 +176,8 @@ export default function AdminDashboard(props) {
   const [userDoc, setUserDoc] = useState(null);
   const [open, setOpen] = React.useState(true);
   const [title, setTitle] = React.useState("Configurations");
+  const [frame, setFrame] = useState(null);
+  const [socialDistancingFrame, setSocialDistancingFrame] = useState(null);
   const mainListItems = (
     <ThemeProvider theme={theme}>
       <div>
@@ -311,10 +313,42 @@ export default function AdminDashboard(props) {
                     "Connection Established on socket: ",
                     obj.IPCamera.IPAddress
                   );
+                  obj.socket.send("send");
+                  // should be changed later
                 };
                 // establishing connection for each socket.
                 obj.socket.onmessage = function (data) {
+                  const dataJSON = JSON.parse(data.data);
+                  setFrame(dataJSON.message.frame);
+                  if (dataJSON.message.type === "social_distancing") {
+                    console.log("::::::::::::social distancing frame:::::::::");
+                    setSocialDistancingFrame(dataJSON.message.frame);
+                    console.log("frame: ", dataJSON.message.frame);
+                  }
+                  if (dataJSON.message.type === "error") {
+                    console.log(
+                      "socket closed due to message type error: ",
+                      dataJSON.message.type
+                    );
+                    obj.socket.close();
+                    setTimeout(() => {
+                      let socket = new WebSocket(
+                        `wss://facegenie.co/ws/responser/${obj.IPCamera.IPAddress}/`
+                      );
+                      ipCamerasSockets[index] = socket;
+                      ipCamerasSockets[index].onopen = () => {
+                        console.log(
+                          "Connection Established on socket: ",
+                          obj.IPCamera.IPAddress
+                        );
+                        obj.socket.send("send");
+                        // should be changed later
+                      };
+                      // insert socket.onMessage here.???
+                    }, 15000);
+                  }
                   processResponse(data, persons, todayDate, doc, obj.IPCamera);
+                  obj.socket.send("send");
                 };
                 // process the data incoming on that channel
                 obj.socket.onclose = function (data) {
@@ -420,7 +454,11 @@ export default function AdminDashboard(props) {
           <div className={classes.appBarSpacer} />
           <Container maxwidth="lg" className={classes.container}>
             <UserContext.Provider value={userDoc}>
-              <RenderComponent component={title} />
+              <RenderComponent
+                component={title}
+                frame={frame}
+                socialDistancingFrame={socialDistancingFrame}
+              />
             </UserContext.Provider>
           </Container>
         </main>
@@ -465,13 +503,14 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
       }
     }
   } else if (obj.message.type === "ppe_alerts") {
+    // console.log("ppe_alerts : ", obj.message);
     var PPETotalCount = 0;
     if (IPCamera.Body_Suit) {
       PPETotalCount += 1;
     }
-    if (IPCamera.Boots) {
-      PPETotalCount += 1;
-    }
+    // if (IPCamera.Boots) {
+    //   PPETotalCount += 1;
+    // }
     if (IPCamera.Gloves) {
       PPETotalCount += 1;
     }
@@ -489,8 +528,8 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
     realtimePPEUpdate.people = users.num_people;
     realtimePPEUpdate.mask = 0;
     realtimePPEUpdate.body_Suit = 0;
-    realtimePPEUpdate.non_body_Suit = 0;
-    realtimePPEUpdate.boots = 0;
+    // realtimePPEUpdate.non_body_Suit = 0;
+    // realtimePPEUpdate.boots = 0;
     realtimePPEUpdate.gloves = 0;
     realtimePPEUpdate.headgear = 0;
     realtimePPEUpdate.safety_goggles = 0;
@@ -498,31 +537,35 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
     realtimePPEUpdate.timestamp = Firebase.database.ServerValue.TIMESTAMP;
     const people = users.people;
     for (let i = 0; i < people.length; i++) {
-      if (people[i].detected_ppe < PPETotalCount) {
+      console.log("detected ppe", people[i].ppe_violations);
+
+      if (people[i].ppe_violations > 5 - PPETotalCount) {
         realtimePPEUpdate.status = "Red";
       }
       if (IPCamera.Body_Suit) {
-        realtimePPEUpdate.body_Suit += people[i].body_suit.num === 0 ? 1 : 0;
-        realtimePPEUpdate.non_body_Suit +=
-          people[i].non_body_suit.num === 0 ? 1 : 0;
+        realtimePPEUpdate.body_Suit += people[i].no_body_suit.num === 1 ? 1 : 0;
+        // realtimePPEUpdate.non_body_Suit +=
+        //   people[i].non_body_suit.num === 0 ? 1 : 0;
       }
-      if (IPCamera.Boots) {
-        realtimePPEUpdate.headgear += people[i].boots.num === 0 ? 1 : 0;
-      }
+      // if (IPCamera.Boots) {
+      //   realtimePPEUpdate.headgear += people[i].boots.num === 0 ? 1 : 0;
+      // }
       if (IPCamera.Gloves) {
-        realtimePPEUpdate.gloves += people[i].headgear.num === 0 ? 1 : 0;
+        realtimePPEUpdate.gloves += people[i].no_gloves.num === 1 ? 1 : 0;
       }
       if (IPCamera.Headgear) {
-        PPETotalCount += 1;
+        realtimePPEUpdate.headgear += people[i].no_headgear.num === 1 ? 1 : 0;
       }
       if (IPCamera.Mask) {
-        realtimePPEUpdate.mask += people[i].mask.num === 0 ? 1 : 0;
+        realtimePPEUpdate.mask += people[i].no_mask.num === 1 ? 1 : 0;
       }
       if (IPCamera.Safety_Goggles) {
         realtimePPEUpdate.safety_goggles +=
-          people[i].non_body_suit.num === 0 ? 1 : 0;
+          people[i].no_safety_goggles.num === 1 ? 1 : 0;
       }
     }
+
+    console.log("real time PPE update object: ", realtimePPEUpdate);
 
     if (realtimePPEUpdate.status === "Red") {
       const pushRef = rdb
@@ -531,11 +574,11 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
       pushRef
         .set({
           body_Suit: realtimePPEUpdate.body_Suit,
-          boots: realtimePPEUpdate.boots,
+          // boots: realtimePPEUpdate.boots,
           gloves: realtimePPEUpdate.gloves,
           headgear: realtimePPEUpdate.headgear,
           mask: realtimePPEUpdate.mask,
-          non_body_suit: realtimePPEUpdate.non_body_Suit,
+          // non_body_suit: realtimePPEUpdate.non_body_Suit,
           people: realtimePPEUpdate.people,
           safety_goggles: realtimePPEUpdate.safety_goggles,
           status: realtimePPEUpdate.status,
@@ -548,11 +591,11 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
       .ref(`/PPE_Alerts/${userDoc.id}/${IPAddressRDB}/`)
       .update({
         body_Suit: realtimePPEUpdate.body_Suit,
-        boots: realtimePPEUpdate.boots,
+        // boots: realtimePPEUpdate.boots,
         gloves: realtimePPEUpdate.gloves,
         headgear: realtimePPEUpdate.headgear,
         mask: realtimePPEUpdate.mask,
-        non_body_suit: realtimePPEUpdate.non_body_Suit,
+        // non_body_suit: realtimePPEUpdate.non_body_Suit,
         people: realtimePPEUpdate.people,
         safety_goggles: realtimePPEUpdate.safety_goggles,
         status: realtimePPEUpdate.status,
@@ -612,11 +655,15 @@ function snapToBucket(obj, imgKey) {
 
 function RenderComponent(props) {
   const componentMap = {
-    Reports: <NavigationReports />,
+    Reports: <NavigationReports frame={props.frame} />,
     "Register Employees": <NavigationTabs />,
     Configurations: <Settings />,
     "PPE Tracking": <PlaceDashboard />,
-    "Social Distancing": <SocialDistancingDashboard />,
+    "Social Distancing": (
+      <SocialDistancingDashboard
+        socialDistancingFrame={props.socialDistancingFrame}
+      />
+    ),
     Downloads: <Downloads />,
   };
   return <div>{componentMap[props.component]}</div>;

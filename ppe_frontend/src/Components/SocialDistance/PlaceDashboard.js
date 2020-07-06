@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SocialDistancingDashboard() {
+export default function SocialDistancingDashboard(props) {
   const userDoc = useContext(UserContext);
   const [places, setPlaces] = useState([]);
   const [placeLogs, setPlaceLogs] = useState(null);
@@ -119,7 +119,11 @@ export default function SocialDistancingDashboard() {
 
   if (placeLogs) {
     return (
-      <StreamUpdates IPAddress={placeLogs} handleBack={setPlaceLogsToNull} />
+      <StreamUpdates
+        IPAddress={placeLogs}
+        handleBack={setPlaceLogsToNull}
+        socialDistancingFrame={props.socialDistancingFrame}
+      />
     );
   }
 

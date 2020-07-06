@@ -9,7 +9,7 @@ export default function StreamUpdates(props) {
   const user = useContext(UserContext);
   const [totalPeople, setTotalPeople] = useState(15);
   const [bodySuit, setBodySuit] = useState(0);
-  const [boots, setBoots] = useState(0);
+  // const [boots, setBoots] = useState(0);
   const [gloves, setGloves] = useState(0);
   const [headgear, setHeadgear] = useState(0);
   const [safetyGoggles, setSafetyGoggles] = useState(0);
@@ -29,9 +29,9 @@ export default function StreamUpdates(props) {
             case "body_Suit":
               setBodySuit(collection[field]);
               break;
-            case "boots":
-              setBoots(collection[field]);
-              break;
+            // case "boots":
+            //   setBoots(collection[field]);
+            //   break;
             case "gloves":
               setGloves(collection[field]);
               break;
@@ -101,16 +101,24 @@ export default function StreamUpdates(props) {
             }}
           >
             <CustomCircularProgressbar
-              percentage={(bodySuit / totalPeople) * 100}
+              percentage={
+                totalPeople === 0 ? 0 : (bodySuit / totalPeople) * 100
+              }
               title="No Body Suit"
             />
-            <CustomCircularProgressbar
+            {/* <CustomCircularProgressbar
               percentage={(boots / totalPeople) * 100}
               title="No Boots"
+            /> */}
+            <CustomCircularProgressbar
+              percentage={totalPeople === 0 ? 0 : (gloves / totalPeople) * 100}
+              title="No Gloves"
             />
             <CustomCircularProgressbar
-              percentage={(gloves / totalPeople) * 100}
-              title="No Gloves"
+              percentage={
+                totalPeople === 0 ? 0 : (headgear / totalPeople) * 100
+              }
+              title="No Headgear"
             />
           </div>
           <div
@@ -122,15 +130,13 @@ export default function StreamUpdates(props) {
             }}
           >
             <CustomCircularProgressbar
-              percentage={(headgear / totalPeople) * 100}
-              title="No Headgear"
-            />
-            <CustomCircularProgressbar
-              percentage={(masks / totalPeople) * 100}
+              percentage={totalPeople === 0 ? 0 : (masks / totalPeople) * 100}
               title="No Mask"
             />
             <CustomCircularProgressbar
-              percentage={(safetyGoggles / totalPeople) * 100}
+              percentage={
+                totalPeople === 0 ? 0 : (safetyGoggles / totalPeople) * 100
+              }
               title="No Safety Goggles"
             />
           </div>

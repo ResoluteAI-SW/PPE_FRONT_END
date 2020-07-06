@@ -48,18 +48,18 @@ export default function StreamUpdates(props) {
 
   useEffect(() => {
     const IPAddress = props.IPAddress.toString().replace(/\./g, "_");
-    let socket = new WebSocket(
-      "wss://facegenie.co/ws/responser/192.168.29.126/"
-    );
-    socket.onopen = () => {
-      console.log("Connection Established");
-    };
-    socket.onmessage = (data) => {
-      const obj = JSON.parse(data.data);
-      if (obj.message.type === "social_distancing") {
-        setFrame(obj.message.frame);
-      }
-    };
+    // let socket = new WebSocket(
+    //   "wss://facegenie.co/ws/responser/192.168.29.126/"
+    // );
+    // socket.onopen = () => {
+    //   console.log("Connection Established");
+    // };
+    // socket.onmessage = (data) => {
+    //   const obj = JSON.parse(data.data);
+    //   if (obj.message.type === "social_distancing") {
+    //     setFrame(obj.message.frame);
+    //   }
+    // };
     rdb
       .ref(`SocialDistancing/${user.id}/${IPAddress}/Logs`)
       .orderByChild("timestamp")
@@ -118,7 +118,7 @@ export default function StreamUpdates(props) {
         }}
       >
         <div>
-          {frame === "" ? (
+          {props.socialDistancingframe === "" ? (
             <div
               style={{
                 display: "flex",
@@ -132,9 +132,9 @@ export default function StreamUpdates(props) {
             </div>
           ) : (
             <img
-              src={frame}
+              src={props.socialDistancingFrame}
               alt="Stream not available"
-              style={{ width: 400, height: 500 }}
+              style={{ width: 640, height: 360 }}
             />
           )}
         </div>
@@ -160,7 +160,14 @@ export default function StreamUpdates(props) {
                 {logs.map((row) => (
                   <StyledTableRow key={logs.id}>
                     <StyledTableCell component="th" scope="row">
-                      <img src={row.imgURL} alt="No thumbnail" />
+                      <img
+                        src={row.imgURL}
+                        alt="No thumbnail"
+                        style={{
+                          width: 100,
+                          height: 100,
+                        }}
+                      />
                     </StyledTableCell>
                     <StyledTableCell component="th" scope="row">
                       {row.Grid}

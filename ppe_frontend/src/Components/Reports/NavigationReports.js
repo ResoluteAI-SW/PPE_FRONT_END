@@ -87,9 +87,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Settings() {
+export default function Settings(props) {
   const classes = useStyles();
-  const [title, setTitle] = React.useState("PPE Alert Reports");
+  const [title, setTitle] = React.useState("Attendance Reports");
   const mainListItems = ["PPE Alert Reports", "Attendance Reports"];
 
   return (
@@ -110,7 +110,7 @@ export default function Settings() {
             ))}
           </div>
           <Container maxwidth="lg" className={classes.container}>
-            <RenderComponent component={title} />
+            <RenderComponent component={title} frame={props.frame} />
           </Container>
         </main>
       </div>
@@ -121,7 +121,7 @@ export default function Settings() {
 function RenderComponent(props) {
   const componentMap = {
     "PPE Alert Reports": <PPEAlertReports />,
-    "Attendance Reports": <AttendanceReports />,
+    "Attendance Reports": <AttendanceReports frame={props.frame} />,
   };
   return <div>{componentMap[props.component]}</div>;
 }
