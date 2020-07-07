@@ -21,3 +21,7 @@ https://fg003fe.web.app/
    npm start
    ```
 7. Project will open at localhost in your default browser.
+
+# Architecture:
+
+![Architecture](https://i.ibb.co/KrmcZZv/sss.png)
