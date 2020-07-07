@@ -25,3 +25,7 @@ https://fg003fe.web.app/
 # Architecture:
 
 ![Architecture](https://i.ibb.co/KrmcZZv/sss.png)
+
+# Front end DOM Tree:
+
+![DOM Tree structure](https://i.ibb.co/XYsVXxz/sss-Page-2.png)
