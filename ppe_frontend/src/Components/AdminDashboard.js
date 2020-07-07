@@ -171,13 +171,19 @@ const theme = createMuiTheme({
 
 export const UserContext = createContext();
 
+/**
+ * @Component responsible for admin dashboard entry point.
+ * @param {*} props
+ */
+
 export default function AdminDashboard(props) {
   const classes = useStyles();
-  const [userDoc, setUserDoc] = useState(null);
+  const [userDoc, setUserDoc] = useState(null); // to check if the user is logged in
   const [open, setOpen] = React.useState(true);
-  const [title, setTitle] = React.useState("Configurations");
-  const [frame, setFrame] = useState(null);
-  const [socialDistancingFrame, setSocialDistancingFrame] = useState(null);
+  const [title, setTitle] = React.useState("Configurations"); // to open that component initially
+  const [frame, setFrame] = useState(null); // attendance marking frames
+  const [socialDistancingFrame, setSocialDistancingFrame] = useState(null); // social distancing frames
+  // list of items to be displayed on navigation bar
   const mainListItems = (
     <ThemeProvider theme={theme}>
       <div>
@@ -269,9 +275,15 @@ export default function AdminDashboard(props) {
     </ThemeProvider>
   );
 
+  /**
+   * @function responsible for loading all the data and configurations for the logged in user.
+   * responsible for connecting sockets for all the IP Cameras
+   * responsible for processing the data coming from socket channel
+   */
+
   useEffect(() => {
     db.collection("users")
-      .where("email", "==", props.user.email)
+      .where("email", "==", props.user.email) // loop through the users to get the logged in user
       .get()
       .then((querySnapshot) => {
         doc = querySnapshot.docs[0];
@@ -313,6 +325,8 @@ export default function AdminDashboard(props) {
                     "Connection Established on socket: ",
                     obj.IPCamera.IPAddress
                   );
+                  // as soon as connection established, request the backend to send data
+                  // by sending "send"
                   obj.socket.send("send");
                   // should be changed later
                 };
@@ -320,11 +334,15 @@ export default function AdminDashboard(props) {
                 obj.socket.onmessage = function (data) {
                   const dataJSON = JSON.parse(data.data);
                   setFrame(dataJSON.message.frame);
+                  // if the message type is social distancing,
+                  // set the social distancing frame to state variable.
                   if (dataJSON.message.type === "social_distancing") {
                     console.log("::::::::::::social distancing frame:::::::::");
                     setSocialDistancingFrame(dataJSON.message.frame);
                     console.log("frame: ", dataJSON.message.frame);
                   }
+                  // if camera not found error, socket connection closes
+                  // after every 15 seconds, try connecting that particular socket again
                   if (dataJSON.message.type === "error") {
                     console.log(
                       "socket closed due to message type error: ",
@@ -347,6 +365,7 @@ export default function AdminDashboard(props) {
                       // insert socket.onMessage here.???
                     }, 15000);
                   }
+                  // process the response from backend and save it to firebase
                   processResponse(data, persons, todayDate, doc, obj.IPCamera);
                   obj.socket.send("send");
                 };
@@ -467,24 +486,37 @@ export default function AdminDashboard(props) {
   );
 }
 
+/**
+ * @function responsible for processing the backend response and storing into database
+ * @param {*} data
+ * @param {*} persons
+ * @param {*} todayDate
+ * @param {*} userDoc
+ * @param {*} IPCamera
+ */
+
 function processResponse(data, persons, todayDate, userDoc, IPCamera) {
   console.log("message received on IP Address: ", IPCamera.IPAddress);
   const IPAddressRDB = IPCamera.IPAddress.replace(/\./g, "_");
 
-  const obj = JSON.parse(data.data);
+  // IP Cameras in realtime database are stored in the form of "XXX_XX_XXX_XX"
+
+  const obj = JSON.parse(data.data); // converting the JSON String into JSON paresable object
   console.log("JSON parsed data: ", obj);
   if (obj.message.type === "attendance_tracking") {
+    // if response message is of type attendance_tracking
     const usersDetected = obj.message.users;
     for (let i = 0; i < usersDetected.length; i++) {
-      console.log("looping inside users");
+      // console.log("looping inside users");
       const user = usersDetected[i];
-      console.log("person detected:", user[0]);
+      // console.log("person detected:", user[0]);
       for (let j = 0; j < persons.length; j++) {
-        console.log("looping inside stored users.....");
-        console.log("stored user: ", persons[j].id);
-        console.log("matched?: - ", persons[j].id === user[0]);
+        // console.log("looping inside stored users.....");
+        // console.log("stored user: ", persons[j].id);
+        // console.log("matched?: - ", persons[j].id === user[0]);
         if (persons[j].id === user[0]) {
-          console.log("person matched");
+          // console.log("person matched");
+          // store response in realtime database
           rdb
             .ref(`/Attendance/${doc.id}/${todayDate}/${persons[j].id}`)
             .set({
@@ -503,8 +535,11 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
       }
     }
   } else if (obj.message.type === "ppe_alerts") {
-    // console.log("ppe_alerts : ", obj.message);
-    var PPETotalCount = 0;
+    // if response message is of type attendance_tracking
+
+    // check what all settings are enabled on particular IP Camera
+
+    var PPETotalCount = 0; // to validate if the status is red or green
     if (IPCamera.Body_Suit) {
       PPETotalCount += 1;
     }
@@ -524,7 +559,7 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
       PPETotalCount += 1;
     }
     const users = obj.message.users;
-    const realtimePPEUpdate = {};
+    const realtimePPEUpdate = {}; // final log to be updated in Real time database
     realtimePPEUpdate.people = users.num_people;
     realtimePPEUpdate.mask = 0;
     realtimePPEUpdate.body_Suit = 0;
@@ -540,7 +575,10 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
       console.log("detected ppe", people[i].ppe_violations);
 
       if (people[i].ppe_violations > 5 - PPETotalCount) {
+        // decide if status has to be set to red or green
         realtimePPEUpdate.status = "Red";
+      } else {
+        realtimePPEUpdate.status = "Green";
       }
       if (IPCamera.Body_Suit) {
         realtimePPEUpdate.body_Suit += people[i].no_body_suit.num === 1 ? 1 : 0;
@@ -565,12 +603,13 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
       }
     }
 
-    console.log("real time PPE update object: ", realtimePPEUpdate);
+    // console.log("real time PPE update object: ", realtimePPEUpdate);
 
     if (realtimePPEUpdate.status === "Red") {
       const pushRef = rdb
         .ref(`/PPE_Alerts/${userDoc.id}/${IPAddressRDB}/Logs`)
         .push();
+      // insert into Real time database
       pushRef
         .set({
           body_Suit: realtimePPEUpdate.body_Suit,
@@ -587,6 +626,7 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
         .catch((err) => console.log("PPE Alert error", err));
     }
 
+    // update the new data to real time database
     rdb
       .ref(`/PPE_Alerts/${userDoc.id}/${IPAddressRDB}/`)
       .update({
@@ -603,9 +643,11 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
       })
       .catch((err) => console.log("error in PPE Alerts :: ", err));
   } else if (obj.message.type === "social_distancing") {
+    // if response message is of type social_distancing
     console.log("Social distancing response: ");
     console.log(obj.message);
     if (obj.message.grid.length > 0) {
+      // if there's an actual violation of social distancing
       rdb
         .ref(`/SocialDistancing/${userDoc.id}/${IPAddressRDB}/`)
         .update({
@@ -616,7 +658,7 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
         const pushRef = rdb
           .ref(`/SocialDistancing/${userDoc.id}/${IPAddressRDB}/Logs`)
           .push();
-        const imgKey = pushRef.key;
+        const imgKey = pushRef.key; // take the unique document ID and label it ffor thumbnail
         pushRef
           .set({
             Grid: obj.message.grid[i],
@@ -632,6 +674,7 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
           );
       }
     } else {
+      // if there is no social distancing violation
       rdb
         .ref(`/SocialDistancing/${userDoc.id}/${IPAddressRDB}/`)
         .update({
@@ -641,6 +684,11 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
     }
   }
 }
+
+/**
+ * @function responsible for storing the social distancing thumbnail
+ * to cloud bucket
+ */
 
 function snapToBucket(obj, imgKey) {
   let frame_trim = obj.message.frame

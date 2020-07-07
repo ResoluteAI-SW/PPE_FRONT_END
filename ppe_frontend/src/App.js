@@ -30,6 +30,11 @@ const mainTheme = createMuiTheme({
   },
 });
 
+/**
+ * @Component responsible for entry point of the application.
+ * Initializes routes to sign in, sign up and admin dashboard
+ */
+
 function App() {
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
