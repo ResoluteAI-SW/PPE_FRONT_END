@@ -69,13 +69,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-var placesTemp = [];
-
-export default function SocialDistancingDashboard() {
+/**
+ * @Component responsible for Social distancing Cards for each place
+ * @param {*} props
+ */
+export default function SocialDistancingDashboard(props) {
   const userDoc = useContext(UserContext);
   const [places, setPlaces] = useState([]);
   const [placeLogs, setPlaceLogs] = useState(null);
 
+  /**
+   * @function responsible for loading the last updated status for each IP Camera from RDB
+   */
   useEffect(() => {
     var ipCameras = [];
     userDoc.ref
@@ -89,7 +94,7 @@ export default function SocialDistancingDashboard() {
       .then(() => {
         console.log("IP Camera: ", ipCameras[0]);
         rdb.ref(`SocialDistancing/${userDoc.id}`).on("value", (snapshot) => {
-          placesTemp = [];
+          setPlaces([]);
           const collection = snapshot.val();
           for (const ipCamera in collection) {
             for (let i = 0; i < ipCameras.length; i++) {
@@ -105,8 +110,7 @@ export default function SocialDistancingDashboard() {
                 obj.Status = collection[ipCamera].status;
                 obj.Hashtag = ipCameras[i].Hashtag;
                 obj.Place = ipCameras[i].Place;
-                placesTemp.push(obj);
-                setPlaces(placesTemp);
+                setPlaces((places) => places.concat(obj));
               }
             }
           }
@@ -114,18 +118,31 @@ export default function SocialDistancingDashboard() {
       });
   }, []);
 
+  /**
+   * @function responsible for moving back to place dashboard
+   */
   const setPlaceLogsToNull = () => {
     setPlaceLogs(null);
   };
 
   const classes = useStyles();
 
+  /**
+   * if user/admin has clicked on any of the places
+   */
   if (placeLogs) {
     return (
-      <StreamUpdates IPAddress={placeLogs} handleBack={setPlaceLogsToNull} />
+      <StreamUpdates
+        IPAddress={placeLogs}
+        handleBack={setPlaceLogsToNull}
+        socialDistancingFrame={props.socialDistancingFrame}
+      />
     );
   }
 
+  /**
+   * else return place dashboard
+   */
   return <PlaceDashboard />;
 
   function PlaceDashboard() {

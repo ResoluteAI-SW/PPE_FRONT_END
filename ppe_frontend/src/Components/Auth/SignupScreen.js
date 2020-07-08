@@ -61,6 +61,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * @Component responsible for displaying sign up screen
+ */
+
 export default function SignUpScreen() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -80,6 +84,11 @@ export default function SignUpScreen() {
     }
     setOpen(false);
   };
+
+  /**
+   * @function responsible to create an account on firebase
+   * and also post the user details to backend api for token authentication
+   */
 
   const signup = () => {
     const details = {
@@ -123,6 +132,10 @@ export default function SignUpScreen() {
         setLoading(false);
       });
   };
+
+  /**
+   * if user has signed up, log in for that user to admin dashboard
+   */
 
   if (user) {
     return <Redirect to="/" />;

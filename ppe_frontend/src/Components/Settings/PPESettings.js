@@ -70,6 +70,9 @@ const StyledTableCell = withStyles((theme) => ({
 var severity = "success";
 var message = "IP Camera successfully registered";
 
+/**
+ * @Component responsible for displaying the PPE configuration settings
+ */
 export default function PPESettings() {
   const displayImageMap = {
     "Hazmat Suit": HazmatSuit,
@@ -94,6 +97,9 @@ export default function PPESettings() {
   ]);
   const [open, setOpen] = React.useState(false);
 
+  /**
+   * @function responsible for loading the last updated PPE detection settings from cloud firestore
+   */
   useEffect(() => {
     if (
       userDoc.data().settings.RedAlert &&
@@ -128,17 +134,20 @@ export default function PPESettings() {
         toolsArr.push(toolsObj);
         toolsObj = {};
       }
-      for (let i = 0; i < toolsArr.length; i++) {
-        console.log(toolsArr[i]);
-      }
-      for (let i = 0; i < timeArr.length; i++) {
-        console.log(timeArr[i]);
-      }
+      // for (let i = 0; i < toolsArr.length; i++) {
+      //   console.log(toolsArr[i]);
+      // }
+      // for (let i = 0; i < timeArr.length; i++) {
+      //   console.log(timeArr[i]);
+      // }
       setTime(timeArr);
       setTools(toolsArr);
     }
   }, []);
 
+  /**
+   * @function responsible for saving the updated PPE Settings to Firebase
+   */
   const savePPESettings = () => {
     var RedAlert = {};
     RedAlert.tools = [];

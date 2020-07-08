@@ -26,6 +26,10 @@ function Alert(props) {
 var severity = "success";
 var message = "IP Camera successfully registered";
 
+/**
+ * @Component responsible for rendering attendance framerate and sensitivity
+ */
+
 export default function AttendanceSettings() {
   const classes = useStyles();
   const [frameRate, setFrameRate] = useState(0);
@@ -33,6 +37,9 @@ export default function AttendanceSettings() {
   const [open, setOpen] = React.useState(false);
   const userDoc = useContext(UserContext);
 
+  /**
+   * function responsible for loading the last adjusted attendance frame rate and sensitivity
+   */
   useEffect(() => {
     if (
       userDoc.data().settings.attendanceFrameRate &&
@@ -52,6 +59,10 @@ export default function AttendanceSettings() {
     setOpen(false);
   };
 
+  /**
+   * @function responsible for saving the settings into firebase
+   * into cloud firestore saved account of admin
+   */
   const saveAttendanceSettings = () => {
     console.log("frame rate", frameRate);
     console.log("sensitivity", sensitivity);

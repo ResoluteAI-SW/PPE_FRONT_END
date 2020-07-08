@@ -25,7 +25,9 @@ function Alert(props) {
 
 var severity = "success";
 var message = "IP Camera successfully registered";
-
+/**
+ * @Component responsible for displaying and adjusting the detection settings
+ */
 export default function DetectionSettings() {
   const classes = useStyles();
   const [frameRate, setFrameRate] = useState(0);
@@ -33,6 +35,9 @@ export default function DetectionSettings() {
   const [open, setOpen] = React.useState(false);
   const userDoc = useContext(UserContext);
 
+  /**
+   * @function responsible for loading the last settings applied for detection framerate and sensitivity
+   */
   useEffect(() => {
     if (
       userDoc.data().settings.detectionFrameRate &&
@@ -52,6 +57,9 @@ export default function DetectionSettings() {
     setOpen(false);
   };
 
+  /**
+   * @function responsible for saving the detection settings into cloud firestore's admin account
+   */
   const saveDetectionSettings = () => {
     userDoc.ref
       .set(

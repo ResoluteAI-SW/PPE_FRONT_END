@@ -67,6 +67,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * @Component responsible for the sign in screen
+ */
 export default function SignInScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -102,9 +105,17 @@ export default function SignInScreen() {
 
   const classes = useStyles();
 
+  /**
+   * If user is logged in successfully logged in, route to dashboard
+   */
+
   if (user) {
     return <AdminDashboard user={user} />;
   }
+
+  /**
+   * If user is not logged in, return login screen
+   */
 
   return (
     <Grid container component="main" className={classes.root}>

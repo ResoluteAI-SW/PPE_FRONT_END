@@ -89,6 +89,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * @Component responsible for navigating into settings
+ */
 export default function Settings() {
   const classes = useStyles();
   const [title, setTitle] = React.useState("IP Camera Registration");
@@ -125,6 +128,10 @@ export default function Settings() {
   );
 }
 
+/**
+ * @Component responsible for rendering the child component in settings panel
+ * @param {*} props
+ */
 function RenderComponent(props) {
   const componentMap = {
     "IP Camera Registration": <IPCameraRegistration />,

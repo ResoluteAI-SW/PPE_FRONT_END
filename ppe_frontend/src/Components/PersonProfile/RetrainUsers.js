@@ -4,6 +4,9 @@ import Button from "@material-ui/core/Button";
 import axios from "axios";
 import { UserContext } from "../AdminDashboard";
 
+/**
+ * @Component responsible for displaying retrain users screen
+ */
 export default function RetrainUsers() {
   const userDoc = useContext(UserContext);
 

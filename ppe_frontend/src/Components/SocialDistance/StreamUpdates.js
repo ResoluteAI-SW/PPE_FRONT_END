@@ -12,7 +12,6 @@ import TableRow from "@material-ui/core/TableRow";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 import moment from "moment";
-import Firebase from "firebase";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -40,6 +39,11 @@ const useStyles = makeStyles({
 
 var reverseTempList = [];
 
+/**
+ * @Component responsible for displaying the social distancing stream
+ * and the latest social distancing violation
+ * @param {*} props
+ */
 export default function StreamUpdates(props) {
   const classes = useStyles();
   const user = useContext(UserContext);
@@ -47,20 +51,23 @@ export default function StreamUpdates(props) {
   const [showCompleteLogs, setShowCompleteLogs] = useState(false);
   const [frame, setFrame] = useState("");
 
+  /**
+   * @function responsible for fetching the latest social distancing violation
+   */
   useEffect(() => {
     const IPAddress = props.IPAddress.toString().replace(/\./g, "_");
-    let socket = new WebSocket(
-      "wss://facegenie.co/ws/responser/192.168.29.126/"
-    );
-    socket.onopen = () => {
-      console.log("Connection Established");
-    };
-    socket.onmessage = (data) => {
-      const obj = JSON.parse(data.data);
-      if (obj.message.type === "social_distancing") {
-        setFrame(obj.message.frame);
-      }
-    };
+    // let socket = new WebSocket(
+    //   "wss://facegenie.co/ws/responser/192.168.29.126/"
+    // );
+    // socket.onopen = () => {
+    //   console.log("Connection Established");
+    // };
+    // socket.onmessage = (data) => {
+    //   const obj = JSON.parse(data.data);
+    //   if (obj.message.type === "social_distancing") {
+    //     setFrame(obj.message.frame);
+    //   }
+    // };
     rdb
       .ref(`SocialDistancing/${user.id}/${IPAddress}/Logs`)
       .orderByChild("timestamp")
@@ -92,19 +99,9 @@ export default function StreamUpdates(props) {
       });
   }, []);
 
-  const generateLogs = () => {
-    const IPAddress = props.IPAddress.toString().replace(/\./g, "_");
-    const pushingRef = rdb
-      .ref(`SocialDistancing/${user.id}/${IPAddress}/Logs`)
-      .push();
-    pushingRef.set({
-      Grid: "01",
-      ip: "192.168.29.127",
-      Hashtag: "#Lab",
-      timestamp: Firebase.database.ServerValue.TIMESTAMP,
-    });
-  };
-
+  /**
+   * @function responsible for dispalying the complete logs for that particular IP Camera
+   */
   if (showCompleteLogs) {
     return (
       <Logs
@@ -123,9 +120,6 @@ export default function StreamUpdates(props) {
       >
         Back to Dashboard
       </Button>
-      <Button color="primary" onClick={generateLogs}>
-        Generate Logs
-      </Button>
       <div
         style={{
           display: "flex",
@@ -135,7 +129,7 @@ export default function StreamUpdates(props) {
         }}
       >
         <div>
-          {frame === "" ? (
+          {props.socialDistancingframe === "" ? (
             <div
               style={{
                 display: "flex",
@@ -149,9 +143,9 @@ export default function StreamUpdates(props) {
             </div>
           ) : (
             <img
-              src={frame}
+              src={props.socialDistancingFrame}
               alt="Stream not available"
-              style={{ width: 400, height: 500 }}
+              style={{ width: 640, height: 360 }}
             />
           )}
         </div>
@@ -177,7 +171,14 @@ export default function StreamUpdates(props) {
                 {logs.map((row) => (
                   <StyledTableRow key={logs.id}>
                     <StyledTableCell component="th" scope="row">
-                      <img src={row.imgURL} alt="No thumbnail" />
+                      <img
+                        src={row.imgURL}
+                        alt="No thumbnail"
+                        style={{
+                          width: 100,
+                          height: 100,
+                        }}
+                      />
                     </StyledTableCell>
                     <StyledTableCell component="th" scope="row">
                       {row.Grid}

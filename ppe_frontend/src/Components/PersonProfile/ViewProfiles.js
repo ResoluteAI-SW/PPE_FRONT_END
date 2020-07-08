@@ -34,6 +34,10 @@ const useStyles = makeStyles({
   },
 });
 
+/**
+ * @Component responsible for displaying the profiles of registered employees
+ */
+
 export default function ViewProfiles() {
   const userDoc = useContext(UserContext);
   const [persons, setPersons] = useState([]);

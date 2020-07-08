@@ -64,16 +64,26 @@ const videoConstraints = {
 var severity = "success";
 var message = "IP Camera successfully registered";
 
+/**
+ * @Component responsible for displaying add profiles of employeess section
+ */
+
 export default function AddProfile() {
   const adminDoc = useContext(UserContext);
   const [name, setName] = useState("");
   const [images, setImages] = useState([]);
   const [department, setDepartment] = useState("");
+  const [designation, setDesignation] = useState("");
   const [blocked, setBlocked] = useState(false);
   const [hashtag, setHashtag] = useState("");
   const [open, setOpen] = React.useState(false);
   const [retrainedPersons, setRetrainedPersons] = useState(0);
   const classes = useStyles();
+
+  /**
+   * @Component responsible for Webcam Window to capture the photos and display the thumbnails
+   * of captured photos
+   */
 
   const WebcamCapture = () => {
     const webcamRef = React.useRef(null);
@@ -131,6 +141,11 @@ export default function AddProfile() {
     );
   };
 
+  /**
+   * @Component responsible for submitting the profile information filled in the form
+   * to store into firebase and also post it to the backend
+   * @param {*} e
+   */
   const submitProfileInfo = (e) => {
     e.preventDefault();
     const persons_registered = parseInt(adminDoc.data().persons_registered) + 1;
@@ -140,6 +155,7 @@ export default function AddProfile() {
     const profileInfo = {
       name: name,
       department: department,
+      designation: designation,
       blocked: blocked,
       hashtag: hashtag,
       adminEmail: adminDoc.data().email,
@@ -178,6 +194,7 @@ export default function AddProfile() {
                   setOpen(true);
                   setName("");
                   setDepartment("");
+                  setDesignation("");
                   setBlocked(false);
                   setHashtag("");
                   setImages([]);
@@ -212,17 +229,27 @@ export default function AddProfile() {
     setOpen(false);
   };
 
+  /**
+   * @function responsible for resetting the details filled in the form
+   * @param {*} e
+   */
   const handleReset = (e) => {
     e.preventDefault();
     var confirmAns = window.confirm("Are you sure you want to reset?");
     if (confirmAns) {
       setName("");
       setDepartment("");
+      setDesignation("");
       setBlocked(false);
       setHashtag("");
     }
     console.log("pressed reset");
   };
+
+  /**
+   * @function responsible for determining the count of retrained persons,
+   * determining if admin should be allowed to add profiles without retraining
+   */
 
   useEffect(() => {
     adminDoc.ref.onSnapshot((doc) => {
@@ -230,9 +257,17 @@ export default function AddProfile() {
     });
   });
 
+  /**
+   * in case if persons not retrained threshold is passed, don't allow the admin to register more profiles.
+   */
+
   if (retrainedPersons > 1) {
     return <RetrainUsers />;
   }
+
+  /**
+   * if the persons not retrained numbers still in limit, display the webcam and form component
+   */
 
   return (
     <Grid container component="main">
@@ -298,6 +333,18 @@ export default function AddProfile() {
                 onChange={(e) => setDepartment(e.target.value)}
                 autoComplete="department"
                 value={department}
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                name="designation"
+                label="Designation"
+                id="department"
+                onChange={(e) => setDesignation(e.target.value)}
+                autoComplete="designation"
+                value={designation}
               />
               <FormControlLabel
                 control={

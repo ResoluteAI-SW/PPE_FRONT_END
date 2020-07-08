@@ -51,27 +51,32 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AttendanceReports() {
+/**
+ * @Component responsible for displaying attendance marking and stream side by side
+ */
+
+export default function AttendanceReports(props) {
   const classes = useStyles();
 
   const userDoc = useContext(UserContext);
   const [attendanceReports, setAttendanceReports] = useState([]);
-  const [frame, setFrame] = useState("");
 
+  /**
+   * @function responsible for getting the attendance reports
+   */
   useEffect(() => {
-    let socket = new WebSocket(
-      "wss://facegenie.co/ws/responser/192.168.29.126/"
-    );
-    socket.onopen = () => {
-      console.log("Connection Established");
-    };
-    socket.onmessage = (data) => {
-      const obj = JSON.parse(data.data);
-      console.log(obj.message.type);
-      if (obj.message.type === "attendance_tracking") {
-        setFrame(obj.message.frame);
-      }
-    };
+    // let socket = new WebSocket(
+    //   "wss://facegenie.co/ws/responser/192.168.29.126/"
+    // );
+    // socket.onopen = () => {
+    //   console.log("Connection Established");
+    // };
+    // socket.onmessage = (data) => {
+    //   const obj = JSON.parse(data.data);
+    //   console.log(obj.message.type);
+    //   if (obj.message.type === "attendance_tracking") {
+    //   }
+    // };
     const todayDate = moment().format("DD MMM YYYY");
     console.log(todayDate);
     console.log(userDoc.id);
@@ -98,7 +103,7 @@ export default function AttendanceReports() {
         }}
       >
         <div>
-          {frame === "" ? (
+          {props.frame === "" ? (
             <div
               style={{
                 display: "flex",
@@ -112,9 +117,9 @@ export default function AttendanceReports() {
             </div>
           ) : (
             <img
-              src={frame}
+              src={props.frame}
               alt="Stream not available"
-              style={{ width: 400, height: 500 }}
+              style={{ width: 640, height: 360 }}
             />
           )}
         </div>
