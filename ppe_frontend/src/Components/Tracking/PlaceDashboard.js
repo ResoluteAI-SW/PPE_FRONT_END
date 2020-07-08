@@ -69,11 +69,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * @Component responsible for Social distancing Cards for each place
+ * @param {*} props
+ */
 export default function SocialDistancingDashboard() {
   const userDoc = useContext(UserContext);
   const [places, setPlaces] = useState([]);
   const [placeLogs, setPlaceLogs] = useState(null);
 
+  /**
+   * @function responsible for loading the place dashboard
+   * and tiles
+   */
   useEffect(() => {
     var ipCameras = [];
     userDoc.ref
@@ -118,12 +126,18 @@ export default function SocialDistancingDashboard() {
 
   const classes = useStyles();
 
+  /**
+   * if want to display complete analytics of particular palce
+   */
   if (placeLogs) {
     return (
       <StreamUpdates IPAddress={placeLogs} handleBack={setPlaceLogsToNull} />
     );
   }
 
+  /**
+   * else display place dashboard - cards for IP Cameras
+   */
   return <PlaceDashboard />;
 
   function PlaceDashboard() {

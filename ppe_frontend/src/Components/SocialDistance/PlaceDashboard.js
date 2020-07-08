@@ -69,11 +69,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * @Component responsible for Social distancing Cards for each place
+ * @param {*} props
+ */
 export default function SocialDistancingDashboard(props) {
   const userDoc = useContext(UserContext);
   const [places, setPlaces] = useState([]);
   const [placeLogs, setPlaceLogs] = useState(null);
 
+  /**
+   * @function responsible for loading the last updated status for each IP Camera from RDB
+   */
   useEffect(() => {
     var ipCameras = [];
     userDoc.ref
@@ -111,12 +118,18 @@ export default function SocialDistancingDashboard(props) {
       });
   }, []);
 
+  /**
+   * @function responsible for moving back to place dashboard
+   */
   const setPlaceLogsToNull = () => {
     setPlaceLogs(null);
   };
 
   const classes = useStyles();
 
+  /**
+   * if user/admin has clicked on any of the places
+   */
   if (placeLogs) {
     return (
       <StreamUpdates
@@ -127,6 +140,9 @@ export default function SocialDistancingDashboard(props) {
     );
   }
 
+  /**
+   * else return place dashboard
+   */
   return <PlaceDashboard />;
 
   function PlaceDashboard() {

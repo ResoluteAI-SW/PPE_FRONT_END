@@ -87,9 +87,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * @function responsible for Navigation between Add profiles and view profiles
+ */
 export default function NavigationTabs() {
   const classes = useStyles();
-  const [title, setTitle] = React.useState("Add Profile");
+  const [title, setTitle] = React.useState("Add Profile"); // what to render initially
   const mainListItems = ["Add Profile", "View Profiles"];
 
   return (
@@ -118,6 +121,10 @@ export default function NavigationTabs() {
   );
 }
 
+/**
+ * function responsible for returning the child component to be displayed
+ * @param {*} props
+ */
 function RenderComponent(props) {
   const componentMap = {
     "Add Profile": <AddProfile />,

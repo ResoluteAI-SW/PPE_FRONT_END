@@ -77,6 +77,9 @@ var message = "IP Camera successfully registered";
 var ipCameraEdit = null;
 var ipCamerasTemp = [];
 
+/**
+ * @Component responsible for registering IP Cameras and also displayng them
+ */
 export default function IPCameraRegistration() {
   const classes = useStyles();
   const [ipAddress, setIPAddress] = useState("");
@@ -94,6 +97,9 @@ export default function IPCameraRegistration() {
   const [safety_goggles, setSafety_Goggles] = useState(false);
   const user = useContext(UserContext);
 
+  /**
+   * @function responsible for loading all the ip cameras
+   */
   useEffect(() => {
     user.ref.collection("ipCameras").onSnapshot((querySnapshot) => {
       querySnapshot.forEach((doc) => {
@@ -105,6 +111,11 @@ export default function IPCameraRegistration() {
     });
   }, []);
 
+  /**
+   * @function responsible for submitting the details for the new IP Camera or
+   * updated IP Camera
+   * @param {*} e
+   */
   const handleFormSubmit = (e) => {
     e.preventDefault();
     if (
@@ -229,6 +240,10 @@ export default function IPCameraRegistration() {
     setOpen(false);
   };
 
+  /**
+   * @function responsible for filling out the last updated details for the registered IP Camera
+   * @param {*} ipAddress
+   */
   const handleEdit = (ipAddress) => {
     console.log(ipAddress);
     ipCameraEdit = ipCameras.find(
@@ -247,6 +262,10 @@ export default function IPCameraRegistration() {
     setSafety_Goggles(ipCameraEdit.Safety_Goggles);
   };
 
+  /**
+   * @function responsible for deleting the IP Camera details and field from firestore and realtime database
+   * @param {*} ipAddress
+   */
   const handleDelete = (ipAddress) => {
     console.log(ipAddress);
     user.ref
@@ -556,6 +575,12 @@ export default function IPCameraRegistration() {
   );
 }
 
+/**
+ * @function responsible for updating IP Camera address field in RDB for social distancing and PPE Alerts
+ * @param {*} user
+ * @param {*} IPAddress
+ * @param {*} ipAddress
+ */
 function updateToRDB(user, IPAddress, ipAddress) {
   rdb
     .ref(`/SocialDistancing/${user.id}/${IPAddress}`)
@@ -584,7 +609,12 @@ function updateToRDB(user, IPAddress, ipAddress) {
         });
     });
 }
-
+/**
+ * @function responsible for deleting IP Camera address field in RDB for social distancing and PPE Alerts
+ * @param {*} ipAddress
+ * @param {*} user
+ * @param {*} setOpen
+ */
 function deleteFromRDB(ipAddress, user, setOpen) {
   const IPAddress = ipAddress.replace(/\./g, "_");
   rdb
@@ -617,6 +647,12 @@ function deleteFromRDB(ipAddress, user, setOpen) {
     });
 }
 
+/**
+ * @function responsible for creating IP Camera address field in RDB for social distancing and PPE Alerts
+ * @param {*} ipAddress
+ * @param {*} user
+ * @param {*} setOpen
+ */
 function writeToRDB(user, ipCameraInfo, setOpen) {
   const IPAddress = ipCameraInfo.IPAddress.replace(/\./g, "_");
   rdb

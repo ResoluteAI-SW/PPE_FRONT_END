@@ -39,6 +39,11 @@ const useStyles = makeStyles({
 
 var reverseTempList = [];
 
+/**
+ * @Component responsible for displaying the social distancing stream
+ * and the latest social distancing violation
+ * @param {*} props
+ */
 export default function StreamUpdates(props) {
   const classes = useStyles();
   const user = useContext(UserContext);
@@ -46,6 +51,9 @@ export default function StreamUpdates(props) {
   const [showCompleteLogs, setShowCompleteLogs] = useState(false);
   const [frame, setFrame] = useState("");
 
+  /**
+   * @function responsible for fetching the latest social distancing violation
+   */
   useEffect(() => {
     const IPAddress = props.IPAddress.toString().replace(/\./g, "_");
     // let socket = new WebSocket(
@@ -91,6 +99,9 @@ export default function StreamUpdates(props) {
       });
   }, []);
 
+  /**
+   * @function responsible for dispalying the complete logs for that particular IP Camera
+   */
   if (showCompleteLogs) {
     return (
       <Logs

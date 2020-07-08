@@ -5,6 +5,10 @@ import { UserContext } from "../AdminDashboard";
 import "react-circular-progressbar/dist/styles.css";
 import CustomCircularProgressbar from "./CircularProgressBar";
 
+/**
+ * @Component responsible for displaying detailed analytics of that particular place for PPE
+ * violations
+ */
 export default function StreamUpdates(props) {
   const user = useContext(UserContext);
   const [totalPeople, setTotalPeople] = useState(15);
@@ -15,6 +19,9 @@ export default function StreamUpdates(props) {
   const [safetyGoggles, setSafetyGoggles] = useState(0);
   const [masks, setMasks] = useState(0);
 
+  /**
+   * @function responsible for fetcing and updating the analytics of particular IP Camera
+   */
   useEffect(() => {
     const IPAddress = props.IPAddress.toString().replace(/\./g, "_");
 

@@ -64,6 +64,10 @@ const videoConstraints = {
 var severity = "success";
 var message = "IP Camera successfully registered";
 
+/**
+ * @Component responsible for displaying add profiles of employeess section
+ */
+
 export default function AddProfile() {
   const adminDoc = useContext(UserContext);
   const [name, setName] = useState("");
@@ -75,6 +79,11 @@ export default function AddProfile() {
   const [open, setOpen] = React.useState(false);
   const [retrainedPersons, setRetrainedPersons] = useState(0);
   const classes = useStyles();
+
+  /**
+   * @Component responsible for Webcam Window to capture the photos and display the thumbnails
+   * of captured photos
+   */
 
   const WebcamCapture = () => {
     const webcamRef = React.useRef(null);
@@ -132,6 +141,11 @@ export default function AddProfile() {
     );
   };
 
+  /**
+   * @Component responsible for submitting the profile information filled in the form
+   * to store into firebase and also post it to the backend
+   * @param {*} e
+   */
   const submitProfileInfo = (e) => {
     e.preventDefault();
     const persons_registered = parseInt(adminDoc.data().persons_registered) + 1;
@@ -215,6 +229,10 @@ export default function AddProfile() {
     setOpen(false);
   };
 
+  /**
+   * @function responsible for resetting the details filled in the form
+   * @param {*} e
+   */
   const handleReset = (e) => {
     e.preventDefault();
     var confirmAns = window.confirm("Are you sure you want to reset?");
@@ -228,15 +246,28 @@ export default function AddProfile() {
     console.log("pressed reset");
   };
 
+  /**
+   * @function responsible for determining the count of retrained persons,
+   * determining if admin should be allowed to add profiles without retraining
+   */
+
   useEffect(() => {
     adminDoc.ref.onSnapshot((doc) => {
       setRetrainedPersons(doc.data().persons_not_retrained);
     });
   });
 
+  /**
+   * in case if persons not retrained threshold is passed, don't allow the admin to register more profiles.
+   */
+
   if (retrainedPersons > 1) {
     return <RetrainUsers />;
   }
+
+  /**
+   * if the persons not retrained numbers still in limit, display the webcam and form component
+   */
 
   return (
     <Grid container component="main">

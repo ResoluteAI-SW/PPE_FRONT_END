@@ -34,11 +34,18 @@ const useStyles = makeStyles({
   },
 });
 
+/**
+ * @Component responsible for displaying the PPE Alert reports
+ */
+
 export default function PPEAlertReports() {
   const user = useContext(UserContext);
   const classes = useStyles();
   const [logs, setLogs] = useState([]);
 
+  /**
+   * @function responsible for fetching the PPE alert reports from Realtime database
+   */
   useEffect(() => {
     user.ref.collection("ipCameras").onSnapshot((querySnapshot) => {
       querySnapshot.forEach((doc) => {

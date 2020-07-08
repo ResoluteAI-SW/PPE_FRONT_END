@@ -52,12 +52,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * @Component responsible for displaying Social distancing logs for that particular
+ * IP Camera
+ * @param {*} props
+ */
 export default function AttendanceReports(props) {
   const classes = useStyles();
 
   const userDoc = useContext(UserContext);
   const [logs, setLogs] = useState([]);
 
+  /**
+   * @function responsible for fetching the social distancing logs from RDB
+   */
   useEffect(() => {
     const IPAddress = props.IPAddress.toString().replace(/\./g, "_");
     rdb

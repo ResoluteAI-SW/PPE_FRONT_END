@@ -87,7 +87,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Settings(props) {
+/**
+ * @Component responsible for displaying navigation bar to navigate between Attendance marking
+ * and PPE alert reports
+ * @param {*} props
+ */
+
+export default function NavigationReports(props) {
   const classes = useStyles();
   const [title, setTitle] = React.useState("Attendance Reports");
   const mainListItems = ["PPE Alert Reports", "Attendance Reports"];
@@ -118,6 +124,10 @@ export default function Settings(props) {
   );
 }
 
+/**
+ * @Component repsonsible for rendering the child component
+ * @param {*} props
+ */
 function RenderComponent(props) {
   const componentMap = {
     "PPE Alert Reports": <PPEAlertReports />,

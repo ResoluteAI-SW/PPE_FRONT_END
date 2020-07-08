@@ -51,12 +51,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * @Component responsible for displaying attendance marking and stream side by side
+ */
+
 export default function AttendanceReports(props) {
   const classes = useStyles();
 
   const userDoc = useContext(UserContext);
   const [attendanceReports, setAttendanceReports] = useState([]);
 
+  /**
+   * @function responsible for getting the attendance reports
+   */
   useEffect(() => {
     // let socket = new WebSocket(
     //   "wss://facegenie.co/ws/responser/192.168.29.126/"
