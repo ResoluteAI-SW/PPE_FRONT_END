@@ -595,6 +595,7 @@ function updateToRDB(user, IPAddress, ipAddress) {
           rdb.ref(`/SocialDistancing/${user.id}/${newIPAddress}`).set(obj);
         });
     });
+  // add catch case also
   rdb
     .ref(`/PPE_Alerts/${user.id}/${IPAddress}`)
     .once("value")

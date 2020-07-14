@@ -333,6 +333,14 @@ export default function AdminDashboard(props) {
                 // establishing connection for each socket.
                 obj.socket.onmessage = function (data) {
                   const dataJSON = JSON.parse(data.data);
+                  /**
+                   * dataJSON = {
+                   *  message:{
+                   *  frame:"data;image/jpegnmfocewmfioewmowq",
+                   * type:"error"
+                   * }
+                   * }
+                   */
                   setFrame(dataJSON.message.frame);
                   // if the message type is social distancing,
                   // set the social distancing frame to state variable.
@@ -505,6 +513,13 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
   console.log("JSON parsed data: ", obj);
   if (obj.message.type === "attendance_tracking") {
     // if response message is of type attendance_tracking
+    /**
+     * message:{
+     * users:["1","mask"],
+     * users:["2","no_mask"],
+     *
+     * }
+     */
     const usersDetected = obj.message.users;
     for (let i = 0; i < usersDetected.length; i++) {
       // console.log("looping inside users");
@@ -644,6 +659,11 @@ function processResponse(data, persons, todayDate, userDoc, IPCamera) {
       .catch((err) => console.log("error in PPE Alerts :: ", err));
   } else if (obj.message.type === "social_distancing") {
     // if response message is of type social_distancing
+    /**
+     * message:{
+     *  grid:[1,2,3,4],
+     * }
+     */
     console.log("Social distancing response: ");
     console.log(obj.message);
     if (obj.message.grid.length > 0) {

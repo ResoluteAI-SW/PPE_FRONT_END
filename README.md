@@ -29,3 +29,7 @@ https://fg003fe.web.app/
 # Front end DOM Tree:
 
 ![DOM Tree structure](https://i.ibb.co/XYsVXxz/sss-Page-2.png)
+
+# Backend No SQL Firebase data structure:
+
+![Firebase structure](https://i.ibb.co/VvM4pT2/er-1.png)
