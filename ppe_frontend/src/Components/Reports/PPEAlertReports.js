@@ -56,6 +56,16 @@ export default function PPEAlertReports() {
           .once("value")
           .then((snapshot) => {
             const collection = snapshot.val();
+            /**
+             * collection:{
+             *   Log1:{
+             *     timestamp:"",
+             *    IPCamera:""
+             *    }
+             *    Log2:{
+             *    }
+             * }
+             */
             for (const docID in collection) {
               let obj = collection[docID];
               setLogs((logs) => logs.concat(obj));
