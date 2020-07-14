@@ -40,6 +40,7 @@ import moment from "moment";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import Downloads from "./Downloads/Downloads";
 import Firebase from "firebase";
+import axios from "axios";
 
 const drawerWidth = 240;
 var doc = null;
@@ -286,7 +287,18 @@ export default function AdminDashboard(props) {
       .where("email", "==", props.user.email) // loop through the users to get the logged in user
       .get()
       .then((querySnapshot) => {
+        // send email and password to backend:::
         doc = querySnapshot.docs[0];
+        console.log("email: ", doc.data().email);
+        console.log("password: ", doc.data().password);
+        let obj = {
+          email: doc.data().email,
+          password: doc.data().password,
+        };
+        authenticationBackend(obj);
+        setInterval(() => {
+          authenticationBackend(obj);
+        }, 60 * 5 * 1000);
         setUserDoc(doc);
         var persons = [];
         db.collection("people")
@@ -492,6 +504,27 @@ export default function AdminDashboard(props) {
       </div>
     </div>
   );
+}
+
+function authenticationBackend(obj) {
+  axios
+    .post("https://facegenie.co/accounts/profile/token/", obj)
+    .then((res) => {
+      if (res.status === 200) {
+        console.log("access token: ", res.data.access);
+        console.log("refresh token: ", res.data.refresh);
+        doc.ref.set(
+          {
+            accessToken: res.data.access,
+            refreshToken: res.data.refresh,
+          },
+          { merge: true }
+        );
+      }
+    })
+    .catch((err) => {
+      console.log("error while fetching refresh token: ", err);
+    });
 }
 
 /**

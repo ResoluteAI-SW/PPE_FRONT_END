@@ -101,6 +101,9 @@ export default function IPCameraRegistration() {
    * @function responsible for loading all the ip cameras
    */
   useEffect(() => {
+    // user.ref.onSnapshot((doc) => {
+    //   console.log(doc.data().accessToken);
+    // });
     user.ref.collection("ipCameras").onSnapshot((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         ipCamerasTemp.push(doc.data());

@@ -80,6 +80,11 @@ export default function AddProfile() {
   const [retrainedPersons, setRetrainedPersons] = useState(0);
   const classes = useStyles();
 
+  let accessToken = null;
+  adminDoc.ref.onSnapshot((doc) => {
+    accessToken = doc.data().accessToken;
+  });
+
   /**
    * @Component responsible for Webcam Window to capture the photos and display the thumbnails
    * of captured photos
@@ -147,6 +152,7 @@ export default function AddProfile() {
    * @param {*} e
    */
   const submitProfileInfo = (e) => {
+    console.log("access token at add profile: ", accessToken);
     e.preventDefault();
     const persons_registered = parseInt(adminDoc.data().persons_registered) + 1;
     const persons_not_retrained =
@@ -163,7 +169,10 @@ export default function AddProfile() {
     };
     var form = new FormData();
     const config = {
-      headers: { "content-type": "multipart/form-data" },
+      headers: {
+        "content-type": "multipart/form-data",
+        Authorization: `Bearer ${accessToken}`,
+      },
     };
     form.append("Front_Face", images[0]);
     form.append("Bottom_Face", images[1]);
@@ -198,6 +207,13 @@ export default function AddProfile() {
                   setBlocked(false);
                   setHashtag("");
                   setImages([]);
+                } else if (res.status === 401) {
+                  console.log("invalid access token, have to generate again!!");
+                  let obj = {
+                    email: doc.data().email,
+                    password: doc.data().password,
+                  };
+                  authenticationBackend(adminDoc, obj);
                 }
               })
               .catch((err) => {
@@ -441,4 +457,25 @@ export default function AddProfile() {
       </Snackbar>
     </Grid>
   );
+}
+
+function authenticationBackend(adminDoc, obj) {
+  axios
+    .post("https://facegenie.co/accounts/profile/token/", obj)
+    .then((res) => {
+      if (res.status === 200) {
+        // console.log("access token: ", res.data.access);
+        // console.log("refresh token: ", res.data.refresh);
+        adminDoc.ref.set(
+          {
+            accessToken: res.data.access,
+            refreshToken: res.data.refresh,
+          },
+          { merge: true }
+        );
+      }
+    })
+    .catch((err) => {
+      console.log("error while fetching refresh token: ", err);
+    });
 }

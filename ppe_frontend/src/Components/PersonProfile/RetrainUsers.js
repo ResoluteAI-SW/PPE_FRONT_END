@@ -9,9 +9,17 @@ import { UserContext } from "../AdminDashboard";
  */
 export default function RetrainUsers() {
   const userDoc = useContext(UserContext);
-
+  let accessToken = null;
+  userDoc.ref.onSnapshot((doc) => {
+    accessToken = doc.data().accessToken;
+  });
   const handleRetrain = () => {
-    axios.get("https://facegenie.co/recog/retrain").then((res) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    axios.get("https://facegenie.co/recog/retrain", config).then((res) => {
       if (res.status === 200) {
         userDoc.ref.set(
           {
@@ -19,6 +27,12 @@ export default function RetrainUsers() {
           },
           { merge: true }
         );
+      } else if (res.status === 401) {
+        let obj = {
+          email: userDoc.data().email,
+          password: userDoc.data().password,
+        };
+        authenticationBackend(userDoc, obj);
       }
     });
   };
@@ -43,4 +57,25 @@ export default function RetrainUsers() {
       </Button>
     </div>
   );
+}
+
+function authenticationBackend(adminDoc, obj) {
+  axios
+    .post("https://facegenie.co/accounts/profile/token/", obj)
+    .then((res) => {
+      if (res.status === 200) {
+        // console.log("access token: ", res.data.access);
+        // console.log("refresh token: ", res.data.refresh);
+        adminDoc.ref.set(
+          {
+            accessToken: res.data.access,
+            refreshToken: res.data.refresh,
+          },
+          { merge: true }
+        );
+      }
+    })
+    .catch((err) => {
+      console.log("error while fetching refresh token: ", err);
+    });
 }
