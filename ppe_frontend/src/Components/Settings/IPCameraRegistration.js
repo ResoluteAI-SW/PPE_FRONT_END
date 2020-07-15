@@ -23,6 +23,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { UserContext } from "../AdminDashboard";
 import { rdb } from "../../FirebaseConfig";
+import axios from "axios";
 
 const colorHashtags = ["entry", "exit", "lab", "lobby"];
 
@@ -95,7 +96,15 @@ export default function IPCameraRegistration() {
   const [headgear, setHeadgear] = useState(false);
   const [mask, setMask] = useState(false);
   const [safety_goggles, setSafety_Goggles] = useState(false);
+  const [PPETracking, setPPETracking] = useState(false);
+  const [AttendanceMarking, setAttendanceMarking] = useState(false);
+  const [SocialDistancing, setSocialDistancing] = useState(false);
   const user = useContext(UserContext);
+
+  let accessToken = null;
+  user.ref.onSnapshot((doc) => {
+    accessToken = doc.data().accessToken;
+  });
 
   /**
    * @function responsible for loading all the ip cameras
@@ -157,6 +166,9 @@ export default function IPCameraRegistration() {
                       Headgear: headgear,
                       Mask: mask,
                       Safety_Goggles: safety_goggles,
+                      PPETracking: PPETracking,
+                      AttendanceMarking: AttendanceMarking,
+                      SocialDistancing: SocialDistancing,
                     },
                     { merge: true }
                   )
@@ -180,6 +192,9 @@ export default function IPCameraRegistration() {
                     setHeadgear(false);
                     setMask(false);
                     setSafety_Goggles(false);
+                    setPPETracking(false);
+                    setAttendanceMarking(false);
+                    setSocialDistancing(false);
                     setOpen(true);
                   })
                   .catch((err) => {
@@ -204,31 +219,64 @@ export default function IPCameraRegistration() {
         Headgear: headgear,
         Mask: mask,
         Safety_Goggles: safety_goggles,
+        PPETracking: PPETracking,
+        AttendanceMarking: AttendanceMarking,
+        SocialDistancing: SocialDistancing,
       };
-      user.ref
-        .collection("ipCameras")
-        .add(ipCameraInfo)
-        .then((doc) => {
-          if (doc.id) {
-            writeToRDB(user, ipCameraInfo, setOpen);
-            severity = "success";
-            message = "IP Camera details successfully submitted";
-            setUsername("");
-            setPassword("");
-            setHashtag("");
-            setIPAddress("");
-            setPlaceInstalled("");
-            setBody_Suit(false);
-            setBoots(false);
-            setGloves(false);
-            setHeadgear(false);
-            setMask(false);
-            setSafety_Goggles(false);
-            setOpen(true);
+      let ipCameraBackend = {
+        IPAddress: ipAddress,
+        PPETracking: PPETracking,
+        AttendanceMarking: AttendanceMarking,
+        SocialDistancing: SocialDistancing,
+      };
+      const config = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+      axios
+        .post(
+          "https://facegenie.co/recog/ip/register/",
+          ipCameraBackend,
+          config
+        )
+        .then((res) => {
+          if (res.status === 200) {
+            user.ref
+              .collection("ipCameras")
+              .add(ipCameraInfo)
+              .then((doc) => {
+                if (doc.id) {
+                  writeToRDB(user, ipCameraInfo, setOpen);
+                  severity = "success";
+                  message = "IP Camera details successfully submitted";
+                  setUsername("");
+                  setPassword("");
+                  setHashtag("");
+                  setIPAddress("");
+                  setPlaceInstalled("");
+                  setBody_Suit(false);
+                  setBoots(false);
+                  setGloves(false);
+                  setHeadgear(false);
+                  setMask(false);
+                  setSafety_Goggles(false);
+                  setPPETracking(false);
+                  setAttendanceMarking(false);
+                  setSocialDistancing(false);
+                  setOpen(true);
+                }
+              })
+              .catch((err) => {
+                console.log(err);
+                severity = "error";
+                message = err.message;
+                setOpen(true);
+              });
           }
         })
         .catch((err) => {
-          console.log(err);
+          console.log("ERROR WHILE SAVING DATA TO DJANGO BACKEND", err);
           severity = "error";
           message = err.message;
           setOpen(true);
@@ -263,6 +311,9 @@ export default function IPCameraRegistration() {
     setHeadgear(ipCameraEdit.Headgear);
     setMask(ipCameraEdit.Mask);
     setSafety_Goggles(ipCameraEdit.Safety_Goggles);
+    setAttendanceMarking(ipCameraEdit.AttendanceMarking);
+    setSocialDistancing(ipCameraEdit.SocialDistancing);
+    setPPETracking(ipCameraEdit.PPETracking);
   };
 
   /**
@@ -418,6 +469,7 @@ export default function IPCameraRegistration() {
                 style={{
                   display: "flex",
                   justifyContent: "space-evenly",
+                  marginTop: 10,
                 }}
               >
                 <FormControlLabel
@@ -425,12 +477,12 @@ export default function IPCameraRegistration() {
                     <Checkbox
                       value="remember"
                       color="primary"
-                      onChange={(e) => setBody_Suit(e.target.checked)}
-                      checked={body_suit}
+                      onChange={(e) => setPPETracking(e.target.checked)}
+                      checked={PPETracking}
                     />
                   }
-                  label="Body Suit"
-                  value={body_suit}
+                  label="PPE Tracking"
+                  value={PPETracking}
                   color="black"
                 />
                 <FormControlLabel
@@ -438,12 +490,12 @@ export default function IPCameraRegistration() {
                     <Checkbox
                       value="remember"
                       color="primary"
-                      onChange={(e) => setBoots(e.target.checked)}
-                      checked={boots}
+                      onChange={(e) => setAttendanceMarking(e.target.checked)}
+                      checked={AttendanceMarking}
                     />
                   }
-                  label="Boots"
-                  value={boots}
+                  label="Attendance Marking"
+                  value={AttendanceMarking}
                   color="black"
                 />
                 <FormControlLabel
@@ -451,56 +503,107 @@ export default function IPCameraRegistration() {
                     <Checkbox
                       value="remember"
                       color="primary"
-                      onChange={(e) => setGloves(e.target.checked)}
-                      checked={gloves}
+                      onChange={(e) => setSocialDistancing(e.target.checked)}
+                      checked={SocialDistancing}
                     />
                   }
-                  label="Gloves"
-                  value={gloves}
-                  color="black"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      value="remember"
-                      color="primary"
-                      onChange={(e) => setHeadgear(e.target.checked)}
-                      checked={headgear}
-                    />
-                  }
-                  label="Headgear"
-                  value={headgear}
+                  label="Social Distancing"
+                  value={SocialDistancing}
                   color="black"
                 />
               </div>
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      value="remember"
-                      color="primary"
-                      onChange={(e) => setMask(e.target.checked)}
-                      checked={mask}
+              {PPETracking ? (
+                <div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-evenly",
+                    }}
+                  >
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          value="remember"
+                          color="primary"
+                          onChange={(e) => setBody_Suit(e.target.checked)}
+                          checked={body_suit}
+                        />
+                      }
+                      label="Body Suit"
+                      value={body_suit}
+                      color="black"
                     />
-                  }
-                  label="Mask"
-                  value={mask}
-                  color="black"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      value="remember"
-                      color="primary"
-                      onChange={(e) => setSafety_Goggles(e.target.checked)}
-                      checked={safety_goggles}
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          value="remember"
+                          color="primary"
+                          onChange={(e) => setBoots(e.target.checked)}
+                          checked={boots}
+                        />
+                      }
+                      label="Boots"
+                      value={boots}
+                      color="black"
                     />
-                  }
-                  label="Safety Goggles"
-                  value={safety_goggles}
-                  color="black"
-                />
-              </div>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          value="remember"
+                          color="primary"
+                          onChange={(e) => setGloves(e.target.checked)}
+                          checked={gloves}
+                        />
+                      }
+                      label="Gloves"
+                      value={gloves}
+                      color="black"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          value="remember"
+                          color="primary"
+                          onChange={(e) => setHeadgear(e.target.checked)}
+                          checked={headgear}
+                        />
+                      }
+                      label="Headgear"
+                      value={headgear}
+                      color="black"
+                    />
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          value="remember"
+                          color="primary"
+                          onChange={(e) => setMask(e.target.checked)}
+                          checked={mask}
+                        />
+                      }
+                      label="Mask"
+                      value={mask}
+                      color="black"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          value="remember"
+                          color="primary"
+                          onChange={(e) => setSafety_Goggles(e.target.checked)}
+                          checked={safety_goggles}
+                        />
+                      }
+                      label="Safety Goggles"
+                      value={safety_goggles}
+                      color="black"
+                    />
+                  </div>
+                </div>
+              ) : null}
+
               <Button
                 type="submit"
                 fullWidth

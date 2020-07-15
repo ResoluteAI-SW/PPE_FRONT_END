@@ -322,12 +322,12 @@ export default function AdminDashboard(props) {
                   console.log(
                     `wss://facegenie.co/ws/responser/${
                       doc.data().IPAddress
-                    }/?token=\'${doc1.data().accessToken}\'`
+                    }/?token=${doc1.data().accessToken}`
                   );
                   let socket = new WebSocket(
                     `wss://facegenie.co/ws/responser/${
                       doc.data().IPAddress
-                    }/?token=\'${doc1.data().accessToken}\'`
+                    }/?token=${doc1.data().accessToken}`
                   );
                   let obj = {
                     socket: socket,
@@ -337,7 +337,10 @@ export default function AdminDashboard(props) {
                   // ip camera sockets will be pushed to the list.
                 });
                 ipCamerasSockets.forEach((obj, index) => {
-                  obj.socket.onopen = () => {
+                  obj.socket.onopen = (event) => {
+                    console.log("ON OPEN: ----");
+                    console.log("event: ", event);
+                    console.log("event code: ", event.code);
                     console.log(
                       "Connection Established on socket: ",
                       obj.IPCamera.IPAddress
@@ -373,7 +376,7 @@ export default function AdminDashboard(props) {
                     if (dataJSON.message.type === "error") {
                       console.log(
                         "socket closed due to message type error: ",
-                        dataJSON.message.type
+                        dataJSON.message
                       );
                       obj.socket.close();
                       setTimeout(() => {
@@ -403,11 +406,14 @@ export default function AdminDashboard(props) {
                     obj.socket.send("send");
                   };
                   // process the data incoming on that channel
-                  obj.socket.onclose = function (data) {
+                  obj.socket.onclose = function (event) {
+                    console.log("ON OPEN: ----");
+                    console.log("event: ", event);
+                    console.log("event code: ", event.code);
                     console.log("onclose");
-                    console.log(data);
+                    // console.log(data);
                     obj.socket.onerror = function (data) {
-                      console.log("error");
+                      console.log("error on socket: ");
                       console.log(data);
                     };
                   };
