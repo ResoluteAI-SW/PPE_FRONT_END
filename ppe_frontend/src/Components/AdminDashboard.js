@@ -313,92 +313,106 @@ export default function AdminDashboard(props) {
             })
           )
           .then(() => {
-            let ipCamerasSockets = []; // ip cameras sockets
-            const todayDate = moment().format("DD MMM YYYY");
-            doc.ref.collection("ipCameras").onSnapshot((querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                //here doc contains all the ip camera details such as IP Address and the configurations
-                console.log(
-                  `wss://facegenie.co/ws/responser/${doc.data().IPAddress}/`
-                );
-                let socket = new WebSocket(
-                  `wss://facegenie.co/ws/responser/${doc.data().IPAddress}/`
-                );
-                let obj = {
-                  socket: socket,
-                  IPCamera: doc.data(),
-                };
-                ipCamerasSockets = ipCamerasSockets.concat(obj);
-                // ip camera sockets will be pushed to the list.
-              });
-              ipCamerasSockets.forEach((obj, index) => {
-                obj.socket.onopen = () => {
+            doc.ref.onSnapshot((doc1) => {
+              let ipCamerasSockets = []; // ip cameras sockets
+              const todayDate = moment().format("DD MMM YYYY");
+              doc.ref.collection("ipCameras").onSnapshot((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                  //here doc contains all the ip camera details such as IP Address and the configurations
                   console.log(
-                    "Connection Established on socket: ",
-                    obj.IPCamera.IPAddress
+                    `wss://facegenie.co/ws/responser/${
+                      doc.data().IPAddress
+                    }/?token=\'${doc1.data().accessToken}\'`
                   );
-                  // as soon as connection established, request the backend to send data
-                  // by sending "send"
-                  obj.socket.send("send");
-                  // should be changed later
-                };
-                // establishing connection for each socket.
-                obj.socket.onmessage = function (data) {
-                  const dataJSON = JSON.parse(data.data);
-                  /**
-                   * dataJSON = {
-                   *  message:{
-                   *  frame:"data;image/jpegnmfocewmfioewmowq",
-                   * type:"error"
-                   * }
-                   * }
-                   */
-                  setFrame(dataJSON.message.frame);
-                  // if the message type is social distancing,
-                  // set the social distancing frame to state variable.
-                  if (dataJSON.message.type === "social_distancing") {
-                    console.log("::::::::::::social distancing frame:::::::::");
-                    setSocialDistancingFrame(dataJSON.message.frame);
-                    console.log("frame: ", dataJSON.message.frame);
-                  }
-                  // if camera not found error, socket connection closes
-                  // after every 15 seconds, try connecting that particular socket again
-                  if (dataJSON.message.type === "error") {
-                    console.log(
-                      "socket closed due to message type error: ",
-                      dataJSON.message.type
-                    );
-                    obj.socket.close();
-                    setTimeout(() => {
-                      let socket = new WebSocket(
-                        `wss://facegenie.co/ws/responser/${obj.IPCamera.IPAddress}/`
-                      );
-                      ipCamerasSockets[index] = socket;
-                      ipCamerasSockets[index].onopen = () => {
-                        console.log(
-                          "Connection Established on socket: ",
-                          obj.IPCamera.IPAddress
-                        );
-                        obj.socket.send("send");
-                        // should be changed later
-                      };
-                      // insert socket.onMessage here.???
-                    }, 15000);
-                  }
-                  // process the response from backend and save it to firebase
-                  processResponse(data, persons, todayDate, doc, obj.IPCamera);
-                  obj.socket.send("send");
-                };
-                // process the data incoming on that channel
-                obj.socket.onclose = function (data) {
-                  console.log("onclose");
-                  console.log(data);
-                  obj.socket.onerror = function (data) {
-                    console.log("error");
-                    console.log(data);
+                  let socket = new WebSocket(
+                    `wss://facegenie.co/ws/responser/${
+                      doc.data().IPAddress
+                    }/?token=\'${doc1.data().accessToken}\'`
+                  );
+                  let obj = {
+                    socket: socket,
+                    IPCamera: doc.data(),
                   };
-                };
-                // closing and error while connecting of the sockets handled
+                  ipCamerasSockets = ipCamerasSockets.concat(obj);
+                  // ip camera sockets will be pushed to the list.
+                });
+                ipCamerasSockets.forEach((obj, index) => {
+                  obj.socket.onopen = () => {
+                    console.log(
+                      "Connection Established on socket: ",
+                      obj.IPCamera.IPAddress
+                    );
+                    // as soon as connection established, request the backend to send data
+                    // by sending "send"
+                    obj.socket.send("send");
+                    // should be changed later
+                  };
+                  // establishing connection for each socket.
+                  obj.socket.onmessage = function (data) {
+                    const dataJSON = JSON.parse(data.data);
+                    /**
+                     * dataJSON = {
+                     *  message:{
+                     *  frame:"data;image/jpegnmfocewmfioewmowq",
+                     * type:"error"
+                     * }
+                     * }
+                     */
+                    setFrame(dataJSON.message.frame);
+                    // if the message type is social distancing,
+                    // set the social distancing frame to state variable.
+                    if (dataJSON.message.type === "social_distancing") {
+                      console.log(
+                        "::::::::::::social distancing frame:::::::::"
+                      );
+                      setSocialDistancingFrame(dataJSON.message.frame);
+                      console.log("frame: ", dataJSON.message.frame);
+                    }
+                    // if camera not found error, socket connection closes
+                    // after every 15 seconds, try connecting that particular socket again
+                    if (dataJSON.message.type === "error") {
+                      console.log(
+                        "socket closed due to message type error: ",
+                        dataJSON.message.type
+                      );
+                      obj.socket.close();
+                      setTimeout(() => {
+                        let socket = new WebSocket(
+                          `wss://facegenie.co/ws/responser/${obj.IPCamera.IPAddress}/`
+                        );
+                        ipCamerasSockets[index] = socket;
+                        ipCamerasSockets[index].onopen = () => {
+                          console.log(
+                            "Connection Established on socket: ",
+                            obj.IPCamera.IPAddress
+                          );
+                          obj.socket.send("send");
+                          // should be changed later
+                        };
+                        // insert socket.onMessage here.???
+                      }, 15000);
+                    }
+                    // process the response from backend and save it to firebase
+                    processResponse(
+                      data,
+                      persons,
+                      todayDate,
+                      doc,
+                      obj.IPCamera
+                    );
+                    obj.socket.send("send");
+                  };
+                  // process the data incoming on that channel
+                  obj.socket.onclose = function (data) {
+                    console.log("onclose");
+                    console.log(data);
+                    obj.socket.onerror = function (data) {
+                      console.log("error");
+                      console.log(data);
+                    };
+                  };
+                  // closing and error while connecting of the sockets handled
+                });
               });
             });
           })

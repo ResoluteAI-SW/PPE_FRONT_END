@@ -19,22 +19,27 @@ export default function RetrainUsers() {
         Authorization: `Bearer ${accessToken}`,
       },
     };
-    axios.get("https://facegenie.co/recog/retrain", config).then((res) => {
-      if (res.status === 200) {
-        userDoc.ref.set(
-          {
-            persons_not_retrained: 0,
-          },
-          { merge: true }
-        );
-      } else if (res.status === 401) {
-        let obj = {
-          email: userDoc.data().email,
-          password: userDoc.data().password,
-        };
-        authenticationBackend(userDoc, obj);
-      }
-    });
+    axios
+      .get("https://facegenie.co/recog/retrain", config)
+      .then((res) => {
+        if (res.status === 200) {
+          userDoc.ref.set(
+            {
+              persons_not_retrained: 0,
+            },
+            { merge: true }
+          );
+        } else if (res.status === 401) {
+          let obj = {
+            email: userDoc.data().email,
+            password: userDoc.data().password,
+          };
+          authenticationBackend(userDoc, obj);
+        }
+      })
+      .catch((err) => {
+        console.log("error while retraining:: ", err);
+      });
   };
 
   return (
