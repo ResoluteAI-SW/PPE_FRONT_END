@@ -770,6 +770,12 @@ const theme = createMuiTheme({
     contrastThreshold: 3,
     tonalOffset: 0.2,
   },
+  typography: {
+    fontFamily: 'Poppins, Roboto, sans-serif',
+    button: {
+      textTransform: 'none',
+    },
+  }
 });
 
 export const UserContext = createContext();
@@ -796,7 +802,7 @@ export default function AdminDashboard(props) {
         >
           <Tooltip title="Register Employees" placement="right-start" arrow>
             <ListItemIcon>
-              <PersonAddTwoToneIcon  />
+              <PersonAddTwoToneIcon />
             </ListItemIcon>
           </Tooltip>
           <ListItemText primary="Register Employees" />
@@ -810,7 +816,7 @@ export default function AdminDashboard(props) {
         >
           <Tooltip title="PPE Tracking" placement="right-start" arrow>
             <ListItemIcon>
-              <TrackChangesTwoToneIcon  />
+              <TrackChangesTwoToneIcon />
             </ListItemIcon>
           </Tooltip>
           <ListItemText primary="PPE Tracking" />
@@ -824,25 +830,12 @@ export default function AdminDashboard(props) {
         >
           <Tooltip title="Reports" placement="right-start" arrow>
             <ListItemIcon>
-              <AssessmentIcon  />
+              <AssessmentIcon />
             </ListItemIcon>
           </Tooltip>
           <ListItemText primary="Reports" />
         </StyledListItem>
-        <StyledListItem
-          button
-          onClick={() => {
-            setTitle("Configurations");
-          }}
-          selected={title === "Configurations"}
-        >
-          <Tooltip title="Configurations" placement="right-start" arrow>
-            <ListItemIcon>
-              <SettingsTwoToneIcon  />
-            </ListItemIcon>
-          </Tooltip>
-          <ListItemText primary="Configurations" />
-        </StyledListItem>
+
         <StyledListItem
           button
           onClick={() => {
@@ -852,7 +845,7 @@ export default function AdminDashboard(props) {
         >
           <Tooltip title="Social Distancing" placement="right-start" arrow>
             <ListItemIcon>
-              <DoneOutlineTwoToneIcon  />
+              <DoneOutlineTwoToneIcon />
             </ListItemIcon>
           </Tooltip>
           <ListItemText primary="Social Distancing" />
@@ -866,10 +859,24 @@ export default function AdminDashboard(props) {
         >
           <Tooltip title="Downloads" placement="right-start" arrow>
             <ListItemIcon>
-              <GetAppIcon  />
+              <GetAppIcon />
             </ListItemIcon>
           </Tooltip>
           <ListItemText primary="Downloads" />
+        </StyledListItem>
+        <StyledListItem
+          button
+          onClick={() => {
+            setTitle("Configurations");
+          }}
+          selected={title === "Configurations"}
+        >
+          <Tooltip title="Configurations" placement="right-start" arrow>
+            <ListItemIcon>
+              <SettingsTwoToneIcon />
+            </ListItemIcon>
+          </Tooltip>
+          <ListItemText primary="Configurations" />
         </StyledListItem>
       </div>
     </ThemeProvider>
@@ -987,7 +994,7 @@ export default function AdminDashboard(props) {
               <NotificationDropdown />
               <AccountDropdown
                 name={name}
-                handleLogout={handleLogoutDropDown}
+                handleLogout={logout}
               />
             </div>
             {/* </span> */}
@@ -1025,10 +1032,10 @@ export default function AdminDashboard(props) {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxwidth="lg" className={classes.container}>
-             <UserContext.Provider value={userDoc}>
-               <RenderComponent component={title} />
-             </UserContext.Provider>
-           </Container>
+            <UserContext.Provider value={userDoc}>
+              <RenderComponent component={title} />
+            </UserContext.Provider>
+          </Container>
           {/* <Container maxWidth='lg' className={classes.container}>
             <RenderComponent component={title} />
           </Container> */}

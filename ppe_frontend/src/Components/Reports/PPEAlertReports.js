@@ -333,7 +333,7 @@ export default function PPEAlertReports(props) {
 
   return (
     <div >
-      <h1 style={{ marginBottom: "2%", marginTop: "2%" }}>Employee Profiles</h1>
+      <h1 style={{ marginBottom: "2%", marginTop: "2%" }}>Report Logs</h1>
       <React.Fragment>
         {/* <Grid container style={{ marginBottom: '10px' }}>
           <Grid item xs={6}></Grid>

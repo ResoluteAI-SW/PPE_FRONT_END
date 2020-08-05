@@ -13,16 +13,8 @@ import { withStyles, makeStyles } from "@material-ui/core/styles";
 import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 import moment from "moment";
 import Firebase from "firebase";
-
-const StyledTableCell = withStyles((theme) => ({
-  head: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  body: {
-    fontSize: 14,
-  },
-}))(TableCell);
+import BackIcon from '../placeholders/BackIcon.png'
+import MuiTableCell from '@material-ui/core/TableCell';
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
@@ -37,6 +29,33 @@ const useStyles = makeStyles({
     minWidth: 400,
   },
 });
+
+
+
+
+const useStyles1 = makeStyles((theme) => ({
+  root: {
+    // flexShrink: 0,
+    display: 'flex',
+    width: 270,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+}));
+
+const useRowStyles = makeStyles({
+  root: {
+    '& > *': {
+      borderBottom: 'unset',
+    },
+  },
+});
+
+const StyledTableCell = withStyles({
+  root: {
+    borderBottom: 'none',
+  },
+})(MuiTableCell);
 
 var reverseTempList = [];
 
@@ -116,14 +135,20 @@ export default function StreamUpdates(props) {
 
   return (
     <div>
-      <Button
+      {/* <Button
         variant="contained"
         color="primary"
         onClick={() => props.handleBack()}
       >
         Back to Dashboard
+      </Button> */}
+      <Button
+        startIcon={<img src={BackIcon} />}
+        onClick={() => props.handleBack()}
+      >
+        Go Back
       </Button>
-      <Button color="primary" onClick={generateLogs}>
+      <Button color="primary" onClick={generateLogs} style={{ marginLeft: "10%"}}>
         Generate Logs
       </Button>
       <div
@@ -148,12 +173,12 @@ export default function StreamUpdates(props) {
               <h4>Stream not available currently</h4>
             </div>
           ) : (
-            <img
-              src={frame}
-              alt="Stream not available"
-              style={{ width: 400, height: 500 }}
-            />
-          )}
+              <img
+                src={frame}
+                alt="Stream not available"
+                style={{ width: 400, height: 500 }}
+              />
+            )}
         </div>
         <div
           style={{
@@ -174,7 +199,7 @@ export default function StreamUpdates(props) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {logs.map((row) => (
+                {/* {logs.map((row) => (
                   <StyledTableRow key={logs.id}>
                     <StyledTableCell component="th" scope="row">
                       <img src={row.imgURL} alt="No thumbnail" />
@@ -190,7 +215,134 @@ export default function StreamUpdates(props) {
                       {moment(row.timestamp).format("MMMM Do YYYY, h:mm:ss a")}
                     </StyledTableCell>
                   </StyledTableRow>
-                ))}
+                ))} */}
+                  <StyledTableRow >
+                    <StyledTableCell component="th" scope="row">
+                      <img src='https://picsum.photos/122' alt="No thumbnail" />
+                    </StyledTableCell>
+                    <StyledTableCell component="th" scope="row">
+                      {/* {row.Grid} */}
+                      sample data
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {row.ip} */}
+                      192.168.0.0
+                      </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {row.Hashtag} */}
+                      sample data
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {moment(row.timestamp).format("MMMM Do YYYY, h:mm:ss a")} */}
+                      sample data
+                    </StyledTableCell>
+                  </StyledTableRow>
+                  <StyledTableRow >
+                    <StyledTableCell component="th" scope="row">
+                      <img src='https://picsum.photos/122' alt="No thumbnail" />
+                    </StyledTableCell>
+                    <StyledTableCell component="th" scope="row">
+                      {/* {row.Grid} */}
+                      sample data
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {row.ip} */}
+                      192.168.0.0
+                      </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {row.Hashtag} */}
+                      sample data
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {moment(row.timestamp).format("MMMM Do YYYY, h:mm:ss a")} */}
+                      sample data
+                    </StyledTableCell>
+                  </StyledTableRow>
+                  <StyledTableRow >
+                    <StyledTableCell component="th" scope="row">
+                      <img src='https://picsum.photos/122' alt="No thumbnail" />
+                    </StyledTableCell>
+                    <StyledTableCell component="th" scope="row">
+                      {/* {row.Grid} */}
+                      sample data
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {row.ip} */}
+                      192.168.0.0
+                      </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {row.Hashtag} */}
+                      sample data
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {moment(row.timestamp).format("MMMM Do YYYY, h:mm:ss a")} */}
+                      sample data
+                    </StyledTableCell>
+                  </StyledTableRow>
+                  <StyledTableRow >
+                    <StyledTableCell component="th" scope="row">
+                      <img src='https://picsum.photos/122' alt="No thumbnail" />
+                    </StyledTableCell>
+                    <StyledTableCell component="th" scope="row">
+                      {/* {row.Grid} */}
+                      sample data
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {row.ip} */}
+                      192.168.0.0
+                      </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {row.Hashtag} */}
+                      sample data
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {moment(row.timestamp).format("MMMM Do YYYY, h:mm:ss a")} */}
+                      sample data
+                    </StyledTableCell>
+                  </StyledTableRow>
+                  <StyledTableRow >
+                    <StyledTableCell component="th" scope="row">
+                      <img src='https://picsum.photos/122' alt="No thumbnail" />
+                    </StyledTableCell>
+                    <StyledTableCell component="th" scope="row">
+                      {/* {row.Grid} */}
+                      sample data
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {row.ip} */}
+                      192.168.0.0
+                      </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {row.Hashtag} */}
+                      sample data
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {moment(row.timestamp).format("MMMM Do YYYY, h:mm:ss a")} */}
+                      sample data
+                    </StyledTableCell>
+                  </StyledTableRow>
+                  <StyledTableRow >
+                    <StyledTableCell component="th" scope="row">
+                      <img src='https://picsum.photos/122' alt="No thumbnail" />
+                    </StyledTableCell>
+                    <StyledTableCell component="th" scope="row">
+                      {/* {row.Grid} */}
+                      sample data
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {row.ip} */}
+                      192.168.0.0
+                      </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {row.Hashtag} */}
+                      sample data
+                    </StyledTableCell>
+                    <StyledTableCell align="right">
+                      {/* {moment(row.timestamp).format("MMMM Do YYYY, h:mm:ss a")} */}
+                      sample data
+                    </StyledTableCell>
+                  </StyledTableRow>
+                  
               </TableBody>
             </Table>
             <div

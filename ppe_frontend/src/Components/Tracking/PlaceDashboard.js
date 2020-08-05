@@ -149,7 +149,7 @@ export default function SocialDistancingDashboard() {
 
           <Container className={classes.cardGrid} maxwidth="md">
 
-            <Grid container spacing={4}>
+            <Grid container spacing={4} className="w3-animate-bottom">
               {/* {places.map((card) => ( */}
               <Grid item xs={12} sm={6} md={4}>
                 <Card className={classes.card}>

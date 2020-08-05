@@ -385,7 +385,7 @@ export default function SignInScreen() {
             variant='h5'
             align='center'
             className={classes.heading}
-            style={{ marginBottom: "3%", marginTop: "3%" }}
+            style={{ marginTop: "3%" }}
           >
             <Box>Enter your details to Sign In</Box>
           </Typography>
@@ -417,9 +417,9 @@ export default function SignInScreen() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-               
+
                 {/* <div className="separator">OR</div> */}
-                <Grid container style={{ marginTop: 30 }}>
+                <Grid container style={{ marginTop: "3%" }}>
                   <Grid item xs>
                     <Link href="#" variant="body2">
                       Forgot password?
@@ -456,7 +456,7 @@ export default function SignInScreen() {
           variant='h5'
           align='center'
           className={classes.heading}
-          style={{ marginBottom: "5%" }}
+          style={{ marginBottom: "3%", marginTop: "3%" }}
         >
           <Box>Enter your details to create an account</Box>
         </Typography>
@@ -649,26 +649,26 @@ export default function SignInScreen() {
           <img src={FaceGenieLogo} alt='FaceGenieLogo' />
           <Typography variant='h5'>
             <Box>
-              
-              </Box>
+              PPE Management System
+            </Box>
           </Typography>
           <div className={classes.buttons}>
             <Fragment>
-              <Link to='/'>
+              {/* <Link to='/'>
                 <Button
                   startIcon={<img src={BackIcon} />}
                   className={classes.backButton}
                 >
                   Go Back
                   </Button>
-              </Link>
+              </Link> */}
               <Typography
                 variant='h5'
                 align='center'
                 className={classes.heading}
-                style={{ marginBottom: "3%" }}
+                style={{ marginBottom: "3%", marginTop: "5%" }}
               >
-                <Box fontWeight={800}>Enter your details to Log In</Box>
+                <Box fontWeight={800}>Please Sign In to continue</Box>
               </Typography>
               <Container maxWidth='xl'>
 

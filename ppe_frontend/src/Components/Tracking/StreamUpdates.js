@@ -110,11 +110,14 @@ export default function StreamUpdates(props) {
               title="No Body Suit"
             />
             <CustomCircularProgressbar
-              percentage={(boots / totalPeople) * 100}
+              // percentage={(boots / totalPeople) * 100}
+              percentage={76}
+
               title="No Boots"
             />
             <CustomCircularProgressbar
-              percentage={(gloves / totalPeople) * 100}
+              // percentage={(gloves / totalPeople) * 100}
+              percentage={50}
               title="No Gloves"
             />
           </div>
@@ -127,15 +130,18 @@ export default function StreamUpdates(props) {
             }}
           >
             <CustomCircularProgressbar
-              percentage={(headgear / totalPeople) * 100}
+              // percentage={(headgear / totalPeople) * 100}
+              percentage={30}
               title="No Headgear"
             />
             <CustomCircularProgressbar
-              percentage={(masks / totalPeople) * 100}
+              // percentage={(masks / totalPeople) * 100}
+              percentage={85}
               title="No Mask"
             />
             <CustomCircularProgressbar
-              percentage={(safetyGoggles / totalPeople) * 100}
+              // percentage={(safetyGoggles / totalPeople) * 100}
+              percentage={60}
               title="No Safety Goggles"
             />
           </div>

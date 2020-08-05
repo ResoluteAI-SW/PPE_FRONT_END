@@ -7,28 +7,28 @@ import SignUpScreen from "./Components/Auth/SignupScreen";
 import AdminDashboard from "./Components/AdminDashboard";
 import firebase from "./FirebaseConfig";
 
-const mainTheme = createMuiTheme({
-  palette: {
-    primary: {
-      light: "#9A4749",
-      main: "#F72A1F",
-      dark: "#5A1111",
-    },
-    secondary: {
-      light: "#000000",
-      main: "#FFFFFF",
-      dark: "#000000",
-    },
-  },
-  typography: {
-    htmlFontSize: 17,
-    fontFamily: "Poppins, Raleway, Roboto, sans-serif",
-    fontSize: 15,
-  },
-  shape: {
-    borderRadius: 10,
-  },
-});
+// const mainTheme = createMuiTheme({
+//   palette: {
+//     primary: {
+//       light: "#9A4749",
+//       main: "#F72A1F",
+//       dark: "#5A1111",
+//     },
+//     secondary: {
+//       light: "#000000",
+//       main: "#FFFFFF",
+//       dark: "#000000",
+//     },
+//   },
+//   typography: {
+//     htmlFontSize: 17,
+//     fontFamily: "Poppins, Raleway, Roboto, sans-serif",
+//     fontSize: 15,
+//   },
+//   shape: {
+//     borderRadius: 10,
+//   },
+// });
 
 function App() {
   useEffect(() => {
@@ -43,7 +43,6 @@ function App() {
   }, []);
 
   return (
-    <ThemeProvider theme={mainTheme}>
       <Router>
         <Switch>
           <Route exact path="/" component={SignInScreen} />
@@ -51,7 +50,6 @@ function App() {
           <Route exact path="/dashboard" component={AdminDashboard} />
         </Switch>
       </Router>
-    </ThemeProvider>
   );
 }
 

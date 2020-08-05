@@ -34,11 +34,10 @@ import MuiTableCell from '@material-ui/core/TableCell';
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
-    "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.action.hover,
-    },
+    
   },
 }))(TableRow);
+
 
 const useStyles = makeStyles((theme) => ({
   paper: {
