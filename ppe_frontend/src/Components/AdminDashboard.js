@@ -779,7 +779,7 @@ var doc = null;
 export default function AdminDashboard(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
-  const [title, setTitle] = React.useState('Add Student');
+  const [title, setTitle] = React.useState("Register Employees");
   const [userDoc, setUserDoc] = useState(null);
   const [name, setName] = React.useState(props.admin)
 
@@ -796,7 +796,7 @@ export default function AdminDashboard(props) {
         >
           <Tooltip title="Register Employees" placement="right-start" arrow>
             <ListItemIcon>
-              <PersonAddTwoToneIcon color="primary" />
+              <PersonAddTwoToneIcon  />
             </ListItemIcon>
           </Tooltip>
           <ListItemText primary="Register Employees" />
@@ -810,7 +810,7 @@ export default function AdminDashboard(props) {
         >
           <Tooltip title="PPE Tracking" placement="right-start" arrow>
             <ListItemIcon>
-              <TrackChangesTwoToneIcon color="primary" />
+              <TrackChangesTwoToneIcon  />
             </ListItemIcon>
           </Tooltip>
           <ListItemText primary="PPE Tracking" />
@@ -824,7 +824,7 @@ export default function AdminDashboard(props) {
         >
           <Tooltip title="Reports" placement="right-start" arrow>
             <ListItemIcon>
-              <AssessmentIcon color="primary" />
+              <AssessmentIcon  />
             </ListItemIcon>
           </Tooltip>
           <ListItemText primary="Reports" />
@@ -838,7 +838,7 @@ export default function AdminDashboard(props) {
         >
           <Tooltip title="Configurations" placement="right-start" arrow>
             <ListItemIcon>
-              <SettingsTwoToneIcon color="primary" />
+              <SettingsTwoToneIcon  />
             </ListItemIcon>
           </Tooltip>
           <ListItemText primary="Configurations" />
@@ -852,7 +852,7 @@ export default function AdminDashboard(props) {
         >
           <Tooltip title="Social Distancing" placement="right-start" arrow>
             <ListItemIcon>
-              <DoneOutlineTwoToneIcon color="primary" />
+              <DoneOutlineTwoToneIcon  />
             </ListItemIcon>
           </Tooltip>
           <ListItemText primary="Social Distancing" />
@@ -866,7 +866,7 @@ export default function AdminDashboard(props) {
         >
           <Tooltip title="Downloads" placement="right-start" arrow>
             <ListItemIcon>
-              <GetAppIcon color="primary" />
+              <GetAppIcon  />
             </ListItemIcon>
           </Tooltip>
           <ListItemText primary="Downloads" />
@@ -894,6 +894,8 @@ export default function AdminDashboard(props) {
       .then((querySnapshot) => {
         doc = querySnapshot.docs[0];
         setUserDoc(doc);
+        console.log(doc.data())
+        setName(doc.data().username)
         var persons = [];
         db.collection("people")
           .where("adminEmail", "==", doc.data().email)
@@ -1022,9 +1024,14 @@ export default function AdminDashboard(props) {
         </ThemeProvider>
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
-          <Container maxWidth='lg' className={classes.container}>
+          <Container maxwidth="lg" className={classes.container}>
+             <UserContext.Provider value={userDoc}>
+               <RenderComponent component={title} />
+             </UserContext.Provider>
+           </Container>
+          {/* <Container maxWidth='lg' className={classes.container}>
             <RenderComponent component={title} />
-          </Container>
+          </Container> */}
         </main>
       </div>
     </div>

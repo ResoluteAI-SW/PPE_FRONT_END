@@ -33,8 +33,8 @@ export default function CircularProgressBar(props) {
         animation yourself, you'll want to disable the CSS animation. */
               styles={buildStyles({
                 pathTransition: "none",
-                pathColor: "#9B282A",
-                textColor: "#5A1111",
+                pathColor: "#F72A14",
+                textColor: "#F72A14",
               })}
             />
           );

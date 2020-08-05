@@ -5,6 +5,8 @@ import { UserContext } from "../AdminDashboard";
 import "react-circular-progressbar/dist/styles.css";
 import CustomCircularProgressbar from "./CircularProgressBar";
 
+import BackIcon from '../placeholders/BackIcon.png'
+
 export default function StreamUpdates(props) {
   const user = useContext(UserContext);
   const [totalPeople, setTotalPeople] = useState(15);
@@ -19,7 +21,9 @@ export default function StreamUpdates(props) {
     const IPAddress = props.IPAddress.toString().replace(/\./g, "_");
 
     rdb.ref(`PPE_Alerts/${user.id}/${IPAddress}`).on("value", (snapshot) => {
+     
       const collection = snapshot.val();
+      console.log(collection)
       for (const field in collection) {
         if (field !== "Logs") {
           switch (field) {
@@ -57,13 +61,13 @@ export default function StreamUpdates(props) {
 
   return (
     <div>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => props.handleBack()}
-      >
-        Back to Dashboard
-      </Button>
+                    <Button
+                      startIcon={<img src={BackIcon} />}
+                      onClick={() => props.handleBack()}
+                    >
+                      Go Back
+                  </Button>
+      
       <div
         style={{
           display: "flex",
@@ -101,7 +105,8 @@ export default function StreamUpdates(props) {
             }}
           >
             <CustomCircularProgressbar
-              percentage={(bodySuit / totalPeople) * 100}
+              // percentage={(bodySuit / totalPeople) * 100}
+              percentage={20}
               title="No Body Suit"
             />
             <CustomCircularProgressbar

@@ -143,20 +143,22 @@ export default function SocialDistancingDashboard() {
         <main>
           <Container className={classes.cardGrid} maxwidth="md">
             <Grid container spacing={4}>
-              {places.map((card) => (
-                <Grid item key={card} xs={12} sm={6} md={4}>
+              {/* {places.map((card) => ( */}
+                {/* <Grid item key={card} xs={12} sm={6} md={4}> */}
+                <Grid item xs={12} sm={6} md={4}>
+
                   <Card className={classes.card}>
                     <CardContent className={classes.cardContent}>
                       <Typography gutterBottom variant="h5" component="h2">
-                        {card.Place}
+                        Lab
                       </Typography>
                       <Divider />
                       <Typography variant="overline" style={{ color: "grey" }}>
-                        {card.Hashtag}
+                        #Lab
                       </Typography>
                       <br />
                       <Typography variant="overline" style={{ color: "grey" }}>
-                        {card.IPAddress}
+                        192.168.0.2
                       </Typography>
                     </CardContent>
                     <CardActions>
@@ -164,7 +166,7 @@ export default function SocialDistancingDashboard() {
                         size="small"
                         color="primary"
                         onClick={() => {
-                          setPlaceLogs(card.IPAddress);
+                          setPlaceLogs("192.168.0.2");
                         }}
                       >
                         View
@@ -172,17 +174,18 @@ export default function SocialDistancingDashboard() {
                       <Typography>Status:</Typography>
                       <span
                         className={
-                          card.Status === "Green"
-                            ? classes.greenDot
-                            : card.Status === "Red"
-                            ? classes.redDot
-                            : classes.yellowDot
+                          // card.Status === "Green"
+                          //   ? classes.greenDot
+                          //   : card.Status === "Red"
+                          //   ? classes.redDot
+                            // : classes.yellowDot
+                          classes.yellowDot
                         }
                       ></span>
                     </CardActions>
                   </Card>
                 </Grid>
-              ))}
+              {/* ))} */}
             </Grid>
           </Container>
         </main>

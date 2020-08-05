@@ -3,6 +3,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import AddProfile from "./AddProfile";
 import ViewProfiles from "./ViewProfiles";
+import Button from "@material-ui/core/Button";
+
+import { Tab } from 'semantic-ui-react'
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -68,9 +72,6 @@ const useStyles = makeStyles((theme) => ({
   },
   appBarSpacer: theme.mixins.toolbar,
   content: {
-    flexGrow: 1,
-    height: "100vh",
-    overflow: "auto",
   },
   container: {
     paddingTop: theme.spacing(4),
@@ -92,13 +93,23 @@ export default function NavigationTabs() {
   const [title, setTitle] = React.useState("Add Profile");
   const mainListItems = ["Add Profile", "View Profiles"];
 
+
+
+  const panes = [
+    { menuItem: 'Add Profile', render: () => <Tab.Pane><AddProfile /></Tab.Pane> },
+    { menuItem: 'View Profiles', render: () => <Tab.Pane><ViewProfiles /></Tab.Pane> },
+  ]
+
+  const TabExampleBasic = () => <Tab panes={panes} />
+
+
+
+
   return (
-    <div>
-      <div className={classes.root}>
-        <main className={classes.content}>
-          <div class="w3-bar w3-black w3-animate-top">
+    <div className='w3-animate-bottom'>
+          {/* <div class="w3-bar w3-animate-top" style={{ backgroundColor: "#FFE8E9" }}>
             {mainListItems.map((item) => (
-              <button
+              <Button
                 class="w3-bar-item w3-button"
                 href="#"
                 onClick={() => {
@@ -106,14 +117,13 @@ export default function NavigationTabs() {
                 }}
               >
                 {item}
-              </button>
+              </Button>
             ))}
           </div>
           <Container maxwidth="lg" className={classes.container}>
             <RenderComponent component={title} />
-          </Container>
-        </main>
-      </div>
+          </Container> */}
+            <TabExampleBasic />
     </div>
   );
 }

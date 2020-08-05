@@ -3,6 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import PPEAlertReports from "./PPEAlertReports";
 import AttendanceReports from "./AttendanceReports";
+
+import { Tab } from 'semantic-ui-react'
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -92,36 +95,34 @@ export default function Settings() {
   const [title, setTitle] = React.useState("PPE Alert Reports");
   const mainListItems = ["PPE Alert Reports", "Attendance Reports"];
 
+  const panes = [
+    { menuItem: 'PPE Alert Reports', render: () => <Tab.Pane> <PPEAlertReports /></Tab.Pane> },
+    { menuItem: 'Attendance Reports', render: () => <Tab.Pane><AttendanceReports /></Tab.Pane> },
+  ]
+
+  const TabExampleBasic = () => <Tab panes={panes} />
+
+
   return (
-    <div>
-      <div className={classes.root}>
-        <main className={classes.content}>
-          <div class="w3-bar w3-black w3-animate-top">
-            {mainListItems.map((item) => (
-              <button
-                class="w3-bar-item w3-button"
-                href="#"
-                onClick={() => {
-                  setTitle(item);
-                }}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-          <Container maxwidth="lg" className={classes.container}>
-            <RenderComponent component={title} />
-          </Container>
-        </main>
-      </div>
+    <div className='w3-animate-bottom'>
+      {/* <div class="w3-bar w3-animate-top" style={{ backgroundColor: "#FFE8E9" }}>
+      {mainListItems.map((item) => (
+        <Button
+          class="w3-bar-item w3-button"
+          href="#"
+          onClick={() => {
+            setTitle(item);
+          }}
+        >
+          {item}
+        </Button>
+      ))}
+    </div>
+    <Container maxwidth="lg" className={classes.container}>
+      <RenderComponent component={title} />
+    </Container> */}
+      <TabExampleBasic />
     </div>
   );
 }
 
-function RenderComponent(props) {
-  const componentMap = {
-    "PPE Alert Reports": <PPEAlertReports />,
-    "Attendance Reports": <AttendanceReports />,
-  };
-  return <div>{componentMap[props.component]}</div>;
-}

@@ -273,13 +273,13 @@ const Threshold = () => {
   return (
     <div >
       <Container className={classes.root}>
-        <Typography variant='h4'>Current Attendance Threshold Level</Typography>
+        <Typography variant='h4'>Current Detection Threshold Level</Typography>
         <Typography variant='h1' className={classes.Threshold}>
           <Box fontWeight={900}>{current}</Box>
         </Typography>
 
         <Typography variant='h5'>
-          <Box fontWeight={300}>Set Attendance Threshold level</Box>
+          <Box fontWeight={300}>Set Detection Threshold level</Box>
         </Typography>
 
         {/* Dropdown Menu */}
@@ -319,7 +319,7 @@ const Threshold = () => {
   );
 };
 
-export default class AttendanceSettings extends React.Component {
+export default class FrameRate extends React.Component {
   render() {
     return <Threshold />;
   }

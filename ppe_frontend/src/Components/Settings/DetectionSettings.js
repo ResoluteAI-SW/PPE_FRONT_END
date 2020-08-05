@@ -6,6 +6,10 @@ import Button from "@material-ui/core/Button";
 import { UserContext } from "../AdminDashboard";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+import { Tab } from 'semantic-ui-react'
+
+import DetectionSensitivity from './Sensitivity'
+import FrameRate from './DetectionFrameRate'
 
 const useStyles = makeStyles({
   root: {
@@ -33,17 +37,17 @@ export default function DetectionSettings() {
   const [open, setOpen] = React.useState(false);
   const userDoc = useContext(UserContext);
 
-  useEffect(() => {
-    if (
-      userDoc.data().settings.detectionFrameRate &&
-      userDoc.data().settings.detectionSensitivity
-    ) {
-      const frameRate = userDoc.data().settings.detectionFrameRate;
-      const sensitivity = userDoc.data().settings.detectionSensitivity;
-      setFrameRate(frameRate);
-      setSensitivity(sensitivity);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (
+  //     userDoc.data().settings.detectionFrameRate &&
+  //     userDoc.data().settings.detectionSensitivity
+  //   ) {
+  //     const frameRate = userDoc.data().settings.detectionFrameRate;
+  //     const sensitivity = userDoc.data().settings.detectionSensitivity;
+  //     setFrameRate(frameRate);
+  //     setSensitivity(sensitivity);
+  //   }
+  // }, []);
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -77,63 +81,17 @@ export default function DetectionSettings() {
       });
   };
 
+  const panes = [
+    { menuItem: 'Detection Frame Rate', render: () => <Tab.Pane> <FrameRate /></Tab.Pane> },
+    { menuItem: 'Detection Sensitivity', render: () => <Tab.Pane><DetectionSensitivity /></Tab.Pane> },
+  ]
+
+  const TabExampleBasic = () => <Tab panes={panes} />
+
   return (
-    <div className={classes.root}>
-      <div
-        style={{
-          padding: 15,
-          display: "flex",
-          alignItems: "center",
-          width: "50%",
-          flexDirection: "column",
-        }}
-        class="w3-card-2 w3-animate-top"
-      >
-        <Typography id="discrete-slider" gutterBottom>
-          Detection Frame Rate
-        </Typography>
-        <Slider
-          value={frameRate}
-          aria-labelledby="discrete-slider"
-          valueLabelDisplay="on"
-          step={5}
-          marks
-          min={0}
-          max={100}
-          style={{
-            marginTop: 40,
-          }}
-          onChange={(e, value) => setFrameRate(value)}
-        />
-        <Typography id="discrete-slider" gutterBottom>
-          Detection Sensitivity
-        </Typography>
-        <Slider
-          value={sensitivity}
-          aria-labelledby="discrete-slider"
-          step={0.05}
-          marks
-          valueLabelDisplay="on"
-          min={0}
-          max={1}
-          style={{
-            marginTop: 40,
-          }}
-          onChange={(e, value) => setSensitivity(value)}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={saveDetectionSettings}
-        >
-          Save
-        </Button>
-      </div>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity={severity}>
-          {message}
-        </Alert>
-      </Snackbar>
+    <div >
+     
+      <TabExampleBasic />
     </div>
   );
 }

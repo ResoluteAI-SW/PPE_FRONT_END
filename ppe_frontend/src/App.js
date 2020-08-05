@@ -11,7 +11,7 @@ const mainTheme = createMuiTheme({
   palette: {
     primary: {
       light: "#9A4749",
-      main: "#9B282A",
+      main: "#F72A1F",
       dark: "#5A1111",
     },
     secondary: {
@@ -22,7 +22,7 @@ const mainTheme = createMuiTheme({
   },
   typography: {
     htmlFontSize: 17,
-    fontFamily: "Montserrat",
+    fontFamily: "Poppins, Raleway, Roboto, sans-serif",
     fontSize: 15,
   },
   shape: {

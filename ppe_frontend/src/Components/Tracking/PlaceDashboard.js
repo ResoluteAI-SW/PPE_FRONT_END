@@ -76,6 +76,9 @@ export default function SocialDistancingDashboard() {
   const [places, setPlaces] = useState([]);
   const [placeLogs, setPlaceLogs] = useState(null);
 
+  console.log(places)
+  console.log(placeLogs)
+
   useEffect(() => {
     var ipCameras = [];
     userDoc.ref
@@ -133,61 +136,222 @@ export default function SocialDistancingDashboard() {
     return (
       <React.Fragment>
         <CssBaseline />
-        <AppBar position="relative">
+        {/* <AppBar position="relative">
           <Toolbar>
             <DoneOutlineTwoToneIcon className={classes.icon} />
             <Typography variant="h6" color="inherit" noWrap>
               Place Dashboard
             </Typography>
           </Toolbar>
-        </AppBar>
+        </AppBar> */}
         <main>
+          <h1 style={{ margin: "3%", marginBottom: "-2%"}}> PPE Tracking Locations</h1>
+
           <Container className={classes.cardGrid} maxwidth="md">
+
             <Grid container spacing={4}>
-              {places.map((card) => (
-                <Grid item key={card} xs={12} sm={6} md={4}>
-                  <Card className={classes.card}>
-                    <CardContent className={classes.cardContent}>
-                      <Typography gutterBottom variant="h5" component="h2">
-                        {card.Place}
+              {/* {places.map((card) => ( */}
+              <Grid item xs={12} sm={6} md={4}>
+                <Card className={classes.card}>
+                  <CardContent className={classes.cardContent}>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {/* {card.Place} */}
+                        lab 1
                       </Typography>
-                      <Divider />
-                      <Typography variant="overline" style={{ color: "grey" }}>
-                        {card.Hashtag}
+                    <Divider />
+                    <Typography variant="overline" style={{ color: "grey" }}>
+                      {/* {card.Hashtag} */}
+                        #LAB
                       </Typography>
-                      <br />
-                      <Typography variant="overline" style={{ color: "grey" }}>
-                        {card.IPAddress}
+                    <br />
+                    <Typography variant="overline" style={{ color: "grey" }}>
+                      {/* {card.IPAddress} */}
+                        192.168.0.1
                       </Typography>
-                      <br />
-                      <Typography variant="overline" style={{ color: "grey" }}>
-                        On Duty: {card.People}
+                    <br />
+                    <Typography variant="overline" style={{ color: "grey" }}>
+                      {/* On Duty: {card.People} */}
+                        On Duty: 3
                       </Typography>
-                    </CardContent>
-                    <CardActions>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => {
-                          setPlaceLogs(card.IPAddress);
-                        }}
-                      >
-                        View
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => {
+                        // setPlaceLogs(card.IPAddress);
+                        setPlaceLogs('192.168.0.1');
+                      }}
+                    >
+                      View
                       </Button>
-                      <Typography>Status:</Typography>
-                      <span
-                        className={
-                          card.Status === "Green"
-                            ? classes.greenDot
-                            : card.Status === "Red"
-                            ? classes.redDot
-                            : classes.yellowDot
-                        }
-                      ></span>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
+                    <Typography>Status:</Typography>
+                    <span
+                      className={
+                        // card.Status === "Green"
+                        //   ? classes.greenDot
+                        //   : card.Status === "Red"
+                        //   ? classes.redDot
+                        //   : classes.yellowDot
+                        classes.greenDot
+
+                      }
+                    ></span>
+                  </CardActions>
+                </Card>
+
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Card className={classes.card}>
+                  <CardContent className={classes.cardContent}>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {/* {card.Place} */}
+                        lab 1
+                      </Typography>
+                    <Divider />
+                    <Typography variant="overline" style={{ color: "grey" }}>
+                      {/* {card.Hashtag} */}
+                        #LAB
+                      </Typography>
+                    <br />
+                    <Typography variant="overline" style={{ color: "grey" }}>
+                      {/* {card.IPAddress} */}
+                        192.168.0.1
+                      </Typography>
+                    <br />
+                    <Typography variant="overline" style={{ color: "grey" }}>
+                      {/* On Duty: {card.People} */}
+                        On Duty: 3
+                      </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => {
+                        // setPlaceLogs(card.IPAddress);
+                        setPlaceLogs('192.168.0.1');
+                      }}
+                    >
+                      View
+                      </Button>
+                    <Typography>Status:</Typography>
+                    <span
+                      className={
+                        // card.Status === "Green"
+                        //   ? classes.greenDot
+                        //   : card.Status === "Red"
+                        //   ? classes.redDot
+                        //   : classes.yellowDot
+                        classes.greenDot
+
+                      }
+                    ></span>
+                  </CardActions>
+                </Card>
+                
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Card className={classes.card}>
+                  <CardContent className={classes.cardContent}>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {/* {card.Place} */}
+                        lab 1
+                      </Typography>
+                    <Divider />
+                    <Typography variant="overline" style={{ color: "grey" }}>
+                      {/* {card.Hashtag} */}
+                        #LAB
+                      </Typography>
+                    <br />
+                    <Typography variant="overline" style={{ color: "grey" }}>
+                      {/* {card.IPAddress} */}
+                        192.168.0.1
+                      </Typography>
+                    <br />
+                    <Typography variant="overline" style={{ color: "grey" }}>
+                      {/* On Duty: {card.People} */}
+                        On Duty: 3
+                      </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => {
+                        // setPlaceLogs(card.IPAddress);
+                        setPlaceLogs('192.168.0.1');
+                      }}
+                    >
+                      View
+                      </Button>
+                    <Typography>Status:</Typography>
+                    <span
+                      className={
+                        // card.Status === "Green"
+                        //   ? classes.greenDot
+                        //   : card.Status === "Red"
+                        //   ? classes.redDot
+                        //   : classes.yellowDot
+                        classes.greenDot
+
+                      }
+                    ></span>
+                  </CardActions>
+                </Card>
+                
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Card className={classes.card}>
+                  <CardContent className={classes.cardContent}>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {/* {card.Place} */}
+                        lab 1
+                      </Typography>
+                    <Divider />
+                    <Typography variant="overline" style={{ color: "grey" }}>
+                      {/* {card.Hashtag} */}
+                        #LAB
+                      </Typography>
+                    <br />
+                    <Typography variant="overline" style={{ color: "grey" }}>
+                      {/* {card.IPAddress} */}
+                        192.168.0.1
+                      </Typography>
+                    <br />
+                    <Typography variant="overline" style={{ color: "grey" }}>
+                      {/* On Duty: {card.People} */}
+                        On Duty: 3
+                      </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => {
+                        // setPlaceLogs(card.IPAddress);
+                        setPlaceLogs('192.168.0.1');
+                      }}
+                    >
+                      View
+                      </Button>
+                    <Typography>Status:</Typography>
+                    <span
+                      className={
+                        // card.Status === "Green"
+                        //   ? classes.greenDot
+                        //   : card.Status === "Red"
+                        //   ? classes.redDot
+                        //   : classes.yellowDot
+                        classes.greenDot
+
+                      }
+                    ></span>
+                  </CardActions>
+                </Card>
+                
+              </Grid>
+              {/* ))} */}
             </Grid>
           </Container>
         </main>

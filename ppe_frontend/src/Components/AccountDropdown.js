@@ -39,8 +39,8 @@ export default function AccountDropdown(props) {
           aria-haspopup="true"
           onClick={handleClick}
         >
-          {/* Hi {props.name} */}
-          Weclome, Admin
+          Welcome, {props.name}
+          {/* Weclome, Admin */}
           <KeyboardArrowDownIcon />
         </Button>
       </div>

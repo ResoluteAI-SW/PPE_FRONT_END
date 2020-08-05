@@ -5,6 +5,10 @@ import IPCameraRegistration from "./IPCameraRegistration";
 import AttendanceSettings from "./AttendanceSettings";
 import PPESettings from "./PPESettings";
 import DetectionSettings from "./DetectionSettings";
+import DetectionSensitivityAdjustment from './DetectionSensitivity'
+
+import { Tab } from 'semantic-ui-react'
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -99,38 +103,37 @@ export default function Settings() {
     "Detection Threshold",
   ];
 
+  const panes = [
+    { menuItem: 'IP Camera Registration', render: () => <Tab.Pane><IPCameraRegistration /></Tab.Pane> },
+    { menuItem: 'Attendance Framerate', render: () => <Tab.Pane><AttendanceSettings /></Tab.Pane> },
+    { menuItem: 'Senstivity', render: () => <Tab.Pane><DetectionSensitivityAdjustment /></Tab.Pane> },
+    { menuItem: 'PPE Settings', render: () => <Tab.Pane><PPESettings /></Tab.Pane> },
+    { menuItem: 'Detection Threshold', render: () => <Tab.Pane><DetectionSettings /></Tab.Pane> },
+    
+  ]
+
+  const TabExampleBasic = () => <Tab panes={panes} />
+
+
   return (
-    <div>
-      <div className={classes.root}>
-        <main className={classes.content}>
-          <div class="w3-bar w3-black w3-animate-top">
-            {mainListItems.map((item) => (
-              <button
-                class="w3-bar-item w3-button"
-                href="#"
-                onClick={() => {
-                  setTitle(item);
-                }}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-          <Container maxwidth="lg" className={classes.container}>
-            <RenderComponent component={title} />
-          </Container>
-        </main>
-      </div>
+    <div className='w3-animate-bottom'>
+      {/* <div class="w3-bar w3-animate-top" style={{ backgroundColor: "#FFE8E9" }}>
+      {mainListItems.map((item) => (
+        <Button
+          class="w3-bar-item w3-button"
+          href="#"
+          onClick={() => {
+            setTitle(item);
+          }}
+        >
+          {item}
+        </Button>
+      ))}
+    </div>
+    <Container maxwidth="lg" className={classes.container}>
+      <RenderComponent component={title} />
+    </Container> */}
+      <TabExampleBasic />
     </div>
   );
-}
-
-function RenderComponent(props) {
-  const componentMap = {
-    "IP Camera Registration": <IPCameraRegistration />,
-    "Attendance Framerate and Senstivity": <AttendanceSettings />,
-    "PPE Settings": <PPESettings />,
-    "Detection Threshold": <DetectionSettings />,
-  };
-  return <div>{componentMap[props.component]}</div>;
 }

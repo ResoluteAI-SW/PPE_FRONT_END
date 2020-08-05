@@ -59,13 +59,21 @@ function Alert(props) {
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
+    color: theme.palette.common.black,
+    fontSize: 16,
   },
   body: {
-    fontSize: 14,
+    fontSize: 12,
   },
 }))(TableCell);
+
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.background.default,
+    },
+  },
+}))(TableRow);
 
 var severity = "success";
 var message = "IP Camera successfully registered";
@@ -94,100 +102,102 @@ export default function PPESettings() {
   ]);
   const [open, setOpen] = React.useState(false);
 
-  useEffect(() => {
-    if (
-      userDoc.data().settings.RedAlert &&
-      userDoc.data().settings.YellowAlert
-    ) {
-      const RedAlert = userDoc.data().settings.RedAlert;
-      const YellowAlert = userDoc.data().settings.YellowAlert;
-      var timeArr = [];
-      var timeObj = {};
-      timeObj.color = "Red";
-      timeObj.minutes = RedAlert.time.minutes;
-      timeObj.seconds = RedAlert.time.seconds;
-      timeArr.push(timeObj);
-      timeObj = {};
-      timeObj.color = "Yellow";
-      timeObj.minutes = YellowAlert.time.minutes;
-      timeObj.seconds = YellowAlert.time.seconds;
-      timeArr.push(timeObj);
-      var toolsArr = [];
-      var toolsObj = {};
-      for (let i = 0; i < RedAlert.tools.length; i++) {
-        toolsObj.display = RedAlert.tools[i];
-        toolsObj.image = displayImageMap[RedAlert.tools[i]];
-        toolsObj.alertType = "Red";
-        toolsArr.push(toolsObj);
-        toolsObj = {};
-      }
-      for (let i = 0; i < YellowAlert.tools.length; i++) {
-        toolsObj.display = YellowAlert.tools[i];
-        toolsObj.image = displayImageMap[YellowAlert.tools[i]];
-        toolsObj.alertType = "Yellow";
-        toolsArr.push(toolsObj);
-        toolsObj = {};
-      }
-      for (let i = 0; i < toolsArr.length; i++) {
-        console.log(toolsArr[i]);
-      }
-      for (let i = 0; i < timeArr.length; i++) {
-        console.log(timeArr[i]);
-      }
-      setTime(timeArr);
-      setTools(toolsArr);
-    }
-  }, []);
+  console.log(userDoc.data())
 
-  const savePPESettings = () => {
-    var RedAlert = {};
-    RedAlert.tools = [];
-    var YellowAlert = {};
-    YellowAlert.tools = [];
-    for (var i = 0; i < tools.length; i++) {
-      if (tools[i].alertType === "Red") {
-        RedAlert.tools.push(tools[i].display);
-      } else {
-        YellowAlert.tools.push(tools[i].display);
-      }
-    }
-    RedAlert.time = {};
-    YellowAlert.time = {};
-    RedAlert.time.minutes = time[0].minutes;
-    RedAlert.time.seconds = time[0].seconds;
-    YellowAlert.time.minutes = time[1].minutes;
-    YellowAlert.time.seconds = time[1].seconds;
-    userDoc.ref
-      .set(
-        {
-          settings: {
-            RedAlert: RedAlert,
-            YellowAlert: YellowAlert,
-          },
-        },
-        { merge: true }
-      )
-      .then(() => {
-        console.log("Write successfull");
-        message = "PPE Settings updated successfully";
-        severity = "success";
-        setOpen(true);
-      })
-      .catch((err) => {
-        console.log(err.message);
-        message = err.message;
-        severity = "error";
-        setOpen(true);
-        console.log(err);
-      });
-  };
+  // useEffect(() => {
+  //   if (
+  //     userDoc.data().settings.RedAlert &&
+  //     userDoc.data().settings.YellowAlert
+  //   ) {
+  //     const RedAlert = userDoc.data().settings.RedAlert;
+  //     const YellowAlert = userDoc.data().settings.YellowAlert;
+  //     var timeArr = [];
+  //     var timeObj = {};
+  //     timeObj.color = "Red";
+  //     timeObj.minutes = RedAlert.time.minutes;
+  //     timeObj.seconds = RedAlert.time.seconds;
+  //     timeArr.push(timeObj);
+  //     timeObj = {};
+  //     timeObj.color = "Yellow";
+  //     timeObj.minutes = YellowAlert.time.minutes;
+  //     timeObj.seconds = YellowAlert.time.seconds;
+  //     timeArr.push(timeObj);
+  //     var toolsArr = [];
+  //     var toolsObj = {};
+  //     for (let i = 0; i < RedAlert.tools.length; i++) {
+  //       toolsObj.display = RedAlert.tools[i];
+  //       toolsObj.image = displayImageMap[RedAlert.tools[i]];
+  //       toolsObj.alertType = "Red";
+  //       toolsArr.push(toolsObj);
+  //       toolsObj = {};
+  //     }
+  //     for (let i = 0; i < YellowAlert.tools.length; i++) {
+  //       toolsObj.display = YellowAlert.tools[i];
+  //       toolsObj.image = displayImageMap[YellowAlert.tools[i]];
+  //       toolsObj.alertType = "Yellow";
+  //       toolsArr.push(toolsObj);
+  //       toolsObj = {};
+  //     }
+  //     for (let i = 0; i < toolsArr.length; i++) {
+  //       console.log(toolsArr[i]);
+  //     }
+  //     for (let i = 0; i < timeArr.length; i++) {
+  //       console.log(timeArr[i]);
+  //     }
+  //     setTime(timeArr);
+  //     setTools(toolsArr);
+  //   }
+  // }, []);
 
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpen(false);
-  };
+  // const savePPESettings = () => {
+  //   var RedAlert = {};
+  //   RedAlert.tools = [];
+  //   var YellowAlert = {};
+  //   YellowAlert.tools = [];
+  //   for (var i = 0; i < tools.length; i++) {
+  //     if (tools[i].alertType === "Red") {
+  //       RedAlert.tools.push(tools[i].display);
+  //     } else {
+  //       YellowAlert.tools.push(tools[i].display);
+  //     }
+  //   }
+  //   RedAlert.time = {};
+  //   YellowAlert.time = {};
+  //   RedAlert.time.minutes = time[0].minutes;
+  //   RedAlert.time.seconds = time[0].seconds;
+  //   YellowAlert.time.minutes = time[1].minutes;
+  //   YellowAlert.time.seconds = time[1].seconds;
+  //   userDoc.ref
+  //     .set(
+  //       {
+  //         settings: {
+  //           RedAlert: RedAlert,
+  //           YellowAlert: YellowAlert,
+  //         },
+  //       },
+  //       { merge: true }
+  //     )
+  //     .then(() => {
+  //       console.log("Write successfull");
+  //       message = "PPE Settings updated successfully";
+  //       severity = "success";
+  //       setOpen(true);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err.message);
+  //       message = err.message;
+  //       severity = "error";
+  //       setOpen(true);
+  //       console.log(err);
+  //     });
+  // };
+
+  // const handleClose = (event, reason) => {
+  //   if (reason === "clickaway") {
+  //     return;
+  //   }
+  //   setOpen(false);
+  // };
 
   const classes = useStyles();
   return (
@@ -195,7 +205,7 @@ export default function PPESettings() {
       <div className={classes.selectPPE}>
         <h2>Select PPE for Detection</h2>
         <div style={{ marginTop: 10 }}>
-          <TableContainer component={Paper}>
+          <TableContainer >
             <Table className={classes.table} aria-label="simple table">
               <TableBody>
                 {tools.map((row, index) => (
@@ -240,20 +250,20 @@ export default function PPESettings() {
         </div>
       </div>
       <div className={classes.selectPPE}>
-        <TableContainer component={Paper}>
+        <TableContainer >
           <Table className={classes.table} aria-label="simple table">
             <TableHead>
-              <TableRow>
-                <StyledTableCell align="left">Type</StyledTableCell>
-                <StyledTableCell align="right">Minutes</StyledTableCell>
-                <StyledTableCell align="right">Seconds</StyledTableCell>
-              </TableRow>
+              <StyledTableRow>
+                <StyledTableCell style={{ color: 'red' }}>Type</StyledTableCell>
+                <StyledTableCell style={{ color: 'red' }}>Minutes</StyledTableCell>
+                <StyledTableCell style={{ color: 'red' }}>Seconds</StyledTableCell>
+              </StyledTableRow>
             </TableHead>
             <TableBody>
               {time.map((row, index) => (
                 <TableRow>
-                  <TableCell align="left">{row.color}</TableCell>
-                  <TableCell align="right">
+                  <StyledTableCell align="left">{row.color}</StyledTableCell>
+                  <StyledTableCell align="right">
                     <input
                       type="number"
                       id="minutes"
@@ -272,8 +282,8 @@ export default function PPESettings() {
                         setTime([...timeBefore, obj, ...timeAfter]);
                       }}
                     />
-                  </TableCell>
-                  <TableCell align="right">
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
                     <input
                       type="number"
                       id="seconds"
@@ -292,14 +302,14 @@ export default function PPESettings() {
                         setTime([...timeBefore, obj, ...timeAfter]);
                       }}
                     />
-                  </TableCell>
+                  </StyledTableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
         <Button
-          onClick={savePPESettings}
+          // onClick={savePPESettings}
           variant="contained"
           color="primary"
           style={{ marginTop: 5 }}
@@ -307,11 +317,11 @@ export default function PPESettings() {
           Save
         </Button>
       </div>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+      {/* <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={severity}>
           {message}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </div>
   );
 }
