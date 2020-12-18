@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-
-//Firebase imports
 import { firedb } from '../../firebase/firebase';
 import moment from 'moment'
-
 import {
     Grid,
     Box,
@@ -11,13 +8,12 @@ import {
     makeStyles,
     Chip,
     Button,
-    Snackbar
+    Snackbar,
+    Checkbox,
+    FormControlLabel
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-//Form validation
 import { ValidatorForm, TextValidator, SelectValidator } from 'react-material-ui-form-validator';
-
-//Components imports
 import IpTable from './IpTable'
 
 const useStyles = makeStyles((theme) => ({
@@ -33,7 +29,8 @@ const colorHashtags = ["entry", "exit", "canteen", "garden"];
 export default function IpCameraRegistration({ clientId }) {
     const classes = useStyles();
 
-    const [IpcameraDetails, setIpCameraDetails] = useState([])
+    const [IpcameraDetails, setIpCameraDetails] = useState([]);
+    const [dvrList, setDvrList] = useState([])
 
     //Snackbar state
     const [fieldMissing, setFieldMissing] = useState(false);
@@ -51,22 +48,40 @@ export default function IpCameraRegistration({ clientId }) {
     const [formDate, setFormData] = useState({
         ipAddress: "",
         location: "",
-        channelName: ""
+        channelName: "",
+        dvrName: ""
     });
+    const [socialDistance, setSocialDistance] = useState(false);
+    const [ppe, setPpe] = useState(false);
+    const [faceRecognation, setFaceRecognation] = useState(false);
 
     const onChange = (e) => setFormData({ ...formDate, [e.target.name]: e.target.value })
-    const { ipAddress, location, channelName } = formDate;
+    const { ipAddress, location, channelName, dvrName } = formDate;
 
     const data = {
-        IPAddress: ipAddress,
+        DVR: dvrName,
+        Ip_address: ipAddress,
         Location: location,
         Hashtag: hashtag,
-        ChannelName: channelName,
-        Timelogged: moment().format('lll')
+        channel_name: channelName,
+        camera_name: ipAddress + "." + channelName,
+        time_logged: moment().format('lll'),
+        Settings: {
+            Service: {
+                "noteacher": false,
+                "stayback": false,
+                ppe: ppe,
+                social_distance: socialDistance,
+                face_recognition: faceRecognation
+            },
+            det_threshold: 0.7,
+            frame_rate: 0.5,
+            Type: ""
+        }
     }
 
     const handleSubmit = () => {
-        if (!ipAddress || !location || !channelName) {
+        if (!ipAddress || !location || !channelName || !dvrName) {
             setFieldMissing(true)
         }
         else {
@@ -74,9 +89,8 @@ export default function IpCameraRegistration({ clientId }) {
                 .collection(`Clients_data/${clientId}/Settings/Camera_details/IPCameras`)
                 .add(data)
                 .then((res) => {
-                    formReset();
                     setRegSuccess(true)
-
+                    formReset();
                 })
                 .catch((err) => {
                     console.log(err.message);
@@ -86,53 +100,109 @@ export default function IpCameraRegistration({ clientId }) {
 
     const formReset = () => {
         setFormData({
-            IPAddress: "",
-            PointOfCamera: "",
+            ipAddress: "",
+            location: "",
+            channelName: "",
+            dvrName: ""
         })
         setHashtag("")
     }
+
     useEffect(() => {
+
+        //Get the ipcamera list and to update it in latestconfig everytime this component loads.
         firedb
             .collection(`Clients_data/${clientId}/Settings/Camera_details/IPCameras`)
-            .orderBy("Timelogged", "desc")
+            // .orderBy("Timelogged", "desc")
             .onSnapshot((cameras) => {
                 const cameraArray = [];
+                const configArray = [];
+
                 cameras.forEach((item) => {
-                    cameraArray.push({ ...item.data(), Vid: item.id })
+                    cameraArray.push({ ...item.data(), Vid: item.id });
+                    configArray.push(item.data());
                 })
                 setIpCameraDetails(cameraArray);
+                firedb
+                    .collection(`Clients_data/${clientId}/Updates/`)
+                    .doc('LatestUpdates/')
+                    .update("Config", configArray)
+                    .then((res) => {
+                        console.log("LatestUpdates updated")
+                    })
+            })
+        //Get the all dvr registered
+        firedb
+            .collection(`Clients_data/${clientId}/Settings/Camera_details/DVR`)
+            .get()
+            .then((res) => {
+                const dvrArray = [];
+                res.forEach((item) => {
+                    dvrArray.push(item.data().hardwarename)
+                })
+                setDvrList(dvrArray);
             })
     }, [clientId]);
+
     return (
         <Grid container spacing={3}>
             <Grid item lg={4}>
                 <Box>
                     <Typography align="center" variant="subtitle1" className={classes.heading}>IP Camera Registration</Typography>
                     <ValidatorForm>
-                        <TextValidator
-                            placeholder="IP Address"
-                            label="IP Address"
+                        <SelectValidator
+                            SelectProps={{
+                                native: true,
+                            }}
                             fullWidth
                             variant="outlined"
                             className={classes.textFiled}
-                            name="ipAddress"
-                            value={ipAddress}
+                            name="dvrName"
+                            value={dvrName}
                             onChange={(e) => onChange(e)}
+                            label="DVR Name"
                             validators={['required']}
                             errorMessages={['This field is required']}
-                        />
-                        <TextValidator
-                            placeholder="Channel Name"
-                            label="Channel Name"
-                            fullWidth
-                            variant="outlined"
-                            className={classes.textFiled}
-                            name="channelName"
-                            value={channelName}
-                            onChange={(e) => onChange(e)}
-                            validators={['required']}
-                            errorMessages={['This field is required']}
-                        />
+                        >
+                            <option aria-label="None" value="" />
+                            {
+                                dvrList.map((dvr) => {
+                                    return (
+                                        <option value={dvr}>{dvr}</option>
+                                    )
+                                })
+                            }
+                        </SelectValidator>
+                        <Grid container spacing={2}>
+                            <Grid item lg={6}>
+                                <TextValidator
+                                    placeholder="IP Address"
+                                    label="IP Address"
+                                    fullWidth
+                                    variant="outlined"
+                                    className={classes.textFiled}
+                                    name="ipAddress"
+                                    value={ipAddress}
+                                    onChange={(e) => onChange(e)}
+                                    validators={['required']}
+                                    errorMessages={['This field is required']}
+                                />
+                            </Grid>
+                            <Grid item lg={6}>
+                                <TextValidator
+                                    placeholder="Channel Name"
+                                    label="Channel Name"
+                                    fullWidth
+                                    variant="outlined"
+                                    className={classes.textFiled}
+                                    name="channelName"
+                                    value={channelName}
+                                    onChange={(e) => onChange(e)}
+                                    validators={['required']}
+                                    errorMessages={['This field is required']}
+                                />
+                            </Grid>
+                        </Grid>
                         <div className={classes.textFiled}>
                             Suggested Hashtags:
                                 {colorHashtags.map(hashtag => (
@@ -164,6 +234,9 @@ export default function IpCameraRegistration({ clientId }) {
                             errorMessages={['This field is required']}
                         />
                         <SelectValidator
+                            SelectProps={{
+                                native: true,
+                            }}
                             fullWidth
                             variant="outlined"
                             className={classes.textFiled}
@@ -174,12 +247,26 @@ export default function IpCameraRegistration({ clientId }) {
                             validators={['required']}
                             errorMessages={['This field is required']}
                         >
-                            <option value={"research"}>R&D</option>
-                            <option value={"finance"}>Finance</option>
-                            <option value={"design"}>Design</option>
-                            <option value={"software developemnt"}>Software Development</option>
+                            <option aria-label="None" value="" />
+                            <option value={"opd"}>OPD</option>
+                            <option value={"icu"}>ICU</option>
+                            <option value={"research room"}>Research Romm</option>
+                            <option value={"cancer department"}>Cancer Department</option>
                         </SelectValidator>
-
+                        <Typography variant="subtitle1" align="center">Service Subcribed for</Typography>
+                        <FormControlLabel
+                            control={<Checkbox checked={faceRecognation} onChange={() => setFaceRecognation(!faceRecognation)} />}
+                            label="Face Recognation "
+                        />
+                        <FormControlLabel
+                            control={<Checkbox checked={ppe} onChange={() => { setPpe(!ppe) }} />}
+                            label="PPE"
+                        />
+                        <FormControlLabel
+                            control={<Checkbox checked={socialDistance} onChange={() => { setSocialDistance(!socialDistance) }} />}
+                            label="Social Distancing"
+                            className={classes.textFiled}
+                        />
                         <Button
                             onClick={() => handleSubmit()}
                             fullWidth
@@ -193,7 +280,7 @@ export default function IpCameraRegistration({ clientId }) {
                 </Box>
             </Grid>
             <Grid item lg={8}>
-                <IpTable IpcameraDetails={IpcameraDetails} />
+                <IpTable IpcameraDetails={IpcameraDetails} clientId={clientId} />
             </Grid>
             <Snackbar open={fieldMissing} autoHideDuration={6000} onClose={handleClose} >
                 <Alert onClose={handleClose} severity="error">

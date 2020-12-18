@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
 import { Redirect, Link } from 'react-router-dom';
-import { clientContext } from '../App';
 import { Firebase } from '../firebase/firebase'
 import FaceGenieLogo from '../assets/images/Facegenie.png';
 import ppeBg from '../assets/images/ppe-bg.jpg';
+import { AuthContext } from './auth/AuthContext';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import {
     Grid,
@@ -97,10 +97,10 @@ export default function Login() {
     }
 
     //LOGIN CLIENT IF AUTHENTICATED
-    const client = useContext(clientContext)
+    const client = useContext(AuthContext)
     if (client !== null) {
         return (
-            <Redirect to={{ pathname: "/dashboard" }} />
+            <Redirect to={"/dashboard"} />
         )
     }
 

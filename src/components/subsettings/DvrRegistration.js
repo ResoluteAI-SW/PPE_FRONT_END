@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
-
-//Firebase imports
 import { firedb } from '../../firebase/firebase';
 import moment from 'moment';
-
-//Form validation
 import { ValidatorForm, TextValidator, SelectValidator } from 'react-material-ui-form-validator';
 
 import {
@@ -13,9 +9,7 @@ import {
     Typography,
     makeStyles,
     Button,
-    Snackbar,
-    TextField,
-    Slide
+    Snackbar
 } from '@material-ui/core';
 
 import { Alert } from '@material-ui/lab';
@@ -61,19 +55,17 @@ export default function DvrRegistration({ clientId }) {
         password: ""
     });
 
-
-
     const onChange = (e) => setFormData({ ...formDate, [e.target.name]: e.target.value })
     const { type, brand, hardwareName, port, userName, password } = formDate;
 
     const data = {
-        Type: type,
-        Brand: brand,
-        HardwareName: hardwareName,
-        Port: port,
-        Username: userName,
-        Password: password,
-        Timelogged: moment().format('lll')
+        type: type,
+        brand: brand,
+        hardwarename: hardwareName,
+        port: port,
+        username: userName,
+        password: password,
+        timelogged: moment().format('lll')
     }
 
     const handleSubmit = () => {
@@ -82,7 +74,7 @@ export default function DvrRegistration({ clientId }) {
         }
         else {
             firedb
-                .collection(`Clients_data/${clientId}/Settings/Camera_details/Dvr`)
+                .collection(`Clients_data/${clientId}/Settings/Camera_details/DVR`)
                 .add(data)
                 .then((res) => {
                     setRegSuccess(true);
@@ -107,8 +99,8 @@ export default function DvrRegistration({ clientId }) {
 
     useEffect(() => {
         firedb
-            .collection(`Clients_data/${clientId}/Settings/Camera_details/Dvr`)
-            .orderBy("Timelogged", "desc")
+            .collection(`Clients_data/${clientId}/Settings/Camera_details/DVR`)
+            // .orderBy("Timelogged", "desc") //TODO
             .onSnapshot((dvr) => {
                 const dvrDetailsArray = [];
                 dvr.forEach((item) => {
@@ -125,6 +117,9 @@ export default function DvrRegistration({ clientId }) {
                     <Typography align="center" variant="subtitle1" className={classes.heading}>DVR Settings</Typography>
                     <ValidatorForm>
                         <SelectValidator
+                            SelectProps={{
+                                native: true,
+                            }}
                             className={classes.textFiled}
                             name="type"
                             value={type}
@@ -132,19 +127,21 @@ export default function DvrRegistration({ clientId }) {
                             label="Type"
                             fullWidth
                             variant="outlined"
-                            placeholder="Brand"
                             validators={["required"]}
                             errorMessages={["This field is required"]}
                         >
+                            <option aria-label="None" value="" />
                             <option value={"Dvr"}>DVR</option>
                             <option value={"Nvr"}>NVR</option>
                             <option value={"Ip Camera"}>IP Camera</option>
                         </SelectValidator>
 
                         <SelectValidator
+                            SelectProps={{
+                                native: true,
+                            }}
                             fullWidth
                             variant="outlined"
-                            placeholder="Brand"
                             validators={["required"]}
                             errorMessages={["This field is required"]}
                             className={classes.textFiled}
@@ -153,6 +150,7 @@ export default function DvrRegistration({ clientId }) {
                             onChange={(e) => onChange(e)}
                             label="Brand"
                         >
+                            <option aria-label="None" value="" />
                             <option value={"Hikvision"}>Hikvision</option>
                             <option value={"CPplus"}>CPplus</option>
                             <option value={"Zicom"}>Zicom</option>
@@ -229,7 +227,7 @@ export default function DvrRegistration({ clientId }) {
                 </Box>
             </Grid>
             <Grid item lg={8}>
-                <DvrTable dvrData={dvrDetails} />
+                <DvrTable dvrData={dvrDetails} clientId={clientId} />
             </Grid>
 
 

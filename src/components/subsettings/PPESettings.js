@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import { clientContext } from '../../App';
 import {
     Grid,
     Typography,
@@ -61,16 +60,13 @@ function TabPanel(props) {
     );
 }
 
-export default function PpeSettings() {
+export default function PpeSettings({ clientId }) {
     const classes = useStyles();
     const [value, setValue] = useState(0)
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
 
-    //GET THE CLIENT ID FROM CONTEXT
-    const client = useContext(clientContext);
-    const clientId = client.clientId;
     return (
         <Grid container>
             <Grid item lg={12}>

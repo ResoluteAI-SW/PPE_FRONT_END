@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 
 //CLIENT CONTEXT
-import { clientContext } from '../App';
+import { AuthContext } from '../components/auth/AuthContext';
 
 //Components imports
 import DvrRegistration from './subsettings/DvrRegistration'
@@ -76,7 +76,7 @@ export default function Settings() {
     };
 
     //GET THE CLIENT ID FROM CONTEXT
-    const client = useContext(clientContext);
+    const client = useContext(AuthContext);
     const clientId = client.clientId;
     return (
         <Grid container>

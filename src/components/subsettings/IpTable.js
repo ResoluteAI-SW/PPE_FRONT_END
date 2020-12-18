@@ -1,9 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-
-//Firebase imports
 import { firedb } from '../../firebase/firebase';
-//CLIENT CONTEXT
-import { clientContext } from '../../App';
 import EditIcon from '../../assets/NavBarIcons/EditIcon';
 import {
     TableRow,
@@ -21,10 +17,12 @@ import {
     DialogContent,
     Dialog,
     Slide,
-    Snackbar
+    Snackbar,
+    FormControlLabel,
+    Checkbox,
+
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-//Form validation
 import { ValidatorForm, TextValidator, SelectValidator } from 'react-material-ui-form-validator';
 
 const useStyles = makeStyles((theme) => ({
@@ -41,26 +39,28 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function IpTable({ IpcameraDetails }) {
+export default function IpTable({ IpcameraDetails, clientId }) {
     const classes = useStyles();
-
-    //GET THE CLIENT ID FROM CONTEXT
-    const client = useContext(clientContext);
-    const clientId = client.clientId;
     //Snackbar state
     const [saveSuccess, setSaveSuccess] = useState(false);
 
     //Modal state
     const [modelOpen, setModelOpen] = useState(false);
+    const [socialDistance, setSocialDistance] = useState(false);
+    const [ppe, setPpe] = useState(false);
+    const [faceRecognation, setFaceRecognation] = useState(false);
     const [editFormDate, setEditFormData] = useState({
         editIpAddress: "",
         editChannelName: "",
         editHashtag: "",
         editDepartment: "",
-        vid: ""
+        vid: "",
+        threshold: null,
+        frameRate: null,
+        type: "",
     });
     const onChangeEdit = (e) => setEditFormData({ ...editFormDate, [e.target.name]: e.target.value })
-    const { editChannelName, editDepartment, editIpAddress, editHashtag } = editFormDate;
+    const { editChannelName, editDepartment, editIpAddress, editHashtag, threshold, frameRate, type } = editFormDate;
 
     //Once modal is open set the form state
     const setModalState = (Vid) => {
@@ -71,12 +71,18 @@ export default function IpTable({ IpcameraDetails }) {
             .get()
             .then((res) => {
                 setEditFormData({
-                    editIpAddress: res.data().IPAddress,
-                    editChannelName: res.data().ChannelName,
+                    editIpAddress: res.data().Ip_address,
+                    editChannelName: res.data().channel_name,
                     editHashtag: res.data().Hashtag,
                     editDepartment: res.data().Location,
-                    vid: Vid
+                    vid: Vid,
+                    threshold: res.data().Settings.det_threshold,
+                    frameRate: res.data().Settings.frame_rate,
+                    type: res.data().Settings.type,
                 })
+                setPpe(res.data().Settings.Service.ppe)
+                setSocialDistance(res.data().Settings.Service.social_distance)
+                setFaceRecognation(res.data().Settings.Service.face_recognition)
             })
             .catch((err) => {
                 console.log(err.message)
@@ -99,14 +105,25 @@ export default function IpTable({ IpcameraDetails }) {
             .doc(editFormDate.vid)
             .update(
                 {
-                    IPAddress: editFormDate.editIpAddress,
-                    ChannelName: editFormDate.editChannelName,
+                    Ip_address: editFormDate.editIpAddress,
+                    channel_name: editFormDate.editChannelName,
                     Hashtag: editFormDate.editHashtag,
-                    Location: editFormDate.editDepartment
+                    Location: editFormDate.editDepartment,
+                    "Settings": {
+                        "Service": {
+                            "noteacher": false,
+                            "stayback": false,
+                            "face_recognition": faceRecognation,
+                            "ppe": ppe,
+                            "social_distance": socialDistance
+                        },
+                        det_threshold: threshold,
+                        frame_rate: frameRate,
+                        type: type
+                    },
                 }
             )
             .then((res) => {
-
                 setSaveSuccess(true)
             })
             .catch((err) => {
@@ -131,10 +148,10 @@ export default function IpTable({ IpcameraDetails }) {
 
     //Table heading
     const headings = [
+        'Dvr Name',
         'Camera',
         'Location',
         'Hashtag',
-        'Time Logged',
         'Action'
     ]
 
@@ -162,10 +179,10 @@ export default function IpTable({ IpcameraDetails }) {
                             : IpcameraDetails
                         ).map((row, index) => (
                             <TableRow key={index}>
-                                <TableCell align="center">{row.ChannelName}</TableCell>
+                                <TableCell align="center">{row.DVR}</TableCell>
+                                <TableCell align="center">{row.camera_name}</TableCell>
                                 <TableCell align="center">{row.Location}</TableCell>
                                 <TableCell align="center">{row.Hashtag}</TableCell>
-                                <TableCell align="center">{row.Timelogged}</TableCell>
                                 <TableCell align="center">{
                                     <Button
                                         onClick={() => {
@@ -204,63 +221,147 @@ export default function IpTable({ IpcameraDetails }) {
                 keepMounted
                 onClose={handleClose}
             >
-                <DialogContent style={{ maxWidth: "300px" }}>
-                    <Typography variant="subtitle1" className={classes.heading} align="center">Edit DVR Configuration</Typography>
+                <DialogContent>
+                    <Typography variant="subtitle1" className={classes.textFiled} align="center">Edit IP Camera Configuration</Typography>
                     <ValidatorForm>
+                        <Grid container spacing={2}>
+                            <Grid item lg={6}>
+                                <TextValidator
+                                    placeholder="IP Address"
+                                    label="IP Address"
+                                    fullWidth
+                                    variant="outlined"
+                                    className={classes.textFiled}
+                                    name="editIpAddress"
+                                    value={editIpAddress}
+                                    onChange={(e) => onChangeEdit(e)}
+                                    validators={['required']}
+                                    errorMessages={['This field is required']}
+                                />
+                            </Grid>
+                            <Grid item lg={6}>
+                                <TextValidator
+                                    placeholder="Channel Name"
+                                    label="Channel Name"
+                                    fullWidth
+                                    variant="outlined"
+                                    className={classes.textFiled}
+                                    name="editChannelName"
+                                    value={editChannelName}
+                                    onChange={(e) => onChangeEdit(e)}
+                                    validators={['required']}
+                                    errorMessages={['This field is required']}
+                                />
+                            </Grid>
+                            <Grid item lg={6}>
+                                <TextValidator
+                                    variant="outlined"
+                                    id="Hashtag"
+                                    label="Insert # Hashtag"
+                                    fullWidth
+                                    name="editHashtag"
+                                    autoComplete="Hashtag"
+                                    onChange={e => onChangeEdit(e)}
+                                    value={editHashtag}
+                                    className={classes.textFiled}
+                                    validators={['required']}
+                                    errorMessages={['This field is required']}
+                                />
+                            </Grid>
+                            <Grid item lg={6}>
+                                <SelectValidator
+                                    SelectProps={{
+                                        native: true,
+                                    }}
+                                    fullWidth
+                                    variant="outlined"
+                                    className={classes.textFiled}
+                                    name="editDepartment"
+                                    value={editDepartment}
+                                    onChange={(e) => onChangeEdit(e)}
+                                    label="Department Name"
+                                    validators={['required']}
+                                    errorMessages={['This field is required']}
+                                >
+                                    <option aria-label="None" value="" />
+                                    <option value={"opd"}>OPD</option>
+                                    <option value={"icu"}>ICU</option>
+                                    <option value={"research room"}>Research Romm</option>
+                                    <option value={"cancer department"}>Cancer Department</option>
+                                </SelectValidator>
+                            </Grid>
+                            <Grid item lg={6}>
+                                <SelectValidator
+                                    SelectProps={{
+                                        native: true,
+                                    }}
+                                    fullWidth
+                                    variant="outlined"
+                                    className={classes.textFiled}
+                                    name="threshold"
+                                    value={threshold}
+                                    onChange={(e) => onChangeEdit(e)}
+                                    label="Detection Threshold"
+                                    validators={['required']}
+                                    errorMessages={['This field is required']}
+                                >
+                                    <option value={0.5}>0.5</option>
+                                    <option value={0.6}>0.6</option>
+                                    <option value={0.7}>0.7</option>
+                                    <option value={0.8}>0.8</option>
+                                    <option value={0.9}>0.9</option>
+                                    <option value={1}>1</option>
+                                </SelectValidator>
+                            </Grid>
+                            <Grid item lg={6}>
+                                <SelectValidator
+                                    SelectProps={{
+                                        native: true,
+                                    }}
+                                    fullWidth
+                                    variant="outlined"
+                                    className={classes.textFiled}
+                                    name="frameRate"
+                                    value={frameRate}
+                                    onChange={(e) => onChangeEdit(e)}
+                                    label="Frame Rate"
+                                    validators={['required']}
+                                    errorMessages={['This field is required']}
+                                >
+                                    <option value={5}>5</option>
+                                    <option value={6}>6</option>
+                                    <option value={7}>7</option>
+                                    <option value={8}>8</option>
+                                    <option value={9}>9</option>
+                                    <option value={1}>1</option>
+                                </SelectValidator>
+                            </Grid>
+                        </Grid>
                         <TextValidator
-                            placeholder="IP Address"
-                            label="IP Address"
-                            fullWidth
                             variant="outlined"
-                            className={classes.textFiled}
-                            name="editIpAddress"
-                            value={editIpAddress}
-                            onChange={(e) => onChangeEdit(e)}
-                            validators={['required']}
-                            errorMessages={['This field is required']}
-                        />
-                        <TextValidator
-                            placeholder="Channel Name"
-                            label="Channel Name"
+                            label="Type"
                             fullWidth
-                            variant="outlined"
-                            className={classes.textFiled}
-                            name="editChannelName"
-                            value={editChannelName}
-                            onChange={(e) => onChangeEdit(e)}
-                            validators={['required']}
-                            errorMessages={['This field is required']}
-                        />
-                        <TextValidator
-                            variant="outlined"
-                            id="Hashtag"
-                            label="Insert # Hashtag"
-                            fullWidth
-                            name="editHashtag"
-                            autoComplete="Hashtag"
+                            name="type"
                             onChange={e => onChangeEdit(e)}
-                            value={editHashtag}
+                            value={type}
                             className={classes.textFiled}
                             validators={['required']}
                             errorMessages={['This field is required']}
                         />
-                        <SelectValidator
-                            fullWidth
-                            variant="outlined"
+                        <Typography variant="subtitle1" align="center">Service Subcribed for</Typography>
+                        <FormControlLabel
+                            control={<Checkbox checked={faceRecognation} onChange={() => setFaceRecognation(!faceRecognation)} />}
+                            label="Face Recognation "
+                        />
+                        <FormControlLabel
+                            control={<Checkbox checked={ppe} onChange={() => { setPpe(!ppe) }} />}
+                            label="PPE"
+                        />
+                        <FormControlLabel
+                            control={<Checkbox checked={socialDistance} onChange={() => { setSocialDistance(!socialDistance) }} />}
+                            label="Social Distance"
                             className={classes.textFiled}
-                            name="editDepartment"
-                            value={editDepartment}
-                            onChange={(e) => onChangeEdit(e)}
-                            label="Department Name"
-                            validators={['required']}
-                            errorMessages={['This field is required']}
-                        >
-                            <option value={"research"}>R&D</option>
-                            <option value={"finance"}>Finance</option>
-                            <option value={"design"}>Design</option>
-                            <option value={"software developemnt"}>Software Development</option>
-                        </SelectValidator>
-
+                        />
                         <Button
                             type="submit"
                             onClick={() => { saveChanges() }}

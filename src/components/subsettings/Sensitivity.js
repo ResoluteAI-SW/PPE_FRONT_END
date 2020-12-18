@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
-//Fireabse
 import { firedb } from '../../firebase/firebase';
-
-//Mui
 import {
     Grid,
     Typography,
@@ -16,7 +12,6 @@ import {
     Slide
 } from '@material-ui/core'
 import { Alert } from '@material-ui/lab';
-
 
 //Modal transition
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -48,7 +43,7 @@ export default function Sensitivity({ clientId }) {
     const handleSubmit = (e) => {
 
         firedb
-            .collection(`Clients_data/${clientId}/Settings/`)    //Update the sensitivity on submit
+            .collection(`Clients_data/${clientId}/Settings/`)
             .doc('GeneralSettings')
             .update({
                 "DetectionSensitivity": current

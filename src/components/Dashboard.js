@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { Redirect } from 'react-router-dom';
-import { clientContext } from '../App';
 import resoulteAiLogo from '../assets/images/resoluteai_logo.jpg';
 import { Logout } from '../utils/Logout'
+import { AuthContext } from '../components/auth/AuthContext'
 
 import Register from './Register';
 import Profiles from './Profiles';
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         padding: theme.spacing(7, 3, 3, 3),
         backgroundColor: "#fafafa",
-        // height: "100vh"
+        minHeight: "100vh"
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -199,14 +199,11 @@ export default function Dashboard() {
         </div>
     )
 
-    //Authentication (Check if client is logged in)
-    const client = useContext(clientContext);
-    console.log(client)
-
-    // Authenticate
-    if (client === null) {
+    //Logout CLIENT IF Not AUTHENTICATED
+    const client = useContext(AuthContext)
+    if (client == null) {
         return (
-            <Redirect to={{ pathname: "/" }} />
+            <Redirect to={"/"} />
         )
     }
     return (

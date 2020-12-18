@@ -41,7 +41,7 @@ export default function DistanceThreshold({ clientId }) {
     const [disabled, setDisabled] = useState(true);
 
     const onChange = (e) => {
-        setCurrent(e.target.value);
+        setCurrent(parseFloat(e.target.value));
         setDisabled(false);
     };
     const handleSubmit = (e) => {
@@ -50,7 +50,7 @@ export default function DistanceThreshold({ clientId }) {
             .collection(`Clients_data/${clientId}/Settings/`)
             .doc('GeneralSettings')
             .update({
-                "distance_threshold": current
+                "PpeSettings.distance_threshold": current
             })
             .then((res) => {
                 setSaveSuccess(true)
@@ -68,7 +68,7 @@ export default function DistanceThreshold({ clientId }) {
             .collection(`Clients_data/${clientId}/Settings/`)
             .doc('GeneralSettings')
             .onSnapshot((res) => {
-                setUpdatedValue(res.data().distance_threshold)
+                setUpdatedValue(res.data().PpeSettings.distance_threshold)
             })
     }, [clientId]);
     return (

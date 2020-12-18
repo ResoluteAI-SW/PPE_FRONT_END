@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-
 import { firedb } from '../../firebase/firebase';
 import moment from 'moment'
-
-//MUI
 import {
     Grid,
     Typography,
@@ -15,7 +12,6 @@ import {
     Slide
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-
 
 const useStyles = makeStyles((theme) => ({
     submit: {
@@ -72,8 +68,8 @@ export default function LoginLogoutTime({ clientId }) {
             .doc('GeneralSettings')
             .update({
                 OfficeTimings: {
-                    Login: login,
-                    Logout: logout
+                    login: login,
+                    logout: logout
                 }
             })
             .then((res) => {
@@ -91,10 +87,10 @@ export default function LoginLogoutTime({ clientId }) {
             .doc('GeneralSettings')
             .onSnapshot((res) => {
                 setUpdatedLogin(
-                    res.data().OfficeTimings.Login
+                    res.data().OfficeTimings.login
                 )
                 setUpdatedLogout(
-                    res.data().OfficeTimings.Logout
+                    res.data().OfficeTimings.logout
                 )
             })
     }, [clientId]);

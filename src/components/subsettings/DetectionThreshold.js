@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
-//Fireabse
 import { firedb } from '../../firebase/firebase';
-
-//Mui
 import {
     Grid,
     Typography,
@@ -41,7 +37,7 @@ export default function DetectionThreshold({ clientId }) {
     const [disabled, setDisabled] = useState(true);
 
     const onChange = (e) => {
-        setCurrent(e.target.value);
+        setCurrent(parseFloat(e.target.value));
         setDisabled(false);
     };
     const handleSubmit = (e) => {
@@ -50,7 +46,7 @@ export default function DetectionThreshold({ clientId }) {
             .collection(`Clients_data/${clientId}/Settings/`)
             .doc('GeneralSettings')
             .update({
-                "det_threshold": current
+                "PpeSettings.det_threshold": current
             })
             .then((res) => {
                 setSaveSuccess(true)
@@ -68,7 +64,7 @@ export default function DetectionThreshold({ clientId }) {
             .collection(`Clients_data/${clientId}/Settings/`)
             .doc('GeneralSettings')
             .onSnapshot((res) => {
-                setUpdatedValue(res.data().det_threshold)
+                setUpdatedValue(res.data().PpeSettings.detection_threshold)
             })
     }, [clientId]);
     return (

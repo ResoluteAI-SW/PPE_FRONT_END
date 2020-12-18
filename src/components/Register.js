@@ -3,7 +3,7 @@ import { ValidatorForm, TextValidator, SelectValidator } from 'react-material-ui
 import { Alert } from '@material-ui/lab';
 import WebCam from './WebCam';
 import { firedb, storageRef } from '../firebase/firebase';
-import { clientContext } from '../App';
+import { AuthContext } from '../components/auth/AuthContext';
 import {
     Button,
     Grid,
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Register() {
     const classes = useStyles();
-    const client = useContext(clientContext);
+    const client = useContext(AuthContext);
     const clientId = client.clientId;
     const [fieldMissing, setFieldMissing] = useState(false);
     const [imageMissing, setImageMissing] = useState(false);
@@ -53,7 +53,6 @@ export default function Register() {
             "Gender": gender,
             "Email": email,
             "Phone": phone,
-            "Face": ""
         },
         Registration_Num: regNo,
         Type: employeeType,
@@ -106,7 +105,8 @@ export default function Register() {
                                 ...dataPrep,
                                 "StorageLinks": {
                                     "Face": url
-                                }
+                                },
+                                cloud_uid: staffRef.id
                             }
                             staffRef.set(staffInfo)
                                 .then((res) => {

@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
-//Fireabse
 import { firedb } from '../../firebase/firebase';
-
-//Mui
 import {
     Grid,
     Typography,
@@ -36,21 +32,21 @@ export default function PersonThreshold({ clientId }) {
     };
 
     //Form state
-    const [current, setCurrent] = useState("");
-    const [updatedValue, setUpdatedValue] = useState("");
+    const [current, setCurrent] = useState(0);
+    const [updatedValue, setUpdatedValue] = useState(0);
     const [disabled, setDisabled] = useState(true);
 
     const onChange = (e) => {
-        setCurrent(e.target.value);
+        setCurrent(parseFloat(e.target.value));
         setDisabled(false);
     };
     const handleSubmit = (e) => {
 
         firedb
             .collection(`Clients_data/${clientId}/Settings/`)
-            .doc('GeneralSettings')
+            .doc('GeneralSettings/')
             .update({
-                "person_threshold": current
+                "PpeSettings.person_threshold": current
             })
             .then((res) => {
                 setSaveSuccess(true)
@@ -66,9 +62,9 @@ export default function PersonThreshold({ clientId }) {
     useEffect(() => {
         firedb
             .collection(`Clients_data/${clientId}/Settings/`)
-            .doc('GeneralSettings')
+            .doc('GeneralSettings/')
             .onSnapshot((res) => {
-                setUpdatedValue(res.data().person_threshold)
+                setUpdatedValue(res.data().PpeSettings.person_threshold)
             })
     }, [clientId]);
     return (

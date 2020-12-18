@@ -36,21 +36,21 @@ export default function PpeThreshold({ clientId }) {
     };
 
     //Form state
-    const [current, setCurrent] = useState("");
-    const [updatedValue, setUpdatedValue] = useState("");
+    const [current, setCurrent] = useState(null);
+    const [updatedValue, setUpdatedValue] = useState(null)
     const [disabled, setDisabled] = useState(true);
 
     const onChange = (e) => {
-        setCurrent(e.target.value);
+        setCurrent(parseFloat(e.target.value));
         setDisabled(false);
     };
     const handleSubmit = (e) => {
 
         firedb
             .collection(`Clients_data/${clientId}/Settings/`)
-            .doc('GeneralSettings')
+            .doc('GeneralSettings/')
             .update({
-                "ppe_threshold": current
+                "PpeSettings.ppe_threshold": current
             })
             .then((res) => {
                 setSaveSuccess(true)
@@ -68,7 +68,7 @@ export default function PpeThreshold({ clientId }) {
             .collection(`Clients_data/${clientId}/Settings/`)
             .doc('GeneralSettings')
             .onSnapshot((res) => {
-                setUpdatedValue(res.data().ppe_threshold)
+                setUpdatedValue(res.data().PpeSettings.ppe_threshold)
             })
     }, [clientId]);
     return (

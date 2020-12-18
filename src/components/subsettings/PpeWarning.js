@@ -254,11 +254,11 @@ export default function PpeWarning({ clientId }) {
                 </Grid>
             </Grid>
             <Grid item lg={6}>
-                <Typography variant="subtitle1" className={classes.marginBtm}>Set Your PPE Warning Time</Typography>
+                <Typography variant="subtitle1" align="center" className={classes.marginBtm}>Set Your PPE Warning Time</Typography>
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell align="center"><b>Type</b></TableCell>
+                            <TableCell align="center"><b>Alert Type</b></TableCell>
                             <TableCell align="center"><b>Minutes</b></TableCell>
                             <TableCell align="center"><b>Seconds</b></TableCell>
                         </TableRow>

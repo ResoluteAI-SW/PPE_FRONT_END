@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import { clientContext } from '../App';
 import {
     Grid,
     Typography,
@@ -61,10 +60,6 @@ export default function Downloads() {
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
-
-    //GET THE CLIENT ID FROM CONTEXT
-    const client = useContext(clientContext);
-    const clientId = client.clientId;
     return (
         <Grid container>
             <Typography variant="h2" className={classes.heading}>Download Your Monthly Reports</Typography>

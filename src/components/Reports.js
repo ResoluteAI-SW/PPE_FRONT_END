@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { clientContext } from '../App';
+import { AuthContext } from '../components/auth/AuthContext';
 import {
     Grid,
     Typography,
@@ -66,7 +66,7 @@ export default function Reports() {
     };
 
     //GET THE CLIENT ID FROM CONTEXT
-    const client = useContext(clientContext);
+    const client = useContext(AuthContext);
     const clientId = client.clientId;
     return (
         <Grid container>

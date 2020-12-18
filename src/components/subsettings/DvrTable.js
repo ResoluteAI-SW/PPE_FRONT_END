@@ -1,8 +1,5 @@
-import React, { useEffect, useState, useContext } from 'react';
-//Firebase imports
+import React, { useEffect, useState } from 'react';
 import { firedb } from '../../firebase/firebase';
-//CLIENT CONTEXT
-import { clientContext } from '../../App';
 import EditIcon from '../../assets/NavBarIcons/EditIcon';
 import {
     TableRow,
@@ -40,12 +37,9 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function DvrTable({ dvrData }) {
+export default function DvrTable({ dvrData, clientId }) {
     const classes = useStyles();
 
-    //GET THE CLIENT ID FROM CONTEXT
-    const client = useContext(clientContext);
-    const clientId = client.clientId;
     //Snackbar state
     const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -65,15 +59,15 @@ export default function DvrTable({ dvrData }) {
     const setModalState = (Vid) => {
         setModelOpen(true);
         firedb
-            .collection(`Clients_data/${clientId}/Settings/Camera_details/Dvr/`)
+            .collection(`Clients_data/${clientId}/Settings/Camera_details/DVR/`)
             .doc(Vid)
             .get()
             .then((res) => {
                 setEditFormData({
-                    editType: res.data().Type,
-                    editBrand: res.data().Brand,
-                    editHardwareName: res.data().HardwareName,
-                    editPort: res.data().Port,
+                    editType: res.data().type,
+                    editBrand: res.data().brand,
+                    editHardwareName: res.data().hardwarename,
+                    editPort: res.data().port,
                     vid: Vid
                 })
             })
@@ -94,19 +88,24 @@ export default function DvrTable({ dvrData }) {
     //Save the edit changes
     const saveChanges = () => {
         firedb
-            .collection(`Clients_data/${clientId}/Settings/Camera_details/Dvr/`)
+            .collection(`Clients_data/${clientId}/Settings/Camera_details/DVR/`)
             .doc(editFormDate.vid)
             .update(
                 {
-                    Type: editFormDate.editType,
-                    Brand: editFormDate.editBrand,
-                    HardwareName: editFormDate.editHardwareName,
-                    Port: editFormDate.editPort
+                    type: editFormDate.editType,
+                    brand: editFormDate.editBrand,
+                    hardwarename: editFormDate.editHardwareName,
+                    port: editFormDate.editPort
                 }
             )
             .then((res) => {
-
                 setSaveSuccess(true)
+                setEditFormData({
+                    editType: "",
+                    editBrand: "",
+                    editHardwareName: "",
+                    editPort: "",
+                })
             })
             .catch((err) => {
                 console.log(err.message)
@@ -161,9 +160,9 @@ export default function DvrTable({ dvrData }) {
                             : dvrData
                         ).map((row, index) => (
                             <TableRow key={index}>
-                                <TableCell align="center">{row.Type}</TableCell>
-                                <TableCell align="center">{row.Brand}</TableCell>
-                                <TableCell align="center">{row.HardwareName}</TableCell>
+                                <TableCell align="center">{row.type}</TableCell>
+                                <TableCell align="center">{row.brand}</TableCell>
+                                <TableCell align="center">{row.hardwarename}</TableCell>
                                 <TableCell align="center">{row.Timelogged}</TableCell>
                                 <TableCell align="center">{
                                     <Button
@@ -207,6 +206,9 @@ export default function DvrTable({ dvrData }) {
                     <Typography variant="subtitle1" className={classes.heading} align="center">Edit DVR Configuration</Typography>
                     <ValidatorForm>
                         <SelectValidator
+                            SelectProps={{
+                                native: true,
+                            }}
                             className={classes.textFiled}
                             name="editType"
                             value={editType}
@@ -224,6 +226,9 @@ export default function DvrTable({ dvrData }) {
                         </SelectValidator>
 
                         <SelectValidator
+                            SelectProps={{
+                                native: true,
+                            }}
                             fullWidth
                             variant="outlined"
                             placeholder="Brand"
